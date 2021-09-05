@@ -15,8 +15,11 @@ It is suppose to be used with pandory on pandora box 3d plus.
 ## Installation
 
 1 - Install the apk
+
 2 - update the config.json on /data/data/com.openpandorabox/files
+
 3 - update the keymap.json on /data/data/com.openpandorabox/files
+
 4 - Done
 
 This frontend will look for gamelist.xml, to get the path, name, desc, image and video.
@@ -32,3 +35,5 @@ I hate to use mouse and keyboard on pandory box, so I created this frontend.
 
 It is not great but it is a honest job.
 
+
+# BEWARE - The SETTINGS IS NOT WORKING, update the settings using the /data/data/com.openpandorabox/files/config.json manually
