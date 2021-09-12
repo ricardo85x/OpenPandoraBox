@@ -131,6 +131,16 @@ export const PandaConfig = () => {
                     },
                     enabled: false,
                 },
+                nds: {
+                    title: "Nintendo DS",
+
+                    core: {
+                        choices: ["desmume_libretro_android.so"],
+                        useDrastic: false,
+                        default: 0
+                    },
+                    enabled: false,
+                },
                 n64: {
                     title: "Nintendo 64",
 
@@ -141,7 +151,6 @@ export const PandaConfig = () => {
                             "parallel_n64_libretro_android.so"
                         ],
                         default: 1,
-                        useMupen: false,
                         useMupenFz: true
                     },
                     
@@ -168,6 +177,17 @@ export const PandaConfig = () => {
         if (platformCore && platformCore?.useMupenFz){
 
             RunLocalCommand().openMupenPlusFZ(rom);
+
+            return
+        }
+
+        console.log("LE PLATFORM CORE", platformCore)
+
+        if (platformCore && platformCore?.useDrastic){
+
+            console.log("RUNNING DRASTIC!")
+
+            RunLocalCommand().openDrastic(rom);
 
             return
         }

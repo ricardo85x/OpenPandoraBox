@@ -30,6 +30,31 @@ public class RunLocalCommandModule extends ReactContextBaseJavaModule {
     return "RunLocalCommandModule";
   }
 
+
+  @ReactMethod
+  public void openDrastic(String rom){
+    Intent requestedIntent = new Intent("android.intent.action.MAIN");
+
+    if (requestedIntent != null) {
+
+      ComponentName componentName = new ComponentName("com.dsemu.drastic", "com.dsemu.drastic.DraSticActivity");
+
+      requestedIntent.setComponent(componentName);
+      requestedIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+      requestedIntent.putExtra("GAMEPATH", rom );
+
+      
+      _context.startActivity(requestedIntent);
+
+    } else {
+      Log.d(
+        "ERROR",
+        "Error no intent com.dsemu.drastic found"
+      );
+    }
+  }
+
   @ReactMethod
   public void openMupenPlusFZ(String rom){
     Intent requestedIntent = new Intent("android.intent.action.VIEW");
