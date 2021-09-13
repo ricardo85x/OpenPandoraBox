@@ -7,6 +7,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { HomeScreen } from "./components/Home"
 import { Platform } from "./components/Platform"
 import { Settings } from "./components/Settings"
+import { History } from "./components/History"
 import { PlatformSettings } from "./components/Settings/Platform"
 import { DirectorySettings } from "./components/Settings/Directory"
 
@@ -31,6 +32,7 @@ const App = () => {
           />
           <Stack.Screen name="Platform" component={Platform} />
           <Stack.Screen name="Settings" component={Settings} />
+          <Stack.Screen name="History" component={History} />
           <Stack.Screen name="PlatformSettings" component={PlatformSettings} />
           <Stack.Screen name="DirectorySettings" component={DirectorySettings} />
         </Stack.Navigator>

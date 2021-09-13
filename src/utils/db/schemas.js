@@ -89,5 +89,40 @@ export const Tables = {
             primary_key: false,
             default_value: null,
         }
+    },
+
+    History: {
+        romId: {
+            type: SupportedTypes.INTEGER,
+            primary_key: false,
+            default_value: null,
+        },
+        platform: {
+            type: SupportedTypes.TEXT,
+            primary_key: false,
+            default_value: null,
+        },
+        updated_at: {
+            type: SupportedTypes.DATETIME,
+            primary_key: false,
+            default_value: null
+        }
+    },
+    Favorites: {
+        romId: {
+            type: SupportedTypes.INTEGER,
+            primary_key: false,
+            default_value: null,
+        },
+        platform: {
+            type: SupportedTypes.TEXT,
+            primary_key: false,
+            default_value: null,
+        },
+        updated_at: {
+            type: SupportedTypes.DATETIME,
+            primary_key: false,
+            default_value: null
+        }
     }
 };

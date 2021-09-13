@@ -181,7 +181,6 @@ export const PandaConfig = () => {
             return
         }
 
-        console.log("LE PLATFORM CORE", platformCore)
 
         if (platformCore && platformCore?.useDrastic){
 
@@ -317,6 +316,11 @@ export const PandaConfig = () => {
                 type: "settings",
                 title: "SETTINGS",
                 text: "Configure Settings"
+            },
+            {
+                type: "History",
+                title: "HISTORY",
+                text: "Past played games"
             },
             ...defaultConfig
         ]

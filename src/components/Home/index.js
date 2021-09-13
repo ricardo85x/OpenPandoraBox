@@ -80,10 +80,17 @@ export const HomeScreen = ({ navigation, route }) => {
         if (keyMapsRef.current.P1_A?.includes(keyEvent.keyCode)) {
 
             if (route.name == "Home") {
+
+
                 const currentItem = carouselReRef.current.items[carouselReRef.current.active];
+                
                 if (currentItem.type === "settings"){
 
                     navigation.navigate('Settings', { keyMaps: keyMapsRef.current })
+
+                } else if (currentItem.type === "History"){
+
+                    navigation.navigate('History', { keyMaps: keyMapsRef.current })
 
                 } else if (currentItem.type === "platform"){
                     navigation.navigate('Platform', { keyMaps: keyMapsRef.current, platform: currentItem })

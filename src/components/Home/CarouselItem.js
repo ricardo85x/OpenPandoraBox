@@ -28,6 +28,8 @@ export const CarouselItem = ({ item, navigation, currentIndex, keyMaps }) => {
           navigation.navigate('System', { item: item.item })
         } else if (type === "platform") {
           navigation.navigate('Platform', { item: item.item, keyMaps })
+        } else if (type === "history") {
+          navigation.navigate('History', { item: item.item, keyMaps })
         }
 
       }}

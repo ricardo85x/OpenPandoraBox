@@ -1,6 +1,6 @@
 import SQLite from 'react-native-sqlite-storage';
 
-SQLite.DEBUG(true);
+SQLite.DEBUG(false);
 SQLite.enablePromise(true);
 
 import * as schema from './schemas';
@@ -30,7 +30,7 @@ class SQLiteManager {
                         .then((DB) => {
                             this.db = DB;
                             db = DB;
-                            db.executeSql('SELECT 1 FROM Rom LIMIT 1')
+                            db.executeSql('SELECT 1 FROM Rom cross join History cross join Favorites LIMIT 1')
                                 .then(() => {
                                     //
                                 })
@@ -38,6 +38,8 @@ class SQLiteManager {
                                     db.transaction((tx) => {
                                         for (const name in schema.Tables) {
                                             this.createTable(tx, schema.Tables[name], name);
+
+                                            console.log("Creating Table", name)
                                         }
                                     })
                                         .then(() => {
@@ -228,6 +230,81 @@ class SQLiteManager {
         });
     }
 
+    async removeFromHistory(rom) {
+        try {
+            const current_history = await this.getHistory()
+            if(current_history.length){
+                const duplicated = current_history.findIndex(i => i.id === rom.id && i.platform === rom.platform)
+                
+                if (duplicated !== -1){
+                    await this.db.executeSql(
+                        "delete from  history where romId = ? and platform = ?", 
+                        [rom.id, rom.platform]
+                    )
+                }
+            }
+
+        } catch (err) {
+            console.log("Error adding rom to history", err)
+        }
+    }
+
+    async addHistory(rom) {
+        try {
+            const current_history = await this.getHistory()
+            if(current_history.length === 0){
+                await this.db.executeSql(
+                    "insert into history(romId, platform, updated_at) values (?,?, datetime(CURRENT_TIMESTAMP, 'localtime'))", 
+                    [rom.id, rom.platform]
+                )
+            } else {
+                const duplicated = current_history.findIndex(i => i.id === rom.id && i.platform === rom.platform)
+                if (duplicated === -1){
+                    await this.db.executeSql(
+                        "insert into history(romId, platform, updated_at) values (?,?, datetime(CURRENT_TIMESTAMP, 'localtime'))", 
+                        [rom.id, rom.platform]
+                    )
+                } else {
+                    await this.db.executeSql(
+                        'update history set updated_at = datetime(CURRENT_TIMESTAMP, "localtime") where romId = ? and platform = ?', 
+                        [rom.id, rom.platform]
+                    )
+                }
+            }
+
+        } catch (err) {
+            console.log("Error adding rom to history", err)
+        }
+    }
+
+    async getHistory() {
+
+        let resultData = []
+
+        const results = await this.db.executeSql('select * from History order by updated_at DESC', [])
+        
+        if(results.length){
+            for (let i = 0; i < results.length; i++){
+                const current_result = results[i]
+
+                for(let j = 0; j < current_result.rows.length ; j++) {
+                    const current_row = results[i].rows.item(j)
+
+                    const results_rom = await this.db.executeSql(
+                        'select * from rom where id = ? and platform = ?',
+                        [current_row.romId, current_row.platform]
+                    )
+
+                    if(results_rom.length && results_rom[0].rows.length){
+                        resultData.push(results_rom[0].rows.item(0))
+                    }
+                }
+            }
+        }
+
+        return resultData
+    }
+
     addRoms(roms) {
         return new Promise((resolve) => {
             this.db
@@ -244,7 +321,7 @@ class SQLiteManager {
                             roms[i].desc,
                             roms[i].romName,
                         ]).then(([tx, results]) => {
-                            resolve(results);
+                            resolve("done");
                         });
                     }
                 })
