@@ -1,23 +1,44 @@
-import React from 'react';
+import React, {useMemo} from 'react';
 
 import { TouchableOpacity, Text, StyleSheet, Dimensions, Image } from "react-native"
 
-export const SLIDER_WIDTH = Dimensions.get('window').width + 80;
-export const ITEM_HEIGHT = Dimensions.get('window').height;
-export const ITEM_WIDTH = Math.round(SLIDER_WIDTH * 0.7);
+import { useSettingsContext } from "../../hooks/useSettings"
 
-export const CarouselItem = ({ item, navigation, currentIndex, keyMaps }) => {
+
+
+export const Item = ({ item, navigation, currentIndex, keyMaps }) => {
+
+
+  const { appSettings, APP_WIDTH, APP_HEIGHT } = useSettingsContext()
+
+  const SLIDER_WIDTH = APP_WIDTH + 80;
+  const ITEM_HEIGHT = APP_HEIGHT;
+  const ITEM_WIDTH = Math.round(SLIDER_WIDTH * 0.7);
 
   const text = item?.text ? item.text : "TEXT";
   const title = item?.title ? item.title : "TITLE";
   const type = item?.type ? item.type : "TYPE";
   const background = item?.background ? item.background : "";
 
-  const backgroundImage = type === "settings" ? 
-    require("../../assets/images/bg.jpg") :
-    {
-      uri: `file://${background}` 
+  const backgroundImage = useMemo( () => {
+
+    let currentBg = ""
+    if (type === "platform") {
+      currentBg = { uri: `file://${background}` }
+    } else if (type === "settings") {
+      if (appSettings?.THEME?.settingsBackgroundImg){
+        currentBg = { uri: `file://${appSettings.THEME.settingsBackgroundImg}` }
+      } else {
+        currentBg = require("../../assets/images/bg.jpg");
+      }
+    } else if (type === "history") {
+      if (appSettings?.THEME?.historyBackgroundImg){
+        currentBg = { uri: `file://${appSettings.THEME.historyBackgroundImg}` }
+      }
     }
+    return currentBg;
+
+  },[type, background])
 
   return (
 
@@ -36,9 +57,9 @@ export const CarouselItem = ({ item, navigation, currentIndex, keyMaps }) => {
 
       style={{
 
-        backgroundColor: background || type === "settings" ? 'transparent' : currentIndex == item.index ?
-          "#333333" :
-          "#242424",
+        backgroundColor: backgroundImage ? "transparent" : currentIndex == item.index ?
+           "#333333" :
+           "#242424",
 
         width: ITEM_WIDTH,
         height: ITEM_HEIGHT - (ITEM_HEIGHT * 0.2),
@@ -46,7 +67,7 @@ export const CarouselItem = ({ item, navigation, currentIndex, keyMaps }) => {
       }}
     >
 
-      { (background || type === "settings") ? (
+      { (background || backgroundImage) ? (
 
         <Image
           source={backgroundImage}
@@ -59,7 +80,6 @@ export const CarouselItem = ({ item, navigation, currentIndex, keyMaps }) => {
           resizeMode={'contain'}
 
         />
-
 
       ) : (
         <>

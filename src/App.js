@@ -12,6 +12,7 @@ import { PlatformSettings } from "./components/Settings/Platform"
 import { DirectorySettings } from "./components/Settings/Directory"
 
 import { DbContextProvider } from "./hooks/useDb"
+import { SettingsContextProvider } from "./hooks/useSettings"
 
 
 const App = () => {
@@ -20,23 +21,25 @@ const App = () => {
 
   return (
     <DbContextProvider>
-      <NavigationContainer>
-        <Stack.Navigator screenOptions={{
-          headerShown: false,
-          initialRouteName: "Home"
-        }} >
-          <Stack.Screen
-            name="Home"
-            component={HomeScreen}
-            options={{ title: 'Home' }}
-          />
-          <Stack.Screen name="Platform" component={Platform} />
-          <Stack.Screen name="Settings" component={Settings} />
-          <Stack.Screen name="History" component={History} />
-          <Stack.Screen name="PlatformSettings" component={PlatformSettings} />
-          <Stack.Screen name="DirectorySettings" component={DirectorySettings} />
-        </Stack.Navigator>
-      </NavigationContainer>
+      <SettingsContextProvider>
+        <NavigationContainer>
+          <Stack.Navigator screenOptions={{
+            headerShown: false,
+            initialRouteName: "Home"
+          }} >
+            <Stack.Screen
+              name="Home"
+              component={HomeScreen}
+              options={{ title: 'Home' }}
+            />
+            <Stack.Screen name="Platform" component={Platform} />
+            <Stack.Screen name="Settings" component={Settings} />
+            <Stack.Screen name="History" component={History} />
+            <Stack.Screen name="PlatformSettings" component={PlatformSettings} />
+            <Stack.Screen name="DirectorySettings" component={DirectorySettings} />
+          </Stack.Navigator>
+        </NavigationContainer>
+      </SettingsContextProvider>
     </DbContextProvider>
 
   )

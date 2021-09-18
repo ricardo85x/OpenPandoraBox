@@ -91,6 +91,10 @@ export const PandaConfig = () => {
             RETROARCH_APK_ID: "com.retroarch.ra32",
             BASE_ROOM_DIR: "/storage/external_storage/sda1/batocera/roms",
             CORE_DIR: "/data/data/com.retroarch.ra32/cores", // 
+            THEME: {
+                settingsBackgroundImg:"",
+                historyBackgroundImg:""
+            },
             PLATFORMS: {
                 megadrive: {
                     title: "Sega Mega Drive",

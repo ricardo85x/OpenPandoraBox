@@ -3,7 +3,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import { SafeAreaView, View, Text, TouchableOpacity } from 'react-native';
 import KeyEvent from 'react-native-keyevent';
 
-import { Utils } from "../../../utils"
+import { useSettingsContext } from "../../../hooks/useSettings"
 
 import { FileBrowser } from "../../FileBrowser";
 
@@ -11,13 +11,11 @@ import { PandaConfig } from "../../../utils/PandaConfig"
 
 export const DirectorySettings = ({ navigation, route }) => {
 
+  const { APP_WIDTH, APP_HEIGHT, keyMap } = useSettingsContext()
+
   const fileBrowserRef = useRef();
 
   const [, forceUpdate] = useReducer(x => x + 1, 0);
-
-  const { APP_WIDTH, APP_HEIGHT } = Utils()
-
-  const { params: { keyMaps } } = route;
 
   const pandaConfig = PandaConfig();
 
@@ -91,28 +89,28 @@ export const DirectorySettings = ({ navigation, route }) => {
 
     if (settingsRef.current.folderIsOpen) {
 
-      fileBrowserRef.current?.listenInput(keyEvent.keyCode, keyMaps)
+      fileBrowserRef.current?.listenInput(keyEvent.keyCode)
 
     } else {
 
 
-      if (keyMaps.upKeyCode?.some(key => key === keyEvent.keyCode)) {
+      if (keyMap.upKeyCode?.some(key => key === keyEvent.keyCode)) {
         handleNavigation("UP")
-      } else if (keyMaps.downKeyCode?.some(key => key === keyEvent.keyCode)) {
+      } else if (keyMap.downKeyCode?.some(key => key === keyEvent.keyCode)) {
         handleNavigation("DOWN")
-      } else if ([...keyMaps.P1_A, ...keyMaps.P2_A].includes(keyEvent.keyCode)) {
+      } else if ([...keyMap.P1_A, ...keyMap.P2_A].includes(keyEvent.keyCode)) {
 
         handleNavigation("A")
 
       }
 
 
-      if (keyMaps.P1_B?.includes(keyEvent.keyCode)) {
+      if (keyMap.P1_B?.includes(keyEvent.keyCode)) {
 
         if (navigation.canGoBack()) {
           navigation.goBack()
         } else {
-          navigation.navigate('Settings', { keyMaps })
+          navigation.navigate('Settings')
         }
       }
 
@@ -318,7 +316,7 @@ export const DirectorySettings = ({ navigation, route }) => {
             selectedFileFolder={settingsRef.current.selectedFileFolder}
             setSelectedFileFolder={setSelectedFileFolder}
             handleSetFolderReturn={handleSetFolderReturn}
-            keyMaps={keyMaps}
+           
 
           />
 

@@ -3,14 +3,15 @@ import { useFocusEffect } from '@react-navigation/native';
 import { SafeAreaView, View, Text } from 'react-native';
 import KeyEvent from 'react-native-keyevent';
 
-import { Utils } from "../../utils";
+import { useSettingsContext } from "../../hooks/useSettings";
 
 import { Footer } from "./Footer"
 
 export const Settings = ({ navigation, route }) => {
 
-    const { APP_WIDTH, APP_HEIGHT } = Utils()
-    const { params: { keyMaps } } = route;
+
+    const { APP_WIDTH, APP_HEIGHT, keyMap } = useSettingsContext()
+
 
     const defaultSettings = {
         active: 0,
@@ -43,24 +44,20 @@ export const Settings = ({ navigation, route }) => {
 
         if (!!selectedItem) {
             if (selectedItem.key === "platform") {
-                navigation.push('PlatformSettings', {
-                    keyMaps: keyMaps
-                })
+                navigation.push('PlatformSettings')
             } else if (selectedItem.key === "directory") {
-                navigation.push('DirectorySettings', {
-                    keyMaps: keyMaps
-                })
+                navigation.push('DirectorySettings')
             }
         }
     }
 
     const ListenKeyBoard = (keyEvent) => {
 
-        if ([...keyMaps.P1_A, ...keyMaps.P2_A].includes(keyEvent.keyCode)) {
+        if ([...keyMap.P1_A, ...keyMap.P2_A].includes(keyEvent.keyCode)) {
             handleSelection()
         }
 
-        if (keyMaps.P1_B?.includes(keyEvent.keyCode)) {
+        if (keyMap.P1_B?.includes(keyEvent.keyCode)) {
             if (navigation.canGoBack()) {
                 navigation.goBack()
                 // console.log("BACK")
@@ -70,11 +67,11 @@ export const Settings = ({ navigation, route }) => {
             }
         }
 
-        if (keyMaps.leftKeyCode?.includes(keyEvent.keyCode)) {
+        if (keyMap.leftKeyCode?.includes(keyEvent.keyCode)) {
             handleNavigation("LEFT")
         }
 
-        if (keyMaps.rightKeyCode?.includes(keyEvent.keyCode)) {
+        if (keyMap.rightKeyCode?.includes(keyEvent.keyCode)) {
             handleNavigation("RIGHT")
         }
 

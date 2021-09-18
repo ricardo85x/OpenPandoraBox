@@ -3,13 +3,11 @@ import { useFocusEffect } from '@react-navigation/native';
 import { SafeAreaView, View, Text } from 'react-native';
 import KeyEvent from 'react-native-keyevent';
 
-import { Utils } from "../../../utils";
+import { useSettingsContext } from "../../../hooks/useSettings";
 
 export const PlatformSettings = ({ navigation, route }) => {
 
-    const { APP_WIDTH, APP_HEIGHT } = Utils()
-
-    const { params: { keyMaps } } = route
+    const { APP_WIDTH, APP_HEIGHT, keyMap } = useSettingsContext()
 
     useEffect(() => {
         const loadSettings = async () => {
@@ -26,11 +24,11 @@ export const PlatformSettings = ({ navigation, route }) => {
 
     const ListenKeyBoard = (keyEvent) => {
 
-        if ([...keyMaps.P1_A, ...keyMaps.P2_A].includes(keyEvent.keyCode)) {
+        if ([...keyMap.P1_A, ...keyMap.P2_A].includes(keyEvent.keyCode)) {
             handleSelection()
         }
 
-        if (keyMaps.P1_B?.includes(keyEvent.keyCode)) {
+        if (keyMap.P1_B?.includes(keyEvent.keyCode)) {
             if (navigation.canGoBack()) {
                 navigation.goBack()
                 // console.log("BACK")

@@ -4,7 +4,8 @@ import { Text, TouchableOpacity, View } from "react-native";
 
 import { listDir } from "../../utils/listDir"
 
-import { Utils } from "../../utils"
+import { useSettingsContext } from "../../hooks/useSettings"
+
 
 export const FileBrowser = forwardRef((
     {
@@ -17,8 +18,11 @@ export const FileBrowser = forwardRef((
     ref
 ) => {
 
+
+    const { APP_WIDTH, APP_HEIGHT, keyMap } = useSettingsContext()
+
+
     const [dirData, setDirData] = useState([])
-    const { APP_HEIGHT, APP_WIDTH } = Utils()
     const [pageItems, setPageItems] = useState([])
 
     const [selectedIndex, setSelectedIndex] = useState(0)
@@ -195,17 +199,17 @@ export const FileBrowser = forwardRef((
 
     useImperativeHandle(ref, () => ({
 
-        listenInput: (keyCode, keyMaps) => {
+        listenInput: (keyCode) => {
 
-            if ([...keyMaps.P1_A, ...keyMaps.P2_A].some(key => key === keyCode)) {
+            if ([...keyMap.P1_A, ...keyMap.P2_A].some(key => key === keyCode)) {
                 handleSelectItem()
-            } else if ([...keyMaps.P1_B, ...keyMaps.P2_B].some(key => key === keyCode)) {
+            } else if ([...keyMap.P1_B, ...keyMap.P2_B].some(key => key === keyCode)) {
                 setFolderIsOpen(false)
-            } else if (keyMaps.upKeyCode.some(key => key === keyCode)) {
+            } else if (keyMap.upKeyCode.some(key => key === keyCode)) {
                 handleNavigation("UP")
-            } else if (keyMaps.downKeyCode.some(key => key === keyCode)) {
+            } else if (keyMap.downKeyCode.some(key => key === keyCode)) {
                 handleNavigation("DOWN")
-            } else if ([...keyMaps.P1_START, ...keyMaps.P2_START].some(key => key === keyCode)) {
+            } else if ([...keyMap.P1_START, ...keyMap.P2_START].some(key => key === keyCode)) {
                 handleSelectItem(true)
             }
         }

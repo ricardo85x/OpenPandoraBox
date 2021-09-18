@@ -12,20 +12,18 @@ import KeyEvent from 'react-native-keyevent';
 
 import { PandaConfig } from "../../utils/PandaConfig"
 import { Header } from "../Header"
-import { CarouselItem } from "../Home/CarouselItem"
+import { Item } from "../Home/Item"
 
-import { Utils } from "../../utils"
+import { useSettingsContext } from "../../hooks/useSettings"
 
 export const HomeScreen = ({ navigation, route }) => {
 
-    const { APP_HEIGHT, APP_WIDTH  } = Utils()
+    const { APP_WIDTH, APP_HEIGHT, keyMap } = useSettingsContext()
 
     const [, forceUpdate] = useReducer(x => x + 1, 0);
 
     const pandaConfig = PandaConfig();
 
-    const [keyMaps, setKeyMaps] = useState({})
-    const keyMapsRef = useRef({});
     const [carousel, setCarousel] = useState({
         active: 0,
         items: [],
@@ -39,11 +37,9 @@ export const HomeScreen = ({ navigation, route }) => {
 
     const loadConfig = async () => {
 
-        keyMapsRef.current = await pandaConfig.keyMapConfig()
-        setKeyMaps(keyMapsRef.current)
-        const gameslist = await pandaConfig.loadItemsMenu()
+        const gameList = await pandaConfig.loadItemsMenu()
 
-        carouselReRef.current = { ...carouselReRef.current, items: gameslist }
+        carouselReRef.current = { ...carouselReRef.current, items: gameList }
         setCarousel(carouselReRef.current)
         forceUpdate()
     }
@@ -56,7 +52,7 @@ export const HomeScreen = ({ navigation, route }) => {
 
     const ListenKeyBoard = (keyEvent) => {
 
-        if (keyMapsRef.current.leftKeyCode?.includes(keyEvent.keyCode)) {
+        if (keyMap.leftKeyCode?.includes(keyEvent.keyCode)) {
 
             if (carouselReRef.current.active > 0) {
                 carouselReRef.current.active = carouselReRef.current.active - 1;
@@ -67,7 +63,7 @@ export const HomeScreen = ({ navigation, route }) => {
             forceUpdate();
         }
 
-        if (keyMapsRef.current.rightKeyCode?.includes(keyEvent.keyCode)) {
+        if (keyMap.rightKeyCode?.includes(keyEvent.keyCode)) {
             if (carouselReRef.current.active < carouselReRef.current.items.length - 1) {
                 carouselReRef.current.active = carouselReRef.current.active + 1;
             } else {
@@ -77,7 +73,7 @@ export const HomeScreen = ({ navigation, route }) => {
             forceUpdate();
         }
 
-        if (keyMapsRef.current.P1_A?.includes(keyEvent.keyCode)) {
+        if (keyMap.P1_A?.includes(keyEvent.keyCode)) {
 
             if (route.name == "Home") {
 
@@ -86,14 +82,14 @@ export const HomeScreen = ({ navigation, route }) => {
                 
                 if (currentItem.type === "settings"){
 
-                    navigation.navigate('Settings', { keyMaps: keyMapsRef.current })
+                    navigation.navigate('Settings')
 
                 } else if (currentItem.type === "History"){
 
-                    navigation.navigate('History', { keyMaps: keyMapsRef.current })
+                    navigation.navigate('History', { keyMaps: keyMap })
 
                 } else if (currentItem.type === "platform"){
-                    navigation.navigate('Platform', { keyMaps: keyMapsRef.current, platform: currentItem })
+                    navigation.navigate('Platform', { keyMaps: keyMap, platform: currentItem })
                 }
             }
         }
@@ -131,11 +127,11 @@ export const HomeScreen = ({ navigation, route }) => {
                 {
                     carousel.items.length ?
                         <View style={{ display: "flex", height: (APP_HEIGHT * 0.9) - 20, flexDirection: 'row', justifyContent: 'center' }}>
-                            <CarouselItem
+                            <Item
                                 item={carouselReRef.current.items[carouselReRef.current.active]}
                                 navigation={navigation}
                                 currentIndex={carouselReRef.current.active}
-                                keyMaps={keyMapsRef.current}
+                                keyMaps={keyMap}
                             />
 
                         </View>
