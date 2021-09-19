@@ -1,14 +1,16 @@
 import React from 'react';
 import { View } from 'react-native';
 
-import {Utils} from "../../utils";
+import { useSettingsContext } from "../../hooks/useSettings";
+
 import { Body } from "./Body"
 import { Header } from "./Header"
 import { Footer } from "./Footer"
 
 export const Main = ({title, selectedGame, onBackground}) => {
 
-    const { APP_WIDTH, APP_HEIGHT } = Utils()
+    const { APP_WIDTH, APP_HEIGHT } = useSettingsContext()
+
 
     return (
 

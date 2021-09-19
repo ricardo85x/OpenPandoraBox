@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef, useMemo } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
-import { SafeAreaView, View } from 'react-native';
+import { SafeAreaView, View, Text } from 'react-native';
 import KeyEvent from 'react-native-keyevent';
 
 import { Utils } from "../../utils";
@@ -10,13 +10,17 @@ import { PandaConfig } from "../../utils/PandaConfig"
 import { GameList } from "./GameList"
 import { Main } from "./Main"
 
+import { useSettingsContext } from "../../hooks/useSettings"
 import { useDbContext } from "../../hooks/useDb"
 
 export const Platform = ({ navigation, route }) => {
 
     const { db } = useDbContext();
 
-    const { decodeText, APP_WIDTH, APP_HEIGHT } = Utils()
+    const { decodeText } = Utils()
+
+    const { APP_WIDTH, APP_HEIGHT, keyMap } = useSettingsContext()
+
 
     const ITEM_SIZE = 50;
     const getPerItem = () => {
@@ -27,7 +31,7 @@ export const Platform = ({ navigation, route }) => {
 
     const EXTRA_SPACE = APP_HEIGHT - ((PER_PAGE) * ITEM_SIZE)
 
-    const { params: { platform, keyMaps } } = route
+    const { params: { platform } } = route
 
     const { title, text, path } = platform
 
@@ -156,41 +160,41 @@ export const Platform = ({ navigation, route }) => {
 
     const ListenKeyBoard = (keyEvent) => {
 
-        if (keyMaps.upKeyCode?.includes(keyEvent.keyCode)) {
+        if (keyMap.upKeyCode?.includes(keyEvent.keyCode)) {
             handleSelection("UP")
         }
 
-        if (keyMaps.downKeyCode?.includes(keyEvent.keyCode)) {
+        if (keyMap.downKeyCode?.includes(keyEvent.keyCode)) {
             handleSelection("DOWN")
         }
 
-        if (keyMaps.P1_A?.includes(keyEvent.keyCode)
-            || keyMaps.P2_A?.includes(keyEvent.keyCode)
+        if (keyMap.P1_A?.includes(keyEvent.keyCode)
+            || keyMap.P2_A?.includes(keyEvent.keyCode)
         ) {
             handleRunGame()
         }
 
-        if (keyMaps.P1_C?.includes(keyEvent.keyCode)
-            || keyMaps.P2_C?.includes(keyEvent.keyCode)
+        if (keyMap.P1_C?.includes(keyEvent.keyCode)
+            || keyMap.P2_C?.includes(keyEvent.keyCode)
         ) {
             // console.log("KEY C")
             handleSelection("BUTTON_C")
         }
 
-        if (keyMaps.P1_F?.includes(keyEvent.keyCode)
-            || keyMaps.P2_F?.includes(keyEvent.keyCode)
+        if (keyMap.P1_F?.includes(keyEvent.keyCode)
+            || keyMap.P2_F?.includes(keyEvent.keyCode)
         ) {
             // console.log("KEY F")
             handleSelection("BUTTON_F")
 
         }
 
-        if ([...keyMaps.P1_D, ...keyMaps.P2_D].includes(keyEvent.keyCode)) {
+        if ([...keyMap.P1_D, ...keyMap.P2_D].includes(keyEvent.keyCode)) {
             // console.log("RELOAD")
             readGameList(true)
         }
 
-        if (keyMaps.P1_B?.includes(keyEvent.keyCode)) {
+        if (keyMap.P1_B?.includes(keyEvent.keyCode)) {
 
             if (navigation.canGoBack()) {
                 navigation.goBack()
@@ -365,6 +369,9 @@ export const Platform = ({ navigation, route }) => {
     }, [page]);
 
     // console.log("N_ITEMS", pageRef.current.length)
+
+
+
     return (
         <>
             <SafeAreaView>
@@ -376,7 +383,7 @@ export const Platform = ({ navigation, route }) => {
                         height: APP_HEIGHT
                     }}
                 >
-                    <GameList EXTRA_SPACE={EXTRA_SPACE} games={pageRef.current} />
+                    <GameList EXTRA_SPACE={EXTRA_SPACE} games={pageRef.current} /> 
                     <Main title={title} onBackground={onBackground} selectedGame={selectedGame} />
                 </View>
 

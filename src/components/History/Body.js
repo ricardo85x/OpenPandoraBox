@@ -1,13 +1,14 @@
 import React  from 'react';
 import { Text, View } from 'react-native';
 
-import { Utils } from "../../utils";
+import { useSettingsContext } from "../../hooks/useSettings";
 
 import { MediaPreview } from "./MediaPreview"
 
 export const Body = ({ selectedGame, onBackground }) => {
 
-    const { APP_WIDTH, APP_HEIGHT } = Utils()
+    const { APP_WIDTH, APP_HEIGHT } = useSettingsContext()
+
 
     return (
         <View style={{

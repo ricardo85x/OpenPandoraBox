@@ -20,6 +20,9 @@ export const HomeScreen = ({ navigation, route }) => {
 
     const { APP_WIDTH, APP_HEIGHT, keyMap } = useSettingsContext()
 
+    const keyMapRef = useRef(keyMap)
+
+
     const [, forceUpdate] = useReducer(x => x + 1, 0);
 
     const pandaConfig = PandaConfig();
@@ -35,13 +38,17 @@ export const HomeScreen = ({ navigation, route }) => {
     });
 
 
+    useEffect(() => {
+        if (keyMap?.leftKeyCode) {
+            keyMapRef.current = keyMap;
+        }
+    }, [keyMap])
+
+
     const loadConfig = async () => {
-
         const gameList = await pandaConfig.loadItemsMenu()
-
         carouselReRef.current = { ...carouselReRef.current, items: gameList }
         setCarousel(carouselReRef.current)
-        forceUpdate()
     }
 
     useEffect(() => {
@@ -52,18 +59,19 @@ export const HomeScreen = ({ navigation, route }) => {
 
     const ListenKeyBoard = (keyEvent) => {
 
-        if (keyMap.leftKeyCode?.includes(keyEvent.keyCode)) {
+        if (keyMapRef.current.leftKeyCode?.includes(keyEvent.keyCode)) {
 
             if (carouselReRef.current.active > 0) {
                 carouselReRef.current.active = carouselReRef.current.active - 1;
             } else {
-                carouselReRef.current.active = carouselReRef.current.items.length - 1; 
+                carouselReRef.current.active = carouselReRef.current.items.length - 1;
             }
             setCarousel(carouselReRef.current)
             forceUpdate();
         }
 
-        if (keyMap.rightKeyCode?.includes(keyEvent.keyCode)) {
+        if (keyMapRef.current.rightKeyCode?.includes(keyEvent.keyCode)) {
+
             if (carouselReRef.current.active < carouselReRef.current.items.length - 1) {
                 carouselReRef.current.active = carouselReRef.current.active + 1;
             } else {
@@ -73,22 +81,21 @@ export const HomeScreen = ({ navigation, route }) => {
             forceUpdate();
         }
 
-        if (keyMap.P1_A?.includes(keyEvent.keyCode)) {
+        if (keyMapRef.current.P1_A?.includes(keyEvent.keyCode)) {
 
             if (route.name == "Home") {
 
-
                 const currentItem = carouselReRef.current.items[carouselReRef.current.active];
-                
-                if (currentItem.type === "settings"){
+
+                if (currentItem.type === "settings") {
 
                     navigation.navigate('Settings')
 
-                } else if (currentItem.type === "History"){
+                } else if (currentItem.type === "History") {
 
                     navigation.navigate('History', { keyMaps: keyMap })
 
-                } else if (currentItem.type === "platform"){
+                } else if (currentItem.type === "platform") {
                     navigation.navigate('Platform', { keyMaps: keyMap, platform: currentItem })
                 }
             }
@@ -97,8 +104,10 @@ export const HomeScreen = ({ navigation, route }) => {
 
     useFocusEffect(
         React.useCallback(() => {
+
             KeyEvent.onKeyDownListener((keyEvent) => ListenKeyBoard(keyEvent));
             loadConfig();
+
             return () => {
                 KeyEvent.removeKeyDownListener();
             };
@@ -116,13 +125,14 @@ export const HomeScreen = ({ navigation, route }) => {
                 flexDirection: "column",
                 alignItems: "center",
                 justifyContent: "space-between",
-                
+
             }}>
 
-                <Header height={APP_HEIGHT*0.1}  title={
+                <Header height={APP_HEIGHT * 0.1} title={
                     carousel.items.length ?
-                    carouselReRef.current.items[carouselReRef.current.active].title : ""
+                        carouselReRef.current.items[carouselReRef.current.active].title : ""
                 } />
+
 
                 {
                     carousel.items.length ?

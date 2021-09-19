@@ -1,11 +1,12 @@
 import React from 'react';
 import { Text, View } from 'react-native';
 
-import {Utils} from "../../utils";
+import {useSettingsContext} from "../../hooks/useSettings";
 
 export const Header = ( { title, gameName = ""}) => {
 
-    const { APP_WIDTH } = Utils()
+    const { APP_WIDTH } = useSettingsContext()
+
 
     return (
         <View style={{

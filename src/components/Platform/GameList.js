@@ -1,12 +1,13 @@
 import React from 'react';
 import { View, Text } from 'react-native';
-import { Utils } from "../../utils";
+import { useSettingsContext } from "../../hooks/useSettings";
 
 import { GameItem } from "./GameItem";
 
 export const GameList = ( { games = [], EXTRA_SPACE } ) => {
 
-    const { APP_WIDTH, APP_HEIGHT } = Utils()
+    const { APP_WIDTH, APP_HEIGHT } = useSettingsContext()
+
 
     return (
         <View style={{ 

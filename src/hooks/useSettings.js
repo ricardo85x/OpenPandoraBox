@@ -5,11 +5,17 @@ import { Dimensions } from "react-native"
 
 import { PandaConfig } from "../utils/PandaConfig"
 
-const SettingsContext = createContext({})
+const SettingsContext = createContext({
+    appSettings: {},
+    keyMap: {},
+    APP_HEIGHT: Dimensions.get('window').height,
+    APP_WIDTH: Dimensions.get('window').width,
+    updateSettings: () => 1
+})
 
 export function SettingsContextProvider({ children }) {
 
-    const [appSettings, setAppSettings] = useState()
+    const [appSettings, setAppSettings] = useState({})
     const [keyMap, setKeyMap] = useState({})
 
     const [APP_HEIGHT, setAPP_HEIGHT] = useState(Dimensions.get('window').height)
