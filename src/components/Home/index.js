@@ -91,7 +91,7 @@ export const HomeScreen = ({ navigation, route }) => {
 
                     navigation.navigate('Settings')
 
-                } else if (currentItem.type === "History") {
+                } else if (currentItem.type === "history") {
 
                     navigation.navigate('History', { keyMaps: keyMap })
 

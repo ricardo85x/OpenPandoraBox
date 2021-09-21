@@ -28,7 +28,8 @@ export const DirectorySettings = ({ navigation, route }) => {
         index: 0, key: "RETROARCH_CONFIG",
         name: "Retroarch config dir", desc: "Folder where retroarch.cfg is saved",
         type: "dir",
-        value: "/data/data/com.openpanda/files/retroarch.cfg"
+        value: "/data/data/com.openpanda/files",
+        fileName: "retroarch.cfg",
       },
       {
         index: 1, key: "RETROARCH_APK_ID",
@@ -48,17 +49,20 @@ export const DirectorySettings = ({ navigation, route }) => {
         name: "Roms Directory", desc: "Directory where platform with roms is stored",
         type: "dir",
         value: "/storage/external_storage/sdcard1/roms"
-      },
+      }
 
     ]
 
   }
 
   const [settings, setSettings] = useState(defaultSettings)
+  const pageSettingsRef = useRef([])
+  const [pageSettings, setPageSettings] = useState([])
   const settingsRef = useRef(defaultSettings)
 
 
   useEffect(() => {
+
     const loadSettings = async () => {
 
       const _dirConfig = await pandaConfig.dirConfig();
@@ -77,12 +81,43 @@ export const DirectorySettings = ({ navigation, route }) => {
       }
 
       setSettings(settingsRef.current)
+      pageSettingsRef.current = settingsRef.current.data.slice(0, PER_PAGE()).map((item,i) => {
+        return {
+          ...item,
+          selected: i === 0
+        }
+      })
+      setPageSettings(pageSettingsRef.current)
+
       // hack to ListenKeyBoard work
       await new Promise(resolve => setTimeout(resolve, 1000))
       KeyEvent.onKeyDownListener((keyEvent) => ListenKeyBoard(keyEvent));
     }
     loadSettings()
   }, [])
+
+
+  useEffect(() => {
+    setPageSettings(pageSettingsRef.current)
+  }, [pageSettingsRef])
+
+  useEffect(() => {
+    // if(settings?.data && pageSettings.length){
+
+    //   settingsRef.current = settingsRef.current.data.map(s => {
+    //     const pageItem = pageSettings.find(p => p.index === s.index)
+    //     if(pageItem){
+    //       return { ...s, value: pageItem.value}
+    //     }
+    //     return s
+    //   })
+
+    //   setSettings(settingsRef.current)
+    // }
+    
+  }, [pageSettings])
+
+
 
   const ListenKeyBoard = (keyEvent) => {
 
@@ -151,6 +186,133 @@ export const DirectorySettings = ({ navigation, route }) => {
 
   const handleNavigation = (direction = "") => {
 
+    const size_page = pageSettingsRef.current.length;
+    let first_item = pageSettingsRef.current.length ? pageSettingsRef.current[0] : undefined;
+    let last_item = pageSettingsRef.current.length ? pageSettingsRef.current[size_page - 1] : undefined
+    let selected = pageSettingsRef.current.length ?  pageSettingsRef.current.find(g => g.selected): undefined;
+
+    let _pageSettingsRef = pageSettingsRef.current;
+
+    if (!selected) {
+        return;
+    }
+
+    // console.log("first    ", first_item.index)
+    // console.log("last     ", last_item.index)
+    // console.log("selected ", selected.index)
+
+    switch (direction) {
+      case "UP":
+        // console.log("TO up", selected.index, selected.name);
+
+        if (selected.index !== 0) {
+
+          // check if it is not the first of the list
+          if (selected.index !== first_item.index) {
+
+              const currentIndex = pageSettingsRef.current.findIndex(g => g.selected)
+
+              _pageSettingsRef = pageSettingsRef.current?.map(p => {
+                return {
+                    ...p,
+                    selected: pageSettingsRef.current[currentIndex - 1].index === p.index
+                }
+              })
+
+              pageSettingsRef.current = _pageSettingsRef
+              setPageSettings(pageSettingsRef.current)
+
+
+
+          } else {
+
+
+            _pageSettingsRef = settingsRef.current.data.slice(first_item.index - 1, first_item.index - 1 + PER_PAGE()).map((page) => {
+              return {
+                ...page,
+                selected: page.index === first_item.index - 1
+              }
+            }) 
+
+            pageSettingsRef.current = _pageSettingsRef
+            setPageSettings(pageSettingsRef.current)
+
+
+
+          }
+      } else {
+          // console.log("No more items UP")
+      }
+
+        
+
+
+
+        break;
+      case "DOWN":
+
+        // console.log("To down")
+        if (selected.index !== last_item.index) {
+          const currentIndex = pageSettingsRef.current.findIndex(g => g.selected)
+
+          _pageSettingsRef = pageSettingsRef.current.map(game => {
+            return {
+                ...game,
+                selected: pageSettingsRef.current[currentIndex + 1].index === game.index
+            }
+        })
+
+          pageSettingsRef.current = _pageSettingsRef
+          setPageSettings(pageSettingsRef.current)
+
+
+      } else {
+
+          // check if has more items
+          if (last_item.index < (settingsRef.current.data.length - 1)) {
+
+            _pageSettingsRef = settingsRef.current.data.slice(first_item.index + 1, first_item.index + 1 + PER_PAGE()).map((game) => {
+              return {
+                  ...game,
+                  selected: game.index === selected.index + 1
+              }
+          })
+            pageSettingsRef.current = _pageSettingsRef
+            setPageSettings(pageSettingsRef.current)
+
+
+          } else {
+              // console.log("No more itens to scroll")
+          }
+      }
+
+        break;
+      case "A":
+        handleSelection()
+        break;
+      case "B":
+        settingsRef.current.folderIsOpen = !settingsRef.current.folderIsOpen
+        setSettings(settingsRef.current)
+
+        break;
+      default:
+        break
+    }
+
+    // first_item = _pageSettingsRef.length ? _pageSettingsRef[0] : undefined;
+    // last_item = _pageSettingsRef.length ? _pageSettingsRef[size_page - 1] : undefined
+    // selected = _pageSettingsRef.length ?  _pageSettingsRef.find(g => g.selected): undefined;
+    
+    // console.log("############################")
+    // console.log("first    ", first_item.index)
+    // console.log("last     ", last_item.index)
+    // console.log("selected ", selected.index)
+
+
+  }
+
+  const handleNavigationOld = (direction = "") => {
+
     switch (direction) {
       case "UP":
         // console.log("To UP");
@@ -189,16 +351,21 @@ export const DirectorySettings = ({ navigation, route }) => {
     }
   }
 
-
   const handleSelection = () => {
 
-    const selectedSettings = settingsRef.current.data.find(s => s.index === settingsRef.current.active);
+    // const selectedSettings = settingsRef.current.data.find(s => s.index === settingsRef.current.active);
+
+    const selectedSettings = pageSettingsRef.current.length ?  pageSettingsRef.current.find(g => g.selected): undefined;
+
+
 
     if (selectedSettings) {
       if (selectedSettings.type == "choice") {
         const choiceIndex = selectedSettings.options.findIndex(o => o === selectedSettings.value);
+
         let newValue;
         if (choiceIndex !== -1) {
+
           if (choiceIndex >= (selectedSettings.options.length - 1)) {
             newValue = selectedSettings.options[0]
           } else {
@@ -206,18 +373,10 @@ export const DirectorySettings = ({ navigation, route }) => {
           }
         }
         if (newValue) {
-          settingsRef.current = {
-            ...settingsRef.current, data: settingsRef.current.data.map(item => {
-              if (item.index === settingsRef.current.active) {
-                return {
-                  ...item,
-                  value: newValue
-                }
-              }
-              return item
-            })
-          }
-          setSettings(settingsRef.current)
+          pageSettingsRef.current[selectedSettings.index].value = newValue
+          settingsRef.current.data[selectedSettings.index].value = newValue
+          setPageSettings(pageSettingsRef.current)
+          forceUpdate()
         }
       } else if (selectedSettings.type == "dir") {
 
@@ -251,8 +410,6 @@ export const DirectorySettings = ({ navigation, route }) => {
       </TouchableOpacity>
     )
   }
-
-
 
   const handleSetFolderReturn = async (data) => {
     const selectedSettings = settingsRef.current.data.find(s => s.index === settingsRef.current.active);
@@ -295,6 +452,15 @@ export const DirectorySettings = ({ navigation, route }) => {
 
   }
 
+  const ITEM_HEIGHT = 105;
+
+  const PER_PAGE = () => {
+    const bodyH = (APP_HEIGHT - 50 - 50); // modal less header
+    return Math.floor(bodyH / (ITEM_HEIGHT + 1));
+  }
+
+  // console.log(pageSettingsRef)
+
   return (
     <>
       <SafeAreaView>
@@ -316,7 +482,7 @@ export const DirectorySettings = ({ navigation, route }) => {
             selectedFileFolder={settingsRef.current.selectedFileFolder}
             setSelectedFileFolder={setSelectedFileFolder}
             handleSetFolderReturn={handleSetFolderReturn}
-           
+
 
           />
 
@@ -330,14 +496,16 @@ export const DirectorySettings = ({ navigation, route }) => {
             zIndex: -1,
             display: 'flex',
             flexDirection: "column",
+            justifyContent: "space-between",
             width: APP_WIDTH,
             height: APP_HEIGHT,
 
 
           }}
         >
+          {/* Header */}
           <View style={{
-            height: 70,
+            height: 50,
             backgroundColor: "#718096",
             display: "flex",
             flexDirection: "row",
@@ -345,51 +513,30 @@ export const DirectorySettings = ({ navigation, route }) => {
 
           }}>
             <Text style={{
-              fontSize: 40, fontWeight: "bold", color: "white"
+              fontSize: 30, marginLeft: 10, fontWeight: "bold", color: "white"
             }}> Directory Settings</Text>
-
-            <DebugButton
-              textButton="⬆️"
-              debugFunction={() => handleNavigation("UP")}
-            />
-            <DebugButton
-              textButton="⬇️"
-              debugFunction={() => handleNavigation("DOWN")}
-            />
-            <DebugButton
-              textButton="(A)"
-              debugFunction={() => handleNavigation("A")}
-            />
-            <DebugButton
-              textButton="(B)"
-              debugFunction={() => handleNavigation("B")}
-            />
-
-            <Text style={{
-              fontSize: 15, fontWeight: "bold", color: "white"
-            }}>Selected: {settings.selectedFileFolder}</Text>
 
           </View>
 
+          {/* Body */}
           <View style={{
-            height: APP_HEIGHT - 150,
+            height: APP_HEIGHT - 50 - 50,
             display: "flex",
             flexDirection: "column",
             alignItems: "flex-start",
             padding: 10
-
-
           }}
           >
 
-            {settings.data.map(item => {
+            {pageSettings.map(item => {
               return (
                 <View key={item.key} style={{
+                  height: ITEM_HEIGHT,
                   padding: 10,
                   margin: 5,
                   borderWidth: 1,
                   width: "100%",
-                  backgroundColor: settingsRef.current.active === item.index ? "#A0AEC0" : "#718096",
+                  backgroundColor: item.selected ? "#FEEBC8" : "#CBD5E0",
                   borderRadius: 10
                 }}>
                   <Text style={{
@@ -399,7 +546,7 @@ export const DirectorySettings = ({ navigation, route }) => {
                   <Text style={{
                     padding: 10,
                     marginVertical: "auto",
-                    backgroundColor: "#E2E8F0",
+                    backgroundColor: item.selected ? "#FFFAF0" : "#E2E8F0",
                     borderWidth: 1
                   }}>{item.value}</Text>
                 </View>
@@ -413,7 +560,7 @@ export const DirectorySettings = ({ navigation, route }) => {
           {/* Footer */}
           <View style={{
             width: "100%",
-            height: 80,
+            height: 50,
 
             display: "flex",
             justifyContent: "space-between",
@@ -424,17 +571,17 @@ export const DirectorySettings = ({ navigation, route }) => {
             borderTopColor: "#ffff",
             borderTopWidth: 1
           }}>
-            <View style={{ margin: 5, border: "2px solid black", width: 70, height: 70, justifyContent: "center", backgroundColor: "white", borderRadius: 35 }}>
-              <Text style={{ alignSelf: "center", fontSize: 20, fontWeight: "bold" }}>A</Text>
-              <Text style={{ alignSelf: "center", fontWeight: "bold" }}>EDIT</Text>
+            <View style={{ margin: 5, border: "2px solid black", width: 45, height: 45, justifyContent: "center", backgroundColor: "white", borderRadius: 35 }}>
+              <Text style={{ alignSelf: "center", lineHeight: 16, fontSize: 17, fontWeight: "bold" }}>A</Text>
+              <Text style={{ alignSelf: "center", fontSize: 10, fontWeight: "bold" }}>EDIT</Text>
             </View>
-            <View style={{ margin: 5, border: "2px solid black", width: 70, height: 70, justifyContent: "center", backgroundColor: "yellow", borderRadius: 35 }}>
-              <Text style={{ alignSelf: "center", fontSize: 20, fontWeight: "bold" }}>B</Text>
-              <Text style={{ alignSelf: "center", fontWeight: "bold" }}>BACK</Text>
+            <View style={{ margin: 5, border: "2px solid black", width: 45, height: 45, justifyContent: "center", backgroundColor: "yellow", borderRadius: 35 }}>
+              <Text style={{ alignSelf: "center", fontSize: 17, lineHeight: 16, fontWeight: "bold" }}>B</Text>
+              <Text style={{ alignSelf: "center", fontSize: 10, fontWeight: "bold" }}>BACK</Text>
             </View>
-            <View style={{ margin: 5, border: "2px solid black", width: 70, height: 70, justifyContent: "center", backgroundColor: "red", borderRadius: 35 }}>
-              <Text style={{ color: "white", alignSelf: "center", fontSize: 20, fontWeight: "bold" }}>C</Text>
-              <Text style={{ color: "white", alignSelf: "center", fontWeight: "bold" }}>RESET</Text>
+            <View style={{ margin: 5, border: "2px solid black", width: 45, height: 45, justifyContent: "center", backgroundColor: "red", borderRadius: 35 }}>
+              <Text style={{ color: "white", alignSelf: "center", lineHeight: 16, fontSize: 17, fontWeight: "bold" }}>C</Text>
+              <Text style={{ color: "white", alignSelf: "center", fontSize: 10, fontWeight: "bold" }}>RESET</Text>
             </View>
 
 

@@ -21,7 +21,6 @@ export const FileBrowser = forwardRef((
 
     const { APP_WIDTH, APP_HEIGHT, keyMap } = useSettingsContext()
 
-
     const [dirData, setDirData] = useState([])
     const [pageItems, setPageItems] = useState([])
 

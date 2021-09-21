@@ -3,6 +3,7 @@ import { View } from 'react-native';
 
 import { FooterItem } from "./FooterItem"
 
+
 export const Footer = () => {
 
     return (

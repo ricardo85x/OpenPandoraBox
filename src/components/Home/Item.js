@@ -36,6 +36,9 @@ export const Item = ({ item, navigation, currentIndex, keyMaps }) => {
         currentBg = { uri: `file://${appSettings.THEME.historyBackgroundImg}` }
       }
     }
+
+    console.log("TYPE", type);
+    console.log(appSettings?.THEME?.historyBackgroundImg)
     return currentBg;
 
   },[type, background])

@@ -322,7 +322,7 @@ export const PandaConfig = () => {
                 text: "Configure Settings"
             },
             {
-                type: "History",
+                type: "history",
                 title: "HISTORY",
                 text: "Past played games"
             },
