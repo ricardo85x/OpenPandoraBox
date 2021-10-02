@@ -16,7 +16,7 @@ export const Settings = ({ navigation, route }) => {
     const defaultSettings = {
         active: 0,
         items: [
-            { key: "directory", name: "Directories", desc: "Directory/Folder settings", index: 0 },
+            { key: "general", name: "General", desc: "Directory/Folder settings", index: 0 },
             { key: "platform", name: "Platforms", desc: "Add/Edit/Remove platforms ", index: 1 },
         ]
     }
@@ -45,8 +45,8 @@ export const Settings = ({ navigation, route }) => {
         if (!!selectedItem) {
             if (selectedItem.key === "platform") {
                 navigation.push('PlatformSettings')
-            } else if (selectedItem.key === "directory") {
-                navigation.push('DirectorySettings')
+            } else if (selectedItem.key === "general") {
+                navigation.push('GeneralSettings')
             }
         }
     }

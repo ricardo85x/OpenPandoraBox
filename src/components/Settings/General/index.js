@@ -9,7 +9,7 @@ import { FileBrowser } from "../../FileBrowser";
 
 import { PandaConfig } from "../../../utils/PandaConfig"
 
-export const DirectorySettings = ({ navigation, route }) => {
+export const GeneralSettings = ({ navigation, route }) => {
 
   const { APP_WIDTH, APP_HEIGHT, keyMap } = useSettingsContext()
 
@@ -22,7 +22,8 @@ export const DirectorySettings = ({ navigation, route }) => {
   const defaultSettings = {
     folderIsOpen: false,
     selectedFileFolder: "",
-    active: 3,
+    type: "",
+    active: 0,
     data: [
       {
         index: 0, key: "RETROARCH_CONFIG",
@@ -38,17 +39,24 @@ export const DirectorySettings = ({ navigation, route }) => {
         options: ["com.retroarch.ra32", "com.retroarch"],
         value: "com.retroarch.ra32"
       },
+      // {
+      //   index: 2, key: "CORE_DIR",
+      //   name: "Core Directory", desc: "Directory where retroarch core is stored",
+      //   type: "dir",
+      //   value: "/storage/external_storage/sdcard1/retroarch/cores"
+      // },
       {
-        index: 2, key: "CORE_DIR",
-        name: "Core Directory", desc: "Directory where retroarch core is stored",
-        type: "dir",
-        value: "/storage/external_storage/sdcard1/retroarch/cores"
-      },
-      {
-        index: 3, key: "BASE_ROOM_DIR",
+        index: 2, key: "BASE_ROOM_DIR",
         name: "Roms Directory", desc: "Directory where platform with roms is stored",
         type: "dir",
         value: "/storage/external_storage/sdcard1/roms"
+      },
+
+      {
+        index: 3, key: "SAVE_CONFIG",
+        name: "Save Configuration", desc: "The configuration will be saved to file",
+        type: "save",
+        value: "save"
       }
 
     ]
@@ -81,7 +89,7 @@ export const DirectorySettings = ({ navigation, route }) => {
       }
 
       setSettings(settingsRef.current)
-      pageSettingsRef.current = settingsRef.current.data.slice(0, PER_PAGE()).map((item,i) => {
+      pageSettingsRef.current = settingsRef.current.data.slice(0, PER_PAGE()).map((item, i) => {
         return {
           ...item,
           selected: i === 0
@@ -114,7 +122,7 @@ export const DirectorySettings = ({ navigation, route }) => {
 
     //   setSettings(settingsRef.current)
     // }
-    
+
   }, [pageSettings])
 
 
@@ -189,12 +197,12 @@ export const DirectorySettings = ({ navigation, route }) => {
     const size_page = pageSettingsRef.current.length;
     let first_item = pageSettingsRef.current.length ? pageSettingsRef.current[0] : undefined;
     let last_item = pageSettingsRef.current.length ? pageSettingsRef.current[size_page - 1] : undefined
-    let selected = pageSettingsRef.current.length ?  pageSettingsRef.current.find(g => g.selected): undefined;
+    let selected = pageSettingsRef.current.length ? pageSettingsRef.current.find(g => g.selected) : undefined;
 
     let _pageSettingsRef = pageSettingsRef.current;
 
     if (!selected) {
-        return;
+      return;
     }
 
     // console.log("first    ", first_item.index)
@@ -210,17 +218,19 @@ export const DirectorySettings = ({ navigation, route }) => {
           // check if it is not the first of the list
           if (selected.index !== first_item.index) {
 
-              const currentIndex = pageSettingsRef.current.findIndex(g => g.selected)
+            const currentIndex = pageSettingsRef.current.findIndex(g => g.selected)
 
-              _pageSettingsRef = pageSettingsRef.current?.map(p => {
-                return {
-                    ...p,
-                    selected: pageSettingsRef.current[currentIndex - 1].index === p.index
-                }
-              })
+            _pageSettingsRef = pageSettingsRef.current?.map(p => {
+              return {
+                ...p,
+                selected: pageSettingsRef.current[currentIndex - 1].index === p.index
+              }
+            })
 
-              pageSettingsRef.current = _pageSettingsRef
-              setPageSettings(pageSettingsRef.current)
+            console.log("SELECTED -1", _pageSettingsRef.find(s => s.selected)?.name)
+
+            pageSettingsRef.current = _pageSettingsRef
+            setPageSettings(pageSettingsRef.current)
 
 
 
@@ -232,7 +242,10 @@ export const DirectorySettings = ({ navigation, route }) => {
                 ...page,
                 selected: page.index === first_item.index - 1
               }
-            }) 
+            })
+
+
+            console.log("SELECTED 0", _pageSettingsRef.find(s => s.selected)?.name)
 
             pageSettingsRef.current = _pageSettingsRef
             setPageSettings(pageSettingsRef.current)
@@ -240,11 +253,11 @@ export const DirectorySettings = ({ navigation, route }) => {
 
 
           }
-      } else {
+        } else {
           // console.log("No more items UP")
-      }
+        }
 
-        
+
 
 
 
@@ -257,34 +270,39 @@ export const DirectorySettings = ({ navigation, route }) => {
 
           _pageSettingsRef = pageSettingsRef.current.map(game => {
             return {
-                ...game,
-                selected: pageSettingsRef.current[currentIndex + 1].index === game.index
+              ...game,
+              selected: pageSettingsRef.current[currentIndex + 1].index === game.index
             }
-        })
+          })
+
+          console.log("SELECTED 2", _pageSettingsRef.find(s => s.selected)?.name)
+
 
           pageSettingsRef.current = _pageSettingsRef
           setPageSettings(pageSettingsRef.current)
 
 
-      } else {
+        } else {
 
           // check if has more items
           if (last_item.index < (settingsRef.current.data.length - 1)) {
 
             _pageSettingsRef = settingsRef.current.data.slice(first_item.index + 1, first_item.index + 1 + PER_PAGE()).map((game) => {
               return {
-                  ...game,
-                  selected: game.index === selected.index + 1
+                ...game,
+                selected: game.index === selected.index + 1
               }
-          })
+            })
+
+            console.log("SELECTED 1", _pageSettingsRef.find(s => s.selected)?.name)
             pageSettingsRef.current = _pageSettingsRef
             setPageSettings(pageSettingsRef.current)
 
 
           } else {
-              // console.log("No more itens to scroll")
+            // console.log("No more itens to scroll")
           }
-      }
+        }
 
         break;
       case "A":
@@ -302,7 +320,7 @@ export const DirectorySettings = ({ navigation, route }) => {
     // first_item = _pageSettingsRef.length ? _pageSettingsRef[0] : undefined;
     // last_item = _pageSettingsRef.length ? _pageSettingsRef[size_page - 1] : undefined
     // selected = _pageSettingsRef.length ?  _pageSettingsRef.find(g => g.selected): undefined;
-    
+
     // console.log("############################")
     // console.log("first    ", first_item.index)
     // console.log("last     ", last_item.index)
@@ -351,13 +369,10 @@ export const DirectorySettings = ({ navigation, route }) => {
     }
   }
 
-  const handleSelection = () => {
+  const handleSelection = async () => {
 
-    // const selectedSettings = settingsRef.current.data.find(s => s.index === settingsRef.current.active);
-
-    const selectedSettings = pageSettingsRef.current.length ?  pageSettingsRef.current.find(g => g.selected): undefined;
-
-
+    const selectedSettingsIndex = pageSettingsRef.current.length ? pageSettingsRef.current.findIndex(g => g.selected) : undefined;
+    const selectedSettings = selectedSettingsIndex !== -1 && selectedSettingsIndex !== undefined ? pageSettingsRef.current[selectedSettingsIndex] : undefined;
 
     if (selectedSettings) {
       if (selectedSettings.type == "choice") {
@@ -373,7 +388,7 @@ export const DirectorySettings = ({ navigation, route }) => {
           }
         }
         if (newValue) {
-          pageSettingsRef.current[selectedSettings.index].value = newValue
+          pageSettingsRef.current[selectedSettingsIndex].value = newValue
           settingsRef.current.data[selectedSettings.index].value = newValue
           setPageSettings(pageSettingsRef.current)
           forceUpdate()
@@ -382,14 +397,82 @@ export const DirectorySettings = ({ navigation, route }) => {
 
         if (settingsRef.current.folderIsOpen == false) {
 
-          settingsRef.current.selectedFileFolder = selectedSettings.value
+          if (selectedSettings?.fileName && selectedSettings.value) {
+
+            const new_path = selectedSettings.value.substr(0, selectedSettings.value.length - selectedSettings.fileName.length - 1)
+            settingsRef.current.selectedFileFolder = new_path
+
+          } else {
+            settingsRef.current.selectedFileFolder = selectedSettings.value
+
+          }
+
+          settingsRef.current.type = "dir"
           settingsRef.current.folderIsOpen = true
+
           setSettings(settingsRef.current)
           setTimeout(() => {
             forceUpdate()
           }, 100);
 
         }
+
+      } else if (selectedSettings.type == "save") {
+        console.log("Saving configuration to file")
+
+        const updatedSettings = settingsRef.current.data
+          .filter(s => s.type !== "save")
+          .reduce((a, v) => {
+            a = {...a,[v.key]: v.value}
+            return a
+          }, {}
+        )
+
+        const updated = await pandaConfig.updateConfig(updatedSettings);
+
+        if(updated){
+          console.log("Settings SAVED!")
+          forceUpdate()
+        } else {
+          console.log("Error on Saving the settings")
+        }
+
+        // const saved = await Promise.all(settingsRef.current.data.filter(s => s.key !== "save").map(async (s) => {
+        //   console.log(s.key, s.value)
+
+        //   const updated = await pandaConfig.updateConfig({
+        //     key: s.key,
+        //     value: s.value
+        //   });
+
+        //   return { key: s.key, status: "ok"}
+        // }))
+
+        console.log("Finish him",updatedSettings)
+
+
+        /*
+         
+      //   const updated = await pandaConfig.updateConfig({
+    //       key: selectedSettings.key,
+    //       value
+    //     });
+
+    //     if (updated) {
+    //       settingsRef.current = {
+    //         ...
+    //         settingsRef.current,
+    //         data: settingsRef.current.data.map(item => {
+    //           if (item.key === selectedSettings.key) {
+    //             // console.log("AEEEE ou nao")
+    //             return { ...item, value }
+    //           }
+    //           return item
+    //         })
+    //       }
+    //     }
+
+        */
 
       }
     }
@@ -412,43 +495,61 @@ export const DirectorySettings = ({ navigation, route }) => {
   }
 
   const handleSetFolderReturn = async (data) => {
-    const selectedSettings = settingsRef.current.data.find(s => s.index === settingsRef.current.active);
+    //const selectedSettings = settingsRef.current.data.find(s => s.index === settingsRef.current.active);
 
-    if (data?.type === selectedSettings.type) {
+    const selectedSettingsIndex = pageSettingsRef.current.length ? pageSettingsRef.current.findIndex(g => g.selected) : undefined;
+    const selectedSettings = selectedSettingsIndex !== -1 && selectedSettingsIndex !== undefined ? pageSettingsRef.current[selectedSettingsIndex] : undefined;
 
-      let value = data?.value;
+    let updated_path = data
 
-      if (value) {
-        if (value === "..") {
-          value = data.dir;
-        } else {
-          value = `${data.dir}/${value}`;
-        }
 
-        const updated = await pandaConfig.updateConfig({
-          key: selectedSettings.key,
-          value
-        });
-
-        if (updated) {
-          settingsRef.current = {
-            ...
-            settingsRef.current,
-            data: settingsRef.current.data.map(item => {
-              if (item.key === selectedSettings.key) {
-                // console.log("AEEEE ou nao")
-                return { ...item, value }
-              }
-              return item
-            })
-          }
-        }
-
-      }
-
-    } else {
-      // console.log("Invalid selection")
+    if (selectedSettings?.fileName) {
+      console.log("FileName", selectedSettings?.fileName)
+      console.log("data", data)
+      updated_path = `${data}/${selectedSettings.fileName}`;
     }
+
+    pageSettingsRef.current[selectedSettingsIndex].value = updated_path
+    settingsRef.current.data[selectedSettings.index].value = updated_path
+    setPageSettings(pageSettingsRef.current)
+    forceUpdate()
+
+
+    // if (data?.type === selectedSettings.type) {
+
+    //   let value = data?.value;
+
+    //   if (value) {
+    //     if (value === "..") {
+    //       value = data.dir;
+    //     } else {
+    //       value = `${data.dir}/${value}`;
+    //     }
+
+    //     const updated = await pandaConfig.updateConfig({
+    //       key: selectedSettings.key,
+    //       value
+    //     });
+
+    //     if (updated) {
+    //       settingsRef.current = {
+    //         ...
+    //         settingsRef.current,
+    //         data: settingsRef.current.data.map(item => {
+    //           if (item.key === selectedSettings.key) {
+    //             // console.log("AEEEE ou nao")
+    //             return { ...item, value }
+    //           }
+    //           return item
+    //         })
+    //       }
+    //     }
+
+    //   }
+
+    // } else {
+    //   // console.log("Invalid selection")
+    // }
 
   }
 
@@ -480,6 +581,7 @@ export const DirectorySettings = ({ navigation, route }) => {
             setFolderIsOpen={setFolderIsOpen}
             folderIsOpen={settingsRef.current.folderIsOpen}
             selectedFileFolder={settingsRef.current.selectedFileFolder}
+            type={settingsRef.current.type}
             setSelectedFileFolder={setSelectedFileFolder}
             handleSetFolderReturn={handleSetFolderReturn}
 
@@ -514,7 +616,7 @@ export const DirectorySettings = ({ navigation, route }) => {
           }}>
             <Text style={{
               fontSize: 30, marginLeft: 10, fontWeight: "bold", color: "white"
-            }}> Directory Settings</Text>
+            }}> General Settings</Text>
 
           </View>
 
@@ -529,6 +631,29 @@ export const DirectorySettings = ({ navigation, route }) => {
           >
 
             {pageSettings.map(item => {
+
+              if (item.key === settingsRef.current.data[settingsRef.current.data.length - 1].key) {
+
+                return (
+                  <View key={item.key} style={{
+                    height: 50,
+                    padding: 10,
+                    margin: 5,
+                    borderWidth: 1,
+                    width: 200,
+                    backgroundColor: item.selected ? "#9AE6B4" : "#CBD5E0",
+                    borderRadius: 10,
+                    alignItems: "center"
+                  }}>
+
+                    <Text style={{
+                      fontSize: 20, fontWeight: "bold"
+                    }}>{item.name}</Text>
+
+                  </View>
+                )
+              }
+
               return (
                 <View key={item.key} style={{
                   height: ITEM_HEIGHT,
@@ -553,6 +678,28 @@ export const DirectorySettings = ({ navigation, route }) => {
               )
 
             })}
+            {
+              (settingsRef.current.data[settingsRef.current.data.length - 1]?.index
+                !== pageSettingsRef.current[pageSettingsRef.current.length - 1]?.index) &&
+              settingsRef.current.data.length > pageSettingsRef.current.length
+
+              && <View key="fake" style={{
+                height: ITEM_HEIGHT,
+                padding: 10,
+                margin: 5,
+                borderWidth: 1,
+                width: "100%",
+                backgroundColor: "#E2E8F0",
+                borderRadius: 10
+              }}>
+                <Text style={{
+                  fontSize: 20, fontWeight: "bold"
+                }}>Loading more...</Text>
+
+              </View>
+
+            }
+
 
           </View>
 

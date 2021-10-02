@@ -3,29 +3,39 @@ import { RunLocalCommand } from "../modules/RunLocalCommand";
 
 export const PandaConfig = () => {
 
-    const updateConfig = async ({ key, value }) => {
+    const updateConfig = async (newConfig) => {
 
         const configFilePath = RNFS.DocumentDirectoryPath + "/config.json";
         const currentConfig = await dirConfig();
 
-        const updatedConfig = { ...currentConfig, [key]: value }
+        const updatedConfig = { ...currentConfig, ...newConfig}
 
-        if (currentConfig[key] === updatedConfig[key]) {
+        let updated = false;
+        Object.keys(currentConfig).forEach(key => {
+            if (updatedConfig[key] !== currentConfig[key]) {
+                updated = true
+            }
+        })
+
+        console.log("Le updated", updatedConfig)
+
+        if(updated) {
+            const updatedConfigText = JSON.stringify(updatedConfig, null, 2);
+
+            await Promise.all(RNFS.writeFile(configFilePath, updatedConfigText, 'utf8')
+                .then(() => {
+                    console.log('Settings updated successfully', configFilePath);
+                })
+                .catch((err) => {
+                    console.log("Error on update settings", err.message);
+                })
+            );
+    
+            return true;
+        } else {
             return false
-        } 
-
-        const updatedConfigText = JSON.stringify({...currentConfig, [key]: value}, null, 2);
-
-        await Promise.all(RNFS.writeFile(configFilePath, updatedConfigText, 'utf8')
-            .then(() => {
-                console.log('RetroArch config created', configFilePath);
-            })
-            .catch((err) => {
-                console.log("Error to create file", err.message);
-            })
-        );
-
-        return true;
+        }
+ 
 
     }
 
@@ -178,20 +188,16 @@ export const PandaConfig = () => {
 
         const platformCore = _baseConfig?.PLATFORMS[platform]?.core;
 
-        if (platformCore && platformCore?.useMupenFz){
+        const launcher = platformCore?.launcher ? platformCore?.launcher : "retroarch"
 
+        if (launcher == "MupenFz"){
             RunLocalCommand().openMupenPlusFZ(rom);
-
             return
         }
 
 
-        if (platformCore && platformCore?.useDrastic){
-
-            console.log("RUNNING DRASTIC!")
-
+        if (launcher == "Drastic"){
             RunLocalCommand().openDrastic(rom);
-
             return
         }
 
@@ -261,6 +267,111 @@ export const PandaConfig = () => {
         })
 
         return await baseConfig(configFilePath, defaultConfig);
+    }
+
+
+    const listCores = async () => {
+
+        let cores = []
+        const _dirConfig = await dirConfig();
+
+        if( _dirConfig?.CORE_DIR){
+
+            const core_path_exists = await RNFS.exists( _dirConfig.CORE_DIR);
+
+            if( core_path_exists){
+                const listOfFiles = await RNFS.readDir(_dirConfig.CORE_DIR);
+
+                if (listOfFiles.length) {
+
+                    for (let i = 0; i < listOfFiles.length; i++) {
+                        const file = listOfFiles[i];
+
+
+                        if (file.isFile()  ) {
+
+                            if(file.name.match(/[^.].+\.so/)){
+                                cores.push(file.name)
+                            }
+
+                        }
+                    }
+                }
+            }
+
+
+
+        }
+
+
+
+        return cores;
+    }
+
+
+    const listPlatforms = async () => {
+
+        const _dirConfig = await dirConfig();
+
+        let platforms = []
+
+        if (_dirConfig?.BASE_ROOM_DIR) {
+            const base_dir = _dirConfig.BASE_ROOM_DIR;
+
+
+            const file_exists = await RNFS.exists(base_dir);
+            if (file_exists) {
+
+                const listOfFiles = await RNFS.readDir(base_dir);
+
+                if (listOfFiles.length) {
+
+                    for (let i = 0; i < listOfFiles.length; i++) {
+                        const file = listOfFiles[i];
+
+
+                        if (file.isDirectory()  ) {
+
+
+                            const enabled = _dirConfig?.PLATFORMS[file.name]?.enabled
+
+                            const title = _dirConfig?.PLATFORMS[file.name]?.title
+                            const bg = _dirConfig?.PLATFORMS[file.name]?.backgroundImg
+                            const core = _dirConfig?.PLATFORMS[file.name]?.core;
+
+                            const selected_core = (
+                                !! core && 
+                                core?.choices.length &&
+                                core?.default >= 0 &&
+                                core.choices.length > core.default
+                            ) ? core.choices[core.default] : ""
+
+                            const launcher = _dirConfig?.PLATFORMS[file.name]?.launcher;
+
+                            if (await RNFS.exists(file.path + "/gamelist.xml")) {
+                                platforms.push({
+                                    name: title,
+                                    dir: file.name,
+                                    enabled: enabled ? true : false,
+                                    background: !!bg ? bg : "",
+                                    core: selected_core,
+                                    launcher: launcher ? launcher : "retroarch"
+                                })
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        platforms.sort((a, b) => a.dir > b.dir)
+
+
+        return platforms.map((e,i) => {
+            return {...e,key:i }
+        });
+
+
     }
 
 
@@ -335,7 +446,9 @@ export const PandaConfig = () => {
         keyMapConfig,
         loadItemsMenu,
         runGame,
-        updateConfig
+        updateConfig,
+        listPlatforms,
+        listCores
     }
 
 }

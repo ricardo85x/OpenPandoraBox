@@ -12,6 +12,7 @@ export const FileBrowser = forwardRef((
         setFolderIsOpen,
         folderIsOpen,
         selectedFileFolder,
+        type,
         setSelectedFileFolder,
         handleSetFolderReturn
     },
@@ -28,23 +29,38 @@ export const FileBrowser = forwardRef((
 
     const handleLoadDirData = async () => {
 
+        
+
         if (!folderIsOpen) {
             return
         }
+
+        console.log("folder:", selectedFileFolder)
 
         const data = await listDir({ directory: selectedFileFolder });
 
         if (data.status == "success") {
 
-            const dirDataWithIndex = [{
-                type: "dir",
-                value: "..",
-            }, ...data.data].map((dir, i) => {
+            const initialData = [
+                {
+                    type: "save",
+                    value: "[ SELECT THIS DIRECTORY ]"
+                }, 
+                    
+                {
+                    type: "dir",
+                    value: "..",
+                }
+            ].filter(d => type === "dir" ? true : d.type === "dir")
+
+            const dirDataWithIndex = [
+            ...initialData, ...data.data.filter(d => type === "dir" ? d.type === "dir" : true)].map((dir, i) => {
                 return {
                     ...dir,
                     index: i
                 }
             })
+
             setDirData(dirDataWithIndex)
 
             setSelectedIndex(0)
@@ -61,9 +77,10 @@ export const FileBrowser = forwardRef((
 
         const selected = pageItems.find(g => g.selected);
 
+
         const selectedItem = selected ? selected : dirData[0]
 
-        if (save) {
+        if (save ) {
             handleSetFolderReturn(selected);
             setFolderIsOpen(false)
             return
@@ -82,6 +99,12 @@ export const FileBrowser = forwardRef((
                 selected_value = `${selectedItem.dir}/${selectedItem.value}`
                 setSelectedFileFolder(selected_value)
             }
+        } else if(selectedItem.type === "save"){
+            console.log("Selected folder: ",selectedFileFolder)
+            handleSetFolderReturn(selectedFileFolder)
+            setFolderIsOpen(false)
+
+
         }
     }
 
@@ -92,7 +115,7 @@ export const FileBrowser = forwardRef((
     const ITEM_HEIGHT = 30;
 
     const PER_PAGE = () => {
-        const modalH = (APP_HEIGHT * 0.8) - 70; // modal less header
+        const modalH = (APP_HEIGHT * 0.8) - 50; // modal less header
         return Math.floor(modalH / (ITEM_HEIGHT + 1));
     }
 
@@ -239,17 +262,24 @@ export const FileBrowser = forwardRef((
             >
                 {/*  Header */}
                 <View style={{
-                    height: 50,
+                    height: 30,
                     width: "100%",
                     backgroundColor: "#2D3748",
                 }}>
-                    <Text style={{ color: "#ffff", margin: "auto", fontSize: 20 }}> File Browser : {selectedFileFolder} {PER_PAGE()}</Text>
+                    <View style={{ 
+                        display: "flex", 
+                        flexDirection: "column",
+                        alignItems: "center"
+                    }}>
+                        <Text style={{ color: "#ffff",   fontSize: 12, fontWeight: "bold" }}> File Browser:</Text>
+                        <Text style={{ color: "#ffff",   fontSize: 12 }}> {selectedFileFolder} </Text>
+                    </View>
                 </View>
 
                 {/*  Body */}
                 <View style={{
                     width: APP_WIDTH * 0.8,
-                    height: (APP_HEIGHT * 0.8) - 50,
+                    height: (APP_HEIGHT * 0.8) - 30,
                     flexGrow: 1,
                     backgroundColor: "#F7FAFC",
                     display: "flex",
@@ -276,16 +306,17 @@ export const FileBrowser = forwardRef((
                                 <View style={{
                                     width: ITEM_HEIGHT,
                                     height: ITEM_HEIGHT,
-                                    backgroundColor: data.type === "dir" ? "#90CDF4" : "#FAF089",
+                                    backgroundColor: data.type === "dir" ? "#90CDF4" : data.type === "save" ? "#68D391" : "#FAF089",
                                     justifyContent: "center",
                                     alignContent: "center",
                                     alignItems: "center",
                                 }}>
-                                    <Text >{data.type === "dir" ? "D" : "F"}</Text>
+                                    <Text>{data.type === "dir" ? "D" : data.type === "save" ? "S" : "F"}</Text>
                                 </View>
                                 <Text style={{
                                     overflow: "hidden",
                                     padding: 5,
+                                    fontWeight: data.type === "save" ? "bold" : "400",
                                     flexGrow: 1,
                                     backgroundColor:
                                         data.index % 2 === 0 ?
