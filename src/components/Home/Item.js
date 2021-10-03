@@ -4,10 +4,7 @@ import { TouchableOpacity, Text, StyleSheet, Dimensions, Image } from "react-nat
 
 import { useSettingsContext } from "../../hooks/useSettings"
 
-
-
 export const Item = ({ item, navigation, currentIndex, keyMaps }) => {
-
 
   const { appSettings, APP_WIDTH, APP_HEIGHT } = useSettingsContext()
 
@@ -28,18 +25,20 @@ export const Item = ({ item, navigation, currentIndex, keyMaps }) => {
     } else if (type === "settings") {
       if (appSettings?.THEME?.settingsBackgroundImg){
         currentBg = { uri: `file://${appSettings.THEME.settingsBackgroundImg}` }
-      } else {
-        currentBg = require("../../assets/images/bg.jpg");
-      }
+      } 
     } else if (type === "history") {
       if (appSettings?.THEME?.historyBackgroundImg){
         currentBg = { uri: `file://${appSettings.THEME.historyBackgroundImg}` }
       }
     }
 
-    console.log("TYPE", type);
-    console.log(appSettings?.THEME?.historyBackgroundImg)
-    return currentBg;
+    const minPathSize = "file://".length + 3;
+
+    if(currentBg?.uri?.length > minPathSize ){
+      return currentBg
+    }
+
+    return undefined
 
   },[type, background])
 
