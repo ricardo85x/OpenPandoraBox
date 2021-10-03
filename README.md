@@ -34,6 +34,3 @@ I tried to find a frontend on playstore but none works well with the default arc
 I hate to use mouse and keyboard on pandory box, so I created this frontend.
 
 It is not great but it is a honest job.
-
-
-# BEWARE - The SETTINGS IS NOT WORKING, update the settings using the /data/data/com.openpandorabox/files/config.json manually
