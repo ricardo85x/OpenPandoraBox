@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef, useReducer } from 'react';
 
 import { useFocusEffect } from '@react-navigation/native';
-import { SafeAreaView, View, Text, TouchableOpacity, Image } from 'react-native';
+import { SafeAreaView, View, Text, Image } from 'react-native';
 import KeyEvent from 'react-native-keyevent';
 
 import { useSettingsContext } from "../../../hooks/useSettings"
@@ -27,23 +27,34 @@ export const PlatformSettings = ({ navigation, route }) => {
   const [cores, setCores] = useState([])
   const pageSettingsRef = useRef([])
   const [pageSettings, setPageSettings] = useState([])
-  const settingsRef = useRef(defaultSettings)
+  const settingsRef = useRef({
+    cores: defaultSettings,
+    folderIsOpen: false,
+    selectedFileFolder: "",
+    core_list: [],
+    type: "file"
+  })
 
   const [xIndex,setXIndex] = useState(0)
   const xIndexRef = useRef(0)
-
 
   useEffect(() => {
 
     const loadSettings = async () => {
 
-      settingsRef.current = await pandaConfig.listPlatforms();
+      settingsRef.current.cores = await pandaConfig.listPlatforms();
+      settingsRef.current.core_list = await pandaConfig.listCores()
+      settingsRef.current.cores.push({
+        key: settingsRef.current.cores.length,
+        dir : "save",
+        name: "Save Configuration", desc: "The configuration will be saved to file",
+        type: "save",
+        value: "save"
+      })
 
-      setCores(await pandaConfig.listCores())
+      setSettings(settingsRef.current.cores)
 
-      setSettings(settingsRef.current)
-
-      pageSettingsRef.current = settingsRef.current.slice(0, PER_PAGE()).map((item, i) => {
+      pageSettingsRef.current = settingsRef.current.cores.slice(0, PER_PAGE()).map((item, i) => {
         return {
           ...item,
           selected: i === 0
@@ -157,8 +168,6 @@ export const PlatformSettings = ({ navigation, route }) => {
               }
             })
 
-            console.log("SELECTED -1", _pageSettingsRef.find(s => s.selected)?.name)
-
             pageSettingsRef.current = _pageSettingsRef
             setPageSettings(pageSettingsRef.current)
 
@@ -167,7 +176,7 @@ export const PlatformSettings = ({ navigation, route }) => {
           } else {
 
 
-            _pageSettingsRef = settingsRef.current.slice(first_item.key - 1, first_item.key - 1 + PER_PAGE()).map((page) => {
+            _pageSettingsRef = settingsRef.current.cores.slice(first_item.key - 1, first_item.key - 1 + PER_PAGE()).map((page) => {
               return {
                 ...page,
                 selected: page.key === first_item.key - 1
@@ -175,7 +184,6 @@ export const PlatformSettings = ({ navigation, route }) => {
             })
 
 
-            console.log("SELECTED 0", _pageSettingsRef.find(s => s.selected)?.name)
 
             pageSettingsRef.current = _pageSettingsRef
             setPageSettings(pageSettingsRef.current)
@@ -192,9 +200,7 @@ export const PlatformSettings = ({ navigation, route }) => {
         // xIndexRef.current = 0
         // setXIndex(xIndexRef.current)
 
-        console.log("To down")
         if (selected.key !== last_item.key) {
-          console.log("D 1")
           const currentIndex = pageSettingsRef.current.findIndex(g => g.selected)
           _pageSettingsRef = pageSettingsRef.current.map(game => {
             return {
@@ -203,7 +209,6 @@ export const PlatformSettings = ({ navigation, route }) => {
             }
           })
 
-          console.log("SELECTED 2", _pageSettingsRef.find(s => s.selected)?.name)
 
 
           pageSettingsRef.current = _pageSettingsRef
@@ -213,33 +218,24 @@ export const PlatformSettings = ({ navigation, route }) => {
         } else {
 
 
-          console.log("D 2")
-
-
           // check if has more items
-          if (last_item.key < (settingsRef.current.length - 1)) {
+          if (last_item.key < (settingsRef.current.cores.length - 1)) {
 
-            _pageSettingsRef = settingsRef.current.slice(first_item.key + 1, first_item.key + 1 + PER_PAGE()).map((game) => {
+            _pageSettingsRef = settingsRef.current.cores.slice(first_item.key + 1, first_item.key + 1 + PER_PAGE()).map((game) => {
               return {
                 ...game,
                 selected: game.key === selected.key + 1
               }
             })
 
-            console.log("D 3")
 
 
-            console.log("SELECTED 1", _pageSettingsRef.find(s => s.selected)?.name)
             pageSettingsRef.current = _pageSettingsRef
             setPageSettings(pageSettingsRef.current)
 
 
           } else {
-            console.log("D 4")
 
-            console.log(settingsRef.current.length, last_item)
-
-            // console.log("No more itens to scroll")
           }
         }
 
@@ -276,8 +272,45 @@ export const PlatformSettings = ({ navigation, route }) => {
     const selectedSettings = selectedSettingsIndex !== -1 && selectedSettingsIndex !== undefined ? pageSettingsRef.current[selectedSettingsIndex] : undefined;
 
     if (selectedSettings) {
-      if (xIndexRef.current === 0) {
-        console.log("UPDATE ENABLE DISABLE", selectedSettings.enabled)
+
+      if (selectedSettings?.type == "save") {
+
+
+        const newPlatformSettings = settingsRef.current.cores
+          .filter(f => f.type !== "save").reduce((acc, current) => {
+            acc = {
+              ...acc, 
+              [current.dir]: {
+                title: current.name,
+                backgroundImg: current.background,
+                core: {
+                    choices: [current.core],
+                    default: 0
+                },
+                enabled: current.enabled,
+                launcher: current.launcher,
+              }
+            }
+            return acc
+        }, {})
+
+
+        const updated = await pandaConfig.updateConfig({ PLATFORMS: newPlatformSettings });
+
+
+        if(updated){
+          // forceUpdate()
+          navigation.navigate('Settings')
+
+        } else {
+          console.log("Error on Saving the settings")
+        }
+
+
+
+
+
+      } else if (xIndexRef.current === 0) {
 
         const newValue = !selectedSettings.enabled
         pageSettingsRef.current = pageSettingsRef.current.map(p => {
@@ -291,88 +324,42 @@ export const PlatformSettings = ({ navigation, route }) => {
           
         })
         
-        settingsRef.current[selectedSettings.key].enabled = newValue
+        settingsRef.current.cores[selectedSettings.key].enabled = newValue
         setPageSettings(pageSettingsRef.current)
         forceUpdate()
 
 
-        // const choiceIndex = selectedSettings.options.findIndex(o => o === selectedSettings.value);
-
-        // let newValue;
-        // if (choiceIndex !== -1) {
-
-        //   if (choiceIndex >= (selectedSettings.options.length - 1)) {
-        //     newValue = selectedSettings.options[0]
-        //   } else {
-        //     newValue = selectedSettings.options[choiceIndex + 1]
-        //   }
-        // }
-        // if (newValue) {
-        //   pageSettingsRef.current[selectedSettingsIndex].value = newValue
-        //   settingsRef.current.data[selectedSettings.key].value = newValue
-        //   setPageSettings(pageSettingsRef.current)
-        //   forceUpdate()
-        // }
       } else if (xIndexRef.current== 1) {
-        console.log("UPDATE Core")
 
-        const currentCoreIndex = cores.indexOf(selectedSettings.core)
+        const currentCoreIndex = settingsRef.current.core_list.indexOf(selectedSettings.core)
 
         let newValue = 0
 
         if(currentCoreIndex !== -1) {
-          if(currentCoreIndex < cores.length - 1){
+          if(currentCoreIndex < settingsRef.current.core_list.length - 1){
             newValue = currentCoreIndex + 1;
           }
-
         }
 
         pageSettingsRef.current = pageSettingsRef.current.map(p => {
           if (p.key === selectedSettings.key){
             return {
               ...p,
-              core:  cores[newValue],
+              core:  settingsRef.current.core_list[newValue],
             }
           }
           return p
           
         })
         
-        settingsRef.current[selectedSettings.key].core = cores[newValue]
+        settingsRef.current.cores[selectedSettings.key].core = settingsRef.current.core_list[newValue]
         setPageSettings(pageSettingsRef.current)
         forceUpdate()
 
-
-
-        // if (settingsRef.current.folderIsOpen == false) {
-
-        //   if (selectedSettings?.fileName && selectedSettings.value) {
-
-        //     const new_path = selectedSettings.value.substr(0, selectedSettings.value.length - selectedSettings.fileName.length - 1)
-        //     settingsRef.current.selectedFileFolder = new_path
-
-        //   } else {
-        //     settingsRef.current.selectedFileFolder = selectedSettings.value
-
-        //   }
-
-        //   settingsRef.current.type = "dir"
-        //   settingsRef.current.folderIsOpen = true
-
-        //   setSettings(settingsRef.current)
-        //   setTimeout(() => {
-        //     forceUpdate()
-        //   }, 100);
-
-        // }
-
       } else if (xIndexRef.current == 2) {
-        console.log("Saving configuration to file")
-        console.log("UPDATE Launcher")
+  
 
         const launchers = ["retroarch", "Drastic", "MupenFz"]
-
-
 
         const currentLauncher = launchers.indexOf(selectedSettings.launcher)
 
@@ -382,7 +369,6 @@ export const PlatformSettings = ({ navigation, route }) => {
           if(currentLauncher < launchers.length - 1){
             newValue = currentLauncher + 1;
           }
-
         }
 
         pageSettingsRef.current = pageSettingsRef.current.map(p => {
@@ -396,58 +382,42 @@ export const PlatformSettings = ({ navigation, route }) => {
           
         })
         
-        settingsRef.current[selectedSettings.key].launcher = launchers[newValue]
+        settingsRef.current.cores[selectedSettings.key].launcher = launchers[newValue]
         setPageSettings(pageSettingsRef.current)
         forceUpdate()
-
-
-
-        // const updatedSettings = settingsRef.current.data
-        //   .filter(s => s.type !== "save")
-        //   .reduce((a, v) => {
-        //     a = { ...a, [v.key]: v.value }
-        //     return a
-        //   }, {}
-        //   )
-
-        // const updated = await pandaConfig.updateConfig(updatedSettings);
-
-        // if (updated) {
-        //   console.log("Settings SAVED!")
-        //   forceUpdate()
-        // } else {
-        //   console.log("Error on Saving the settings")
-        // }
-
-        // console.log("Finish him", updatedSettings)
 
       } else if (xIndexRef.current == 3) {
         console.log("UPDATE IMAGE")
 
         let newValue = ""
 
-
         if(selectedSettings.background === "") {
-          
-        }
 
-
-        pageSettingsRef.current = pageSettingsRef.current.map(p => {
-          if (p.key === selectedSettings.key){
-            return {
-              ...p,
-              background:  newValue,
-            }
+          if (settingsRef.current.folderIsOpen == false) {
+            settingsRef.current.selectedFileFolder = "/storage"
+            settingsRef.current.folderIsOpen = true
+            setSettings(settingsRef.current)            
+            forceUpdate()  
           }
-          return p
           
-        })
-        
-        settingsRef.current[selectedSettings.key].background = newValue
-        setPageSettings(pageSettingsRef.current)
-        forceUpdate()
+        } else {
 
+          pageSettingsRef.current = pageSettingsRef.current.map(p => {
+            if (p.key === selectedSettings.key){
+              return {
+                ...p,
+                background:  newValue,
+              }
+            }
+            return p
+            
+          })
+          
+          settingsRef.current.cores[selectedSettings.key].background = newValue
+          setPageSettings(pageSettingsRef.current)
+          forceUpdate()
 
+        }
       }
     }
   }
@@ -457,19 +427,22 @@ export const PlatformSettings = ({ navigation, route }) => {
     const selectedSettingsIndex = pageSettingsRef.current.length ? pageSettingsRef.current.findIndex(g => g.selected) : undefined;
     const selectedSettings = selectedSettingsIndex !== -1 && selectedSettingsIndex !== undefined ? pageSettingsRef.current[selectedSettingsIndex] : undefined;
 
-    let updated_path = data
-
-
-    if (selectedSettings?.fileName) {
-      console.log("FileName", selectedSettings?.fileName)
-      console.log("data", data)
-      updated_path = `${data}/${selectedSettings.fileName}`;
+    if(data && data.match(/.+[.](jpe?g|png)$/i)){
+      pageSettingsRef.current = pageSettingsRef.current.map(p => {
+        if (p.key === selectedSettings.key){
+          return {
+            ...p,
+            background:  data,
+          }
+        }
+        return p
+        
+      })
+      
+      settingsRef.current.cores[selectedSettings.key].background = data
+      setPageSettings(pageSettingsRef.current)
+      forceUpdate()
     }
-
-    pageSettingsRef.current[selectedSettingsIndex].value = updated_path
-    settingsRef.current.data[selectedSettings.key].value = updated_path
-    setPageSettings(pageSettingsRef.current)
-    forceUpdate()
 
   }
 
@@ -484,7 +457,7 @@ export const PlatformSettings = ({ navigation, route }) => {
     <>
       <SafeAreaView>
         {/*  Modal File Browser  */}
-        {/* <View
+        <View
           style={{
             elevation: 10,
             zIndex: 10,
@@ -505,9 +478,7 @@ export const PlatformSettings = ({ navigation, route }) => {
 
           />
 
-        </View> */}
-
-
+        </View>
 
         <View
           style={{
@@ -549,27 +520,27 @@ export const PlatformSettings = ({ navigation, route }) => {
 
             {pageSettings.map(item => {
 
-              //   if (item.key === settingsRef.current[settingsRef.current.length - 1].key) {
+                if (item.key === settingsRef.current.cores[settingsRef.current.cores.length - 1].key) {
 
-              //     return (
-              //       <View key={item.key} style={{
-              //         height: 50,
-              //         padding: 10,
-              //         margin: 5,
-              //         borderWidth: 1,
-              //         width: 200,
-              //         backgroundColor: item.selected ? "#9AE6B4" : "#CBD5E0",
-              //         borderRadius: 10,
-              //         alignItems: "center"
-              //       }}>
+                  return (
+                    <View key={item.key} style={{
+                      height: 50,
+                      padding: 10,
+                      margin: 5,
+                      borderWidth: 1,
+                      width: 200,
+                      backgroundColor: item.selected ? "#9AE6B4" : "#CBD5E0",
+                      borderRadius: 10,
+                      alignItems: "center"
+                    }}>
 
-              //         <Text style={{
-              //           fontSize: 20, fontWeight: "bold"
-              //         }}>{item.name}</Text>
+                      <Text style={{
+                        fontSize: 20, fontWeight: "bold"
+                      }}>{item.name}</Text>
 
-              //       </View>
-              //     )
-              //   }
+                    </View>
+                  )
+                }
 
               return (
                 <View key={item.dir} style={{
@@ -586,12 +557,6 @@ export const PlatformSettings = ({ navigation, route }) => {
                   flexDirection: "row"
 
                 }}>
-
-
-               
-
-
-
 
                     <View style={{
                       display: 'flex',
@@ -681,17 +646,9 @@ export const PlatformSettings = ({ navigation, route }) => {
 
                           </View>
 
-
-               
-
-
                     </View>
 
-
                     </View>
-
-                    
-
 
                     <View style={{
                       display: 'flex',
@@ -743,22 +700,19 @@ export const PlatformSettings = ({ navigation, route }) => {
                           (<Text>Add</Text>) 
 
                         }
-                       
-                        
+                           
                       </View>
 
 
-                    </View> 
-
-               
+                    </View>  
                 </View>
               )
 
             })}
             {
-              (settingsRef.current[settingsRef.current.length - 1]?.key
+              (settingsRef.current.cores[settingsRef.current.cores.length - 1]?.key
                 !== pageSettingsRef.current[pageSettingsRef.current.length - 1]?.key) &&
-              settingsRef.current.length > pageSettingsRef.current.length
+              settingsRef.current.cores.length > pageSettingsRef.current.length
 
               && <View key="fake" style={{
                 height: ITEM_HEIGHT,
@@ -777,7 +731,6 @@ export const PlatformSettings = ({ navigation, route }) => {
 
             }
 
-
           </View>
 
 
@@ -790,7 +743,6 @@ export const PlatformSettings = ({ navigation, route }) => {
             justifyContent: "space-between",
             flexDirection: "row",
             flexWrap: "wrap",
-            // backgroundColor: "#132640",
             backgroundColor: "#718096",
             borderTopColor: "#ffff",
             borderTopWidth: 1
@@ -807,7 +759,6 @@ export const PlatformSettings = ({ navigation, route }) => {
               <Text style={{ color: "white", alignSelf: "center", lineHeight: 16, fontSize: 17, fontWeight: "bold" }}>C</Text>
               <Text style={{ color: "white", alignSelf: "center", fontSize: 10, fontWeight: "bold" }}>RESET</Text>
             </View> */}
-
 
           </View>
 

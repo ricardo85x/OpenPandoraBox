@@ -77,7 +77,6 @@ export const FileBrowser = forwardRef((
 
         const selected = pageItems.find(g => g.selected);
 
-
         const selectedItem = selected ? selected : dirData[0]
 
         if (save ) {
@@ -99,6 +98,14 @@ export const FileBrowser = forwardRef((
                 selected_value = `${selectedItem.dir}/${selectedItem.value}`
                 setSelectedFileFolder(selected_value)
             }
+        } else if(selectedItem.type === "file" && type === "file"){
+            const current_file = `${selected.dir}/${selected.value}`
+            console.log("Selected file: ",current_file)
+
+            handleSetFolderReturn(`${current_file}`)
+            setFolderIsOpen(false)
+
+            
         } else if(selectedItem.type === "save"){
             console.log("Selected folder: ",selectedFileFolder)
             handleSetFolderReturn(selectedFileFolder)
