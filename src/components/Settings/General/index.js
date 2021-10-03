@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef, useReducer } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
-import { SafeAreaView, View, Text, TouchableOpacity } from 'react-native';
+import { SafeAreaView, View, Text } from 'react-native';
 import KeyEvent from 'react-native-keyevent';
 
 import { useSettingsContext } from "../../../hooks/useSettings"
@@ -68,7 +68,6 @@ export const GeneralSettings = ({ navigation, route }) => {
   const [pageSettings, setPageSettings] = useState([])
   const settingsRef = useRef(defaultSettings)
 
-
   useEffect(() => {
 
     const loadSettings = async () => {
@@ -96,7 +95,6 @@ export const GeneralSettings = ({ navigation, route }) => {
         }
       })
       setPageSettings(pageSettingsRef.current)
-
       // hack to ListenKeyBoard work
       await new Promise(resolve => setTimeout(resolve, 1000))
       KeyEvent.onKeyDownListener((keyEvent) => ListenKeyBoard(keyEvent));
@@ -109,26 +107,7 @@ export const GeneralSettings = ({ navigation, route }) => {
     setPageSettings(pageSettingsRef.current)
   }, [pageSettingsRef])
 
-  useEffect(() => {
-    // if(settings?.data && pageSettings.length){
-
-    //   settingsRef.current = settingsRef.current.data.map(s => {
-    //     const pageItem = pageSettings.find(p => p.index === s.index)
-    //     if(pageItem){
-    //       return { ...s, value: pageItem.value}
-    //     }
-    //     return s
-    //   })
-
-    //   setSettings(settingsRef.current)
-    // }
-
-  }, [pageSettings])
-
-
-
   const ListenKeyBoard = (keyEvent) => {
-
 
     if (settingsRef.current.folderIsOpen) {
 
@@ -136,17 +115,13 @@ export const GeneralSettings = ({ navigation, route }) => {
 
     } else {
 
-
       if (keyMap.upKeyCode?.some(key => key === keyEvent.keyCode)) {
         handleNavigation("UP")
       } else if (keyMap.downKeyCode?.some(key => key === keyEvent.keyCode)) {
         handleNavigation("DOWN")
       } else if ([...keyMap.P1_A, ...keyMap.P2_A].includes(keyEvent.keyCode)) {
-
         handleNavigation("A")
-
       }
-
 
       if (keyMap.P1_B?.includes(keyEvent.keyCode)) {
 
@@ -159,7 +134,6 @@ export const GeneralSettings = ({ navigation, route }) => {
 
     }
 
-
   }
 
   useFocusEffect(
@@ -171,14 +145,12 @@ export const GeneralSettings = ({ navigation, route }) => {
     }, [])
   );
 
-
   const setFolderIsOpen = (value) => {
     settingsRef.current.folderIsOpen = value
     setSettings(settingsRef.current)
     setTimeout(() => {
       forceUpdate()
     }, 100);
-
   }
 
   const setSelectedFileFolder = (value) => {
@@ -205,17 +177,11 @@ export const GeneralSettings = ({ navigation, route }) => {
       return;
     }
 
-    // console.log("first    ", first_item.index)
-    // console.log("last     ", last_item.index)
-    // console.log("selected ", selected.index)
-
     switch (direction) {
       case "UP":
-        // console.log("TO up", selected.index, selected.name);
 
         if (selected.index !== 0) {
 
-          // check if it is not the first of the list
           if (selected.index !== first_item.index) {
 
             const currentIndex = pageSettingsRef.current.findIndex(g => g.selected)
@@ -227,15 +193,10 @@ export const GeneralSettings = ({ navigation, route }) => {
               }
             })
 
-            console.log("SELECTED -1", _pageSettingsRef.find(s => s.selected)?.name)
-
             pageSettingsRef.current = _pageSettingsRef
             setPageSettings(pageSettingsRef.current)
 
-
-
           } else {
-
 
             _pageSettingsRef = settingsRef.current.data.slice(first_item.index - 1, first_item.index - 1 + PER_PAGE()).map((page) => {
               return {
@@ -244,27 +205,17 @@ export const GeneralSettings = ({ navigation, route }) => {
               }
             })
 
-
-            console.log("SELECTED 0", _pageSettingsRef.find(s => s.selected)?.name)
-
             pageSettingsRef.current = _pageSettingsRef
             setPageSettings(pageSettingsRef.current)
-
-
 
           }
         } else {
           // console.log("No more items UP")
         }
 
-
-
-
-
         break;
       case "DOWN":
 
-        // console.log("To down")
         if (selected.index !== last_item.index) {
           const currentIndex = pageSettingsRef.current.findIndex(g => g.selected)
 
@@ -275,12 +226,8 @@ export const GeneralSettings = ({ navigation, route }) => {
             }
           })
 
-          console.log("SELECTED 2", _pageSettingsRef.find(s => s.selected)?.name)
-
-
           pageSettingsRef.current = _pageSettingsRef
           setPageSettings(pageSettingsRef.current)
-
 
         } else {
 
@@ -294,10 +241,8 @@ export const GeneralSettings = ({ navigation, route }) => {
               }
             })
 
-            console.log("SELECTED 1", _pageSettingsRef.find(s => s.selected)?.name)
             pageSettingsRef.current = _pageSettingsRef
             setPageSettings(pageSettingsRef.current)
-
 
           } else {
             // console.log("No more itens to scroll")
@@ -317,56 +262,6 @@ export const GeneralSettings = ({ navigation, route }) => {
         break
     }
 
-    // first_item = _pageSettingsRef.length ? _pageSettingsRef[0] : undefined;
-    // last_item = _pageSettingsRef.length ? _pageSettingsRef[size_page - 1] : undefined
-    // selected = _pageSettingsRef.length ?  _pageSettingsRef.find(g => g.selected): undefined;
-
-    // console.log("############################")
-    // console.log("first    ", first_item.index)
-    // console.log("last     ", last_item.index)
-    // console.log("selected ", selected.index)
-
-
-  }
-
-  const handleNavigationOld = (direction = "") => {
-
-    switch (direction) {
-      case "UP":
-        // console.log("To UP");
-        settingsRef.current = {
-          ...settingsRef.current,
-          active:
-            settingsRef.current.active > 0 ?
-              settingsRef.current.active - 1 :
-              (settingsRef.current.data.length - 1)
-        }
-        setSettings(settingsRef.current)
-
-        break;
-      case "DOWN":
-
-        settingsRef.current = {
-          ...settingsRef.current,
-          active:
-            (settingsRef.current.active >= (settingsRef.current.data.length - 1)) ?
-              0 :
-              settingsRef.current.active + 1
-        }
-        setSettings(settingsRef.current)
-
-        break;
-      case "A":
-        handleSelection()
-        break;
-      case "B":
-        settingsRef.current.folderIsOpen = !settingsRef.current.folderIsOpen
-        setSettings(settingsRef.current)
-
-        break;
-      default:
-        break
-    }
   }
 
   const handleSelection = async () => {
@@ -418,7 +313,6 @@ export const GeneralSettings = ({ navigation, route }) => {
         }
 
       } else if (selectedSettings.type == "save") {
-        console.log("Saving configuration to file")
 
         const updatedSettings = settingsRef.current.data
           .filter(s => s.type !== "save")
@@ -436,72 +330,16 @@ export const GeneralSettings = ({ navigation, route }) => {
         } else {
           console.log("Error on Saving the settings")
         }
-
-        // const saved = await Promise.all(settingsRef.current.data.filter(s => s.key !== "save").map(async (s) => {
-        //   console.log(s.key, s.value)
-
-        //   const updated = await pandaConfig.updateConfig({
-        //     key: s.key,
-        //     value: s.value
-        //   });
-
-        //   return { key: s.key, status: "ok"}
-        // }))
-
-        console.log("Finish him",updatedSettings)
-
-
-        /*
-         
-      //   const updated = await pandaConfig.updateConfig({
-    //       key: selectedSettings.key,
-    //       value
-    //     });
-
-    //     if (updated) {
-    //       settingsRef.current = {
-    //         ...
-    //         settingsRef.current,
-    //         data: settingsRef.current.data.map(item => {
-    //           if (item.key === selectedSettings.key) {
-    //             // console.log("AEEEE ou nao")
-    //             return { ...item, value }
-    //           }
-    //           return item
-    //         })
-    //       }
-    //     }
-
-        */
-
       }
     }
   }
 
-  const DebugButton = ({ textButton, debugFunction }) => {
-    return (
-      <TouchableOpacity
-        onPress={() => debugFunction()}
-        style={{
-          marginHorizontal: 10,
-          borderRadius: 10,
-          fontSize: 30,
-          color: "white"
-        }}
-      >
-        <Text>{textButton}</Text>
-      </TouchableOpacity>
-    )
-  }
-
   const handleSetFolderReturn = async (data) => {
-    //const selectedSettings = settingsRef.current.data.find(s => s.index === settingsRef.current.active);
 
     const selectedSettingsIndex = pageSettingsRef.current.length ? pageSettingsRef.current.findIndex(g => g.selected) : undefined;
     const selectedSettings = selectedSettingsIndex !== -1 && selectedSettingsIndex !== undefined ? pageSettingsRef.current[selectedSettingsIndex] : undefined;
 
     let updated_path = data
-
 
     if (selectedSettings?.fileName) {
       console.log("FileName", selectedSettings?.fileName)
@@ -513,44 +351,6 @@ export const GeneralSettings = ({ navigation, route }) => {
     settingsRef.current.data[selectedSettings.index].value = updated_path
     setPageSettings(pageSettingsRef.current)
     forceUpdate()
-
-
-    // if (data?.type === selectedSettings.type) {
-
-    //   let value = data?.value;
-
-    //   if (value) {
-    //     if (value === "..") {
-    //       value = data.dir;
-    //     } else {
-    //       value = `${data.dir}/${value}`;
-    //     }
-
-    //     const updated = await pandaConfig.updateConfig({
-    //       key: selectedSettings.key,
-    //       value
-    //     });
-
-    //     if (updated) {
-    //       settingsRef.current = {
-    //         ...
-    //         settingsRef.current,
-    //         data: settingsRef.current.data.map(item => {
-    //           if (item.key === selectedSettings.key) {
-    //             // console.log("AEEEE ou nao")
-    //             return { ...item, value }
-    //           }
-    //           return item
-    //         })
-    //       }
-    //     }
-
-    //   }
-
-    // } else {
-    //   // console.log("Invalid selection")
-    // }
-
   }
 
   const ITEM_HEIGHT = 105;
@@ -559,8 +359,6 @@ export const GeneralSettings = ({ navigation, route }) => {
     const bodyH = (APP_HEIGHT - 50 - 50); // modal less header
     return Math.floor(bodyH / (ITEM_HEIGHT + 1));
   }
-
-  // console.log(pageSettingsRef)
 
   return (
     <>
@@ -589,8 +387,6 @@ export const GeneralSettings = ({ navigation, route }) => {
           />
 
         </View>
-
-
 
         <View
           style={{
