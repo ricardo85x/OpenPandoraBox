@@ -26,6 +26,8 @@ This frontend will look for gamelist.xml, to get the path, name, desc, image and
 
 You can generate a gamelist.xml for each platform with  a external tool like skraper.
 
+### If you have a emulationstation installation like batocera/recalbox somewhere, just copy the base ROM folder somewhere on pandora box, install the retroarch cores and you are done.
+
 ## Motivation.
 The default pandora box 3d frontend is good, but I can't configure games property.
 
