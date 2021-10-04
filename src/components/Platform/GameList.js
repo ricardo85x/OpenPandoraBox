@@ -10,10 +10,7 @@ export const GameList = ( { games = [], EXTRA_SPACE } ) => {
 
 
     return (
-        <View style={{ 
-            width: APP_WIDTH * 0.35, 
-            backgroundColor: "#CBD5E0" 
-        }}>
+        <View style={{ width: APP_WIDTH * 0.35 }}>
             { 
                 games.length ? 
 

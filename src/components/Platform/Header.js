@@ -12,10 +12,12 @@ export const Header = ( { title, gameName = ""}) => {
     return (
         <View style={{
             height: 50,
-            width: (APP_WIDTH * 0.65),
+            width: (APP_WIDTH * 0.65) - 2,
             display: "flex",
             flexDirection: "column",
             justifyContent: "space-between",
+            marginTop: 2,
+            marginRight: 2,
             paddingLeft: 10,
        
             // backgroundColor: "#718096",

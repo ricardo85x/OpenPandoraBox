@@ -3,12 +3,20 @@ import { View } from 'react-native';
 
 import { FooterItem } from "./FooterItem"
 
+import { useSettingsContext } from "../../hooks/useSettings";
 
 export const Footer = () => {
 
+    const { APP_WIDTH  } = useSettingsContext()
+
+
     return (
         <View style={{
-            width: "100%",
+            width: (APP_WIDTH * 0.65) - 2,
+            marginRight: 2,
+            borderBottomWidth: 2,
+            borderBottomColor: "white",
+
             height: 50,
             display: "flex",
             justifyContent: "space-between",
@@ -16,8 +24,6 @@ export const Footer = () => {
             flexDirection: "row",
             flexWrap: "wrap",
             backgroundColor: "orange",
-            borderTopColor: "#ffff",
-            borderTopWidth: 1
         }}>
 
             <FooterItem bgColor="white"  btnName="A" btnText="SELECT" />

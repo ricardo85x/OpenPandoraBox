@@ -359,7 +359,7 @@ export const PlatformSettings = ({ navigation, route }) => {
       } else if (xIndexRef.current == 2) {
   
 
-        const launchers = ["retroarch", "Drastic", "MupenFz"]
+        const launchers = ["retroarch", "Drastic", "MupenFz", "PPSSPP"]
 
         const currentLauncher = launchers.indexOf(selectedSettings.launcher)
 

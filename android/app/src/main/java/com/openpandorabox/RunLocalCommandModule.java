@@ -37,6 +37,9 @@ public class RunLocalCommandModule extends ReactContextBaseJavaModule {
 
     if (requestedIntent != null) {
 
+      //am start --user 0 -n com.dsemu.drastic/.DraSticActivity -a android.intent.action.MAIN -c android.intent.category.LAUNCHER -e GAMEPATH "/sdcard/$FILENAME"
+     // am start --user 0 -n org.ppsspp.ppsspp/.PpssppActivity -a android.intent.action.MAIN -e org.ppsspp.ppsspp.Shortcuts "/sdcard/$FILENAME"
+
       ComponentName componentName = new ComponentName("com.dsemu.drastic", "com.dsemu.drastic.DraSticActivity");
 
       requestedIntent.setComponent(componentName);
@@ -51,6 +54,31 @@ public class RunLocalCommandModule extends ReactContextBaseJavaModule {
       Log.d(
         "ERROR",
         "Error no intent com.dsemu.drastic found"
+      );
+    }
+  }
+
+
+  @ReactMethod
+  public void openPPSSPP(String rom){
+    Intent requestedIntent = new Intent("android.intent.action.MAIN");
+
+    if (requestedIntent != null) {
+
+      ComponentName componentName = new ComponentName("org.ppsspp.ppsspp", "org.ppsspp.ppsspp.PpssppActivity");
+
+      requestedIntent.setComponent(componentName);
+      requestedIntent.putExtra("org.ppsspp.ppsspp.Shortcut", rom);
+
+      requestedIntent.setData(Uri.parse(new File(rom).toString()));
+      requestedIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+      
+      _context.startActivity(requestedIntent);
+
+    } else {
+      Log.d(
+        "ERROR",
+        "Error no intent org.ppsspp.ppsspp found"
       );
     }
   }

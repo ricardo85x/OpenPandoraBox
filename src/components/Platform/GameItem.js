@@ -16,8 +16,11 @@ export const GameItem = ({ game, APP_HEIGHT, EXTRA_SPACE }) => {
 
             style={{
                 justifyContent: "center",
-                height: height,
+                height: height - 4,
+                marginVertical: 2,
+                marginHorizontal: 2,
                 borderWidth: 1,
+
                 backgroundColor: game.selected ?
                     // "#4A5568" :
                     "#DD6B20" :
@@ -34,7 +37,7 @@ export const GameItem = ({ game, APP_HEIGHT, EXTRA_SPACE }) => {
                 fontSize: 17,
                 flex: 1,
                 textAlignVertical: "center",
-
+                marginLeft: 5,
                 color: '#ffff',
                 overflow: "hidden",
 

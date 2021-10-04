@@ -3,7 +3,7 @@ import {
     SafeAreaView,
     View,
     Text,
-    StatusBar,
+    StatusBar, Animated
 } from 'react-native';
 
 import { useFocusEffect } from '@react-navigation/native';
@@ -19,12 +19,55 @@ import { useSettingsContext } from "../../hooks/useSettings"
 export const HomeScreen = ({ navigation, route }) => {
 
     const { APP_WIDTH, APP_HEIGHT, keyMap } = useSettingsContext()
-
     const keyMapRef = useRef(keyMap)
 
+    const fadeAnim = useRef(new Animated.Value(0)).current;
+    const animationSpeed = 400
+    const animationOutSpeed = 100
 
-    const [, forceUpdate] = useReducer(x => x + 1, 0);
+    const fadeIn = () => {
+        Animated.timing(fadeAnim, {
+            toValue: 1,
+            duration: animationSpeed,
+            useNativeDriver: true,
+        }).start();
+    }
 
+    const fadeOut = () => {
+        Animated.timing(fadeAnim, {
+            toValue: 0,
+            duration: animationOutSpeed,
+            useNativeDriver: true
+        }).start();
+    }
+
+    const slideLeftStyle = {
+        transform: [
+            {
+                translateX: fadeAnim.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [600, 0]
+                })
+            }
+        ]
+    }
+    const slideRightStyle = {
+        transform: [
+            {
+                translateX: fadeAnim.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [-600, 0]
+                })
+            }
+        ]
+    }
+
+    const fadeoutStyle = {
+        opacity: fadeAnim
+    }
+
+    const currentSlide = useRef(slideLeftStyle)
+    const [_updateView, forceUpdate] = useReducer(x => x + 1, 0);
     const pandaConfig = PandaConfig();
 
     const [carousel, setCarousel] = useState({
@@ -49,6 +92,7 @@ export const HomeScreen = ({ navigation, route }) => {
         const gameList = await pandaConfig.loadItemsMenu()
         carouselReRef.current = { ...carouselReRef.current, items: gameList }
         setCarousel(carouselReRef.current)
+        fadeIn()
     }
 
     useEffect(() => {
@@ -60,25 +104,43 @@ export const HomeScreen = ({ navigation, route }) => {
     const ListenKeyBoard = (keyEvent) => {
 
         if (keyMapRef.current.leftKeyCode?.includes(keyEvent.keyCode)) {
+            // currentSlide.current = slideLeftStyle
+            currentSlide.current = fadeoutStyle
+            forceUpdate();
+            fadeOut()
 
             if (carouselReRef.current.active > 0) {
                 carouselReRef.current.active = carouselReRef.current.active - 1;
             } else {
                 carouselReRef.current.active = carouselReRef.current.items.length - 1;
             }
-            setCarousel(carouselReRef.current)
-            forceUpdate();
+
+            setTimeout(() => {
+                setCarousel(carouselReRef.current)
+                currentSlide.current = slideRightStyle
+                forceUpdate();
+                fadeIn()
+            }, animationOutSpeed)
         }
 
         if (keyMapRef.current.rightKeyCode?.includes(keyEvent.keyCode)) {
+            // currentSlide.current = slideRightStyle
+            currentSlide.current = fadeoutStyle
+            forceUpdate();
+            fadeOut()
 
             if (carouselReRef.current.active < carouselReRef.current.items.length - 1) {
                 carouselReRef.current.active = carouselReRef.current.active + 1;
             } else {
                 carouselReRef.current.active = 0;
             }
-            setCarousel(carouselReRef.current);
-            forceUpdate();
+
+            setTimeout(() => {
+                setCarousel(carouselReRef.current)
+                currentSlide.current = slideLeftStyle
+                forceUpdate();
+                fadeIn()
+            }, animationOutSpeed)
         }
 
         if (keyMapRef.current.P1_A?.includes(keyEvent.keyCode)) {
@@ -124,7 +186,7 @@ export const HomeScreen = ({ navigation, route }) => {
                 display: "flex",
                 flexDirection: "column",
                 alignItems: "center",
-                justifyContent: "space-between",
+                // justifyContent: "space-between",
 
             }}>
 
@@ -133,20 +195,52 @@ export const HomeScreen = ({ navigation, route }) => {
                         carouselReRef.current.items[carouselReRef.current.active].title : ""
                 } />
 
+                <View style={{ 
+                    display: "flex", 
+                    height: (APP_HEIGHT * 0.9),
+                    justifyContent: "center",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    width: "100%"
+                    
+                }}>
 
-                {
+{
                     carousel.items.length ?
-                        <View style={{ display: "flex", height: (APP_HEIGHT * 0.9) - 20, flexDirection: 'row', justifyContent: 'center' }}>
-                            <Item
-                                item={carouselReRef.current.items[carouselReRef.current.active]}
-                                navigation={navigation}
-                                currentIndex={carouselReRef.current.active}
-                                keyMaps={keyMap}
-                            />
+                        <View style={{ 
+                            display: "flex", 
+                            height: (APP_HEIGHT * 0.9) - 20, 
+                            flexDirection: 'row', 
+                            justifyContent: 'center',
+                            alignItems: "center",
+                            // backgroundColor: "#4A5568",
+                            width: "100%"
+                            
+                        }}>
+                            <Animated.View
+                                style={currentSlide.current}
+                            >
+
+                                <Item
+                                    item={carouselReRef.current.items[carouselReRef.current.active]}
+                                    navigation={navigation}
+                                    currentIndex={carouselReRef.current.active}
+                                    keyMaps={keyMap}
+                                />
+
+                            </Animated.View>
 
                         </View>
+
+
                         : <Text>Loading...</Text>
                 }
+
+                </View>
+
+
+                
+
             </View>
         </SafeAreaView>
 

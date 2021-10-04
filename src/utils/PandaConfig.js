@@ -188,10 +188,15 @@ export const PandaConfig = () => {
 
         const platformCore = _baseConfig?.PLATFORMS[platform]?.core;
 
-        const launcher = platformCore?.launcher ? platformCore?.launcher : "retroarch"
+        const launcher = _baseConfig?.PLATFORMS[platform]?.launcher ? _baseConfig?.PLATFORMS[platform].launcher : "retroarch"
 
         if (launcher == "MupenFz"){
             RunLocalCommand().openMupenPlusFZ(rom);
+            return
+        }
+
+        if (launcher == "PPSSPP"){
+            RunLocalCommand().openPPSSPP(rom);
             return
         }
 
