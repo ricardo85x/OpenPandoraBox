@@ -18,11 +18,19 @@ It could be used with **NVIDIA Shield Portable** as well as I am using it to deb
 
 1 - Install the apk
 
-2 - update the config.json on /data/data/com.openpandorabox/files
+2 - Update the path settings on Settings -> General
 
-3 - update the keymap.json on /data/data/com.openpandorabox/files
+3 - Update the platform settings on Settings -> Platforms
 
 4 - Done
+
+
+It is possible to customize the settings directly on these files:
+
+- /data/data/com.openpandorabox/files/config.json
+- /data/data/com.openpandorabox/files/keymap.json
+
+
 
 This frontend will look for gamelist.xml, to get the path, name, desc, image and video.
 
@@ -31,9 +39,9 @@ You can generate a gamelist.xml for each platform with  a external tool like skr
 ### If you have a emulationstation installation like batocera/recalbox somewhere, just copy the base ROM folder somewhere on pandora box, install the retroarch cores and you are done.
 
 ## Motivation.
-The default pandora box 3d frontend is good, but I can't configure games property.
+The default Pandora Box 3D interface is good, but I can't configure games individually.
 
-I tried to find a frontend on playstore but none works well with the default arcade controls on pandory box 3D.
+I tried to find a frontend on playstore but none works well with the default arcade controls on Pandory Box 3D.
 
 I hate to use mouse and keyboard on pandory box, so I created this frontend.
 
