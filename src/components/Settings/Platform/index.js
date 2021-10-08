@@ -46,6 +46,17 @@ export const PlatformSettings = ({ navigation, route }) => {
     const loadSettings = async () => {
 
       settingsRef.current.cores = await pandaConfig.listPlatforms();
+
+      settingsRef.current.cores.sort((a, b) => {
+        if (a.dir > b.dir) {
+          return 1;
+        }
+        if (a.dir < b.dir) {
+          return -1;
+        }
+        return 0;
+      })
+
       settingsRef.current.core_list = await pandaConfig.listCores()
       settingsRef.current.cores.push({
         key: settingsRef.current.cores.length,

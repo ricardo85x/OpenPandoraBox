@@ -97,80 +97,15 @@ export const PandaConfig = () => {
         const configFilePath = RNFS.DocumentDirectoryPath + "/config.json";
 
         const defaultConfig = JSON.stringify({
-            RETROARCH_CONFIG: RNFS.DocumentDirectoryPath + "/retroarch.cfg",
+            RETROARCH_CONFIG: "/storage/emulated/legacy/Android/data/com.retroarch.ra32/files/retroarch.cfg",
             RETROARCH_APK_ID: "com.retroarch.ra32",
-            BASE_ROOM_DIR: "/storage/external_storage/sda1/batocera/roms",
+            BASE_ROOM_DIR: "/storage",
             CORE_DIR: "/data/data/com.retroarch.ra32/cores", // 
             THEME: {
                 settingsBackgroundImg:"",
                 historyBackgroundImg:""
             },
-            PLATFORMS: {
-                megadrive: {
-                    title: "Sega Mega Drive",
-                    backgroundImg: "",
-                    core: {
-                        choices: ["genesis_plus_gx_libretro_android.so"],
-                        default: 0
-                    },
-                    enabled: true,
-                },
-                atari2600: {
-                    title: "Atari 2600",
-
-                    core: {
-                        choices: ["stella_libretro_android.so"],
-                        default: 0
-                    },
-                    enabled: true,
-                },
-                nes: {
-                    title: "Nintendinho",
-
-                    core: {
-                        choices: [
-                            "mesen_libretro_android.so",
-                            "fceumm_libretro_android.so"
-                        ],
-                        default: 1
-                    },
-                    enabled: true,
-                },
-                snes: {
-                    title: "Super Nintendo",
-
-                    core: {
-                        choices: ["snes9x_libretro_android.so"],
-                        default: 0
-                    },
-                    enabled: false,
-                },
-                nds: {
-                    title: "Nintendo DS",
-
-                    core: {
-                        choices: ["desmume_libretro_android.so"],
-                        useDrastic: false,
-                        default: 0
-                    },
-                    enabled: false,
-                },
-                n64: {
-                    title: "Nintendo 64",
-
-                    core: {
-                        choices: [
-                            "mupen64plus_next_gles2_libretro_android.so",
-                            "mupen64plus_next_gles3_libretro_android.so",
-                            "parallel_n64_libretro_android.so"
-                        ],
-                        default: 1,
-                        useMupenFz: true
-                    },
-                    
-                    enabled: false,
-                }
-            }
+            PLATFORMS: {}
         }, null, 2)
 
         return await baseConfig(configFilePath, defaultConfig);

@@ -331,7 +331,8 @@ export const GeneralSettings = ({ navigation, route }) => {
 
         if(updated){
           console.log("Settings SAVED!")
-          forceUpdate()
+          navigation.navigate('Settings')
+
         } else {
           console.log("Error on Saving the settings")
         }
