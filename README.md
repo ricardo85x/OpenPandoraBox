@@ -2,7 +2,9 @@
 
 Another emulator frontend using RetroArch.
 
-It is suppose to be used with pandory on pandora box 3d plus.
+It is suppose to be used with Pandory on Pandora Box 3D Plus.
+
+It could be used with **NVIDIA Shield Portable** as well as I am using it to debug.
 
 ### Platform Selection
 
