@@ -23,6 +23,7 @@
     "react-native-fs": "^2.18.0",
     "react-native-gesture-handler": "^1.10.3",
     "react-native-keyevent": "^0.2.8",
+    "react-native-linear-gradient": "^2.5.6",
     "react-native-safe-area-context": "^3.2.0",
     "react-native-screens": "^3.4.0",
     "react-native-sqlite-storage": "^5.0.0",

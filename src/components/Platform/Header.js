@@ -1,5 +1,7 @@
 import React from 'react';
 import { Text, View } from 'react-native';
+import LinearGradient from 'react-native-linear-gradient';
+
 
 import { useSettingsContext } from "../../hooks/useSettings";
 
@@ -7,10 +9,10 @@ export const Header = ( { title, gameName = ""}) => {
 
     const { APP_WIDTH  } = useSettingsContext()
 
-
-
     return (
-        <View style={{
+        <LinearGradient colors={['#F6AD55', '#ED8936', '#DD6B20']} 
+        
+            style={{
             height: 50,
             width: (APP_WIDTH * 0.65) - 2,
             display: "flex",
@@ -21,7 +23,8 @@ export const Header = ( { title, gameName = ""}) => {
             paddingLeft: 10,
        
             // backgroundColor: "#718096",
-            backgroundColor: "orange",
+            // backgroundColor: "orange",
+            
 
         }}>
             <Text style={{ 
@@ -43,6 +46,6 @@ export const Header = ( { title, gameName = ""}) => {
                 {gameName}
             </Text>
 
-        </View>
+        </LinearGradient>
     )
 }

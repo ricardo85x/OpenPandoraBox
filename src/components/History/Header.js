@@ -2,6 +2,8 @@ import React from 'react';
 import { Text, View } from 'react-native';
 
 import {useSettingsContext} from "../../hooks/useSettings";
+import LinearGradient from 'react-native-linear-gradient';
+
 
 export const Header = ( { title, gameName = ""}) => {
 
@@ -9,16 +11,17 @@ export const Header = ( { title, gameName = ""}) => {
 
 
     return (
-        <View style={{
+        <LinearGradient colors={['#F6AD55', '#ED8936', '#DD6B20']} 
+        
+        style={{
             height: 50,
-            width: (APP_WIDTH * 0.65),
+            width: (APP_WIDTH * 0.65) - 2,
             display: "flex",
             flexDirection: "column",
             justifyContent: "space-between",
+            marginTop: 2,
+            marginRight: 2,
             paddingLeft: 10,
-       
-            // backgroundColor: "#718096",
-            backgroundColor: "orange",
 
         }}>
             <Text style={{ 
@@ -40,6 +43,6 @@ export const Header = ( { title, gameName = ""}) => {
                 {gameName}
             </Text>
 
-        </View>
+        </LinearGradient>
     )
 }

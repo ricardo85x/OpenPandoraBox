@@ -206,6 +206,11 @@ export const PandaConfig = () => {
             return
         }
 
+        if (launcher == "Reicast"){
+            RunLocalCommand().openReicast(rom);
+            return
+        }
+
         if (platformCore && platformCore.choices.length > platformCore.default) {
             core = platformCore.choices[
                 platformCore.default

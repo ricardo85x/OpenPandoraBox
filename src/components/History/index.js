@@ -1,6 +1,8 @@
 import React, { useEffect, useState, useRef, useMemo } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
 import { SafeAreaView, View } from 'react-native';
+import LinearGradient from 'react-native-linear-gradient';
+
 import KeyEvent from 'react-native-keyevent';
 
 import { useSettingsContext } from "../../hooks/useSettings";
@@ -325,7 +327,11 @@ export const History = ({ navigation, route }) => {
     return (
         <>
             <SafeAreaView>
-                <View
+                <LinearGradient 
+
+start={{x: 0, y: 0}} end={{x: 1, y: 0}} 
+
+colors={["#1A202C", "#2D3748", "#4A5568"]} 
                     style={{
                         display: 'flex',
                         flexDirection: "row",
@@ -335,7 +341,7 @@ export const History = ({ navigation, route }) => {
                 >
                     <GameList EXTRA_SPACE={EXTRA_SPACE} games={pageRef.current} />
                     <Main title={selectedGame?.platform} onBackground={onBackground} selectedGame={selectedGame} />
-                </View>
+                </LinearGradient>
 
             </SafeAreaView>
         </>

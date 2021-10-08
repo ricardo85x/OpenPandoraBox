@@ -4,7 +4,7 @@ import { View } from 'react-native';
 import {useSettingsContext} from "../../hooks/useSettings";
 import { Body } from "./Body"
 import { Header } from "./Header"
-import { Footer } from "./Footer"
+import { Footer } from "../Footer"
 
 export const Main = ({selectedGame, onBackground}) => {
 
@@ -22,7 +22,17 @@ export const Main = ({selectedGame, onBackground}) => {
         }}>
             <Header title={selectedGame?.platformTitle} gameName={selectedGame?.name} />
             <Body onBackground={onBackground} selectedGame={selectedGame} />
-            <Footer />
+            <Footer 
+                items={[
+                    {color: "white", title: "A", text: "SELECT"},
+                    {color: "yellow", title: "B", text: "BACK"},
+                    {color: "pink", title: "D", text: "REMOVE"},
+                    {color: "red", title: "C", text: "PREV"},
+                    {color: "green", title: "F", text: "NEXT"}
+                ]}
+
+               
+            />
         </View>
     )
 }

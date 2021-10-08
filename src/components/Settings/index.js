@@ -4,13 +4,19 @@ import { SafeAreaView, View, Text } from 'react-native';
 import KeyEvent from 'react-native-keyevent';
 
 import { useSettingsContext } from "../../hooks/useSettings";
+import LinearGradient from 'react-native-linear-gradient';
 
-import { Footer } from "./Footer"
+import { Footer } from "../Footer"
+import { Header } from "./Header"
+
+
+
 
 export const Settings = ({ navigation, route }) => {
 
 
     const { APP_WIDTH, APP_HEIGHT, keyMap } = useSettingsContext()
+
 
 
     const defaultSettings = {
@@ -24,6 +30,7 @@ export const Settings = ({ navigation, route }) => {
     const settingsRef = useRef(defaultSettings)
     const [settings, setSettings] = useState(defaultSettings)
 
+    const [title, setTitle] = useState("Settings")
 
 
 
@@ -31,10 +38,18 @@ export const Settings = ({ navigation, route }) => {
         const loadSettings = async () => {
             // hack to ListenKeyBoard work
             await new Promise(resolve => setTimeout(resolve, 100))
+            
             KeyEvent.onKeyDownListener((keyEvent) => ListenKeyBoard(keyEvent));
         }
         loadSettings()
     }, [])
+
+    // useEffect(() => {
+    //     const current = settingsRef.current.items.find(
+    //         item => item.index === settingsRef.current.active
+    //     )
+    //     setTitle(current.name)
+    // }, [settings])
 
     const handleSelection = () => {
 
@@ -135,19 +150,20 @@ export const Settings = ({ navigation, route }) => {
 
                     }}
                 >
-                    <View style={{
-                        height: 70,
-                        backgroundColor: "#718096"
+                    <Header title={title} />
+            
 
-                    }}>
-                        <Text style={{
-                            margin: "auto",
-                            fontSize: 40, fontWeight: "bold", color: "white"
-                        }}> SETTINGS</Text>
-                    </View>
 
-                    <View style={{
-                        height: APP_HEIGHT - 150,
+
+
+                    <LinearGradient 
+
+                        start={{x: 0, y: 0}} end={{x: 1, y: 0}} 
+
+                        colors={["#1A202C", "#2D3748", "#4A5568"]}  
+                    
+                        style={{
+                        height: APP_HEIGHT - 100,
                         display: "flex",
                         flexDirection: "row"
 
@@ -159,14 +175,16 @@ export const Settings = ({ navigation, route }) => {
                                 style={{
                                     width: 200,
                                     height: 140,
-                                    backgroundColor: settings.active === item.index ? "#CBD5E0" : "#A0AEC0",
+                                    backgroundColor: settings.active === item.index ? "#FFFAF0" : "#FEEBC8",
                                     margin: 10,
-                                    borderColor: settings.active === item.index ? "black" : "#718096",
-                                    borderWidth: 2,
-                                    borderRadius: 10
+                                    borderColor: settings.active === item.index ? "#DD6B20" : "black",
+                                    borderWidth: settings.active === item.index ? 4 : 2,
+                                    // borderRadius: 10
                                 }}
                             >
-                                <View style={{
+                                <LinearGradient colors={['#F6AD55', '#ED8936', '#DD6B20']}  
+                                
+                                    style={{
                                     display: "flex",
                                     flexDirection: "column",
                                     flexWrap: "wrap",
@@ -174,17 +192,16 @@ export const Settings = ({ navigation, route }) => {
                                     justifyContent: "center",
                                     alignContent: "center",
                                     height: 40,
-                                    backgroundColor: "#4A5568"
 
                                 }}>
                                     <Text style={{
                                         margin: "auto",
-                                        fontSize: 20,
-                                        fontWeight: "bold",
+                                        fontSize: settings.active === item.index ? 25: 20,
+                                        fontWeight: settings.active === item.index ? "bold" : "400",
                                         color: "white"
                                     }}>{item.name}</Text>
 
-                                </View>
+                                </LinearGradient>
                                 <View style={{
                                     height: 100
                                 }}>
@@ -208,9 +225,14 @@ export const Settings = ({ navigation, route }) => {
                             </View>
                         ))}
 
-                    </View>
+                    </LinearGradient>
 
-                    <Footer />
+          
+                    <Footer 
+                        items={[
+                            {color: "white", title: "A", text: "SELECT"},
+                            {color: "yellow", title: "B", text: "BACK"} 
+                    ]} />
 
 
 

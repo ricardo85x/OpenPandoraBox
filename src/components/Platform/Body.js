@@ -30,7 +30,7 @@ export const Body = ({ selectedGame, onBackground }) => {
             <Text style={{
                 width: (APP_WIDTH * 0.65) - 20,
                 alignSelf: "center",
-                color: 'black',
+                color: '#EDF2F7',
                 fontWeight: 'bold',
                 overflow: "hidden",
                 paddingTop: 5,
@@ -43,7 +43,7 @@ export const Body = ({ selectedGame, onBackground }) => {
                 <Text style={{
                     width: (APP_WIDTH * 0.65) - 20,
                     alignSelf: "center",
-                    color: 'black',
+                    color: '#E2E8F0',
                     overflow: "hidden",
                     paddingTop: 5,
                     textAlign: "center"

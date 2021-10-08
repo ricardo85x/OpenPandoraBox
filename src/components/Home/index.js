@@ -1,4 +1,6 @@
 import React, { useEffect, useState, useRef, useReducer } from 'react';
+import LinearGradient from 'react-native-linear-gradient';
+
 import {
     SafeAreaView,
     View,
@@ -11,7 +13,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import KeyEvent from 'react-native-keyevent';
 
 import { PandaConfig } from "../../utils/PandaConfig"
-import { Header } from "../Header"
+import { Header } from "./Header"
 import { Item } from "../Home/Item"
 
 import { useSettingsContext } from "../../hooks/useSettings"
@@ -104,8 +106,8 @@ export const HomeScreen = ({ navigation, route }) => {
     const ListenKeyBoard = (keyEvent) => {
 
         if (keyMapRef.current.leftKeyCode?.includes(keyEvent.keyCode)) {
-            // currentSlide.current = slideLeftStyle
-            currentSlide.current = fadeoutStyle
+            currentSlide.current = slideLeftStyle
+            // currentSlide.current = fadeoutStyle
             forceUpdate();
             fadeOut()
 
@@ -124,8 +126,8 @@ export const HomeScreen = ({ navigation, route }) => {
         }
 
         if (keyMapRef.current.rightKeyCode?.includes(keyEvent.keyCode)) {
-            // currentSlide.current = slideRightStyle
-            currentSlide.current = fadeoutStyle
+            currentSlide.current = slideRightStyle
+            // currentSlide.current = fadeoutStyle
             forceUpdate();
             fadeOut()
 
@@ -190,18 +192,25 @@ export const HomeScreen = ({ navigation, route }) => {
 
             }}>
 
-                <Header height={APP_HEIGHT * 0.1} title={
+                <Header height={50} title={
                     carousel.items.length ?
                         carouselReRef.current.items[carouselReRef.current.active].title : ""
                 } />
 
-                <View style={{ 
+                <LinearGradient 
+
+                    start={{x: 0, y: 0}} end={{x: 1, y: 0}} 
+
+                    colors={["#1A202C", "#2D3748", "#4A5568"]}  
+                
+                    style={{ 
                     display: "flex", 
-                    height: (APP_HEIGHT * 0.9),
+                    height: (APP_HEIGHT - 50),
                     justifyContent: "center",
                     flexDirection: "column",
                     alignItems: "center",
-                    width: "100%"
+                    width: "100%",
+                    backgroundColor: "#4A5568"
                     
                 }}>
 
@@ -209,7 +218,7 @@ export const HomeScreen = ({ navigation, route }) => {
                     carousel.items.length ?
                         <View style={{ 
                             display: "flex", 
-                            height: (APP_HEIGHT * 0.9) - 20, 
+                            height: (APP_HEIGHT - 50) - 20, 
                             flexDirection: 'row', 
                             justifyContent: 'center',
                             alignItems: "center",
@@ -236,7 +245,7 @@ export const HomeScreen = ({ navigation, route }) => {
                         : <Text>Loading...</Text>
                 }
 
-                </View>
+                </LinearGradient>
 
 
                 

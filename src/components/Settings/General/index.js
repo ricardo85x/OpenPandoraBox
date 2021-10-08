@@ -6,8 +6,13 @@ import KeyEvent from 'react-native-keyevent';
 import { useSettingsContext } from "../../../hooks/useSettings"
 
 import { FileBrowser } from "../../FileBrowser";
+import { Header } from "../Header"
+import { Footer } from "../../Footer"
 
 import { PandaConfig } from "../../../utils/PandaConfig"
+
+import LinearGradient from 'react-native-linear-gradient';
+
 
 export const GeneralSettings = ({ navigation, route }) => {
 
@@ -364,7 +369,9 @@ export const GeneralSettings = ({ navigation, route }) => {
     <>
       <SafeAreaView>
         {/*  Modal File Browser  */}
-        <View
+        <View 
+
+ 
           style={{
             elevation: 10,
             zIndex: 10,
@@ -388,7 +395,11 @@ export const GeneralSettings = ({ navigation, route }) => {
 
         </View>
 
-        <View
+        <LinearGradient 
+
+          start={{x: 0, y: 0}} end={{x: 1, y: 0}} 
+          colors={["#1A202C", "#2D3748", "#4A5568"]}  
+
           style={{
             elevation: -1,
             zIndex: -1,
@@ -401,21 +412,10 @@ export const GeneralSettings = ({ navigation, route }) => {
 
           }}
         >
+          
           {/* Header */}
-          <View style={{
-            height: 50,
-            backgroundColor: "#718096",
-            display: "flex",
-            flexDirection: "row",
-            alignItems: "center"
-
-          }}>
-            <Text style={{
-              fontSize: 30, marginLeft: 10, fontWeight: "bold", color: "white"
-            }}> General Settings</Text>
-
-          </View>
-
+          <Header title="General Settings" />
+         
           {/* Body */}
           <View style={{
             height: APP_HEIGHT - 50 - 50,
@@ -501,36 +501,15 @@ export const GeneralSettings = ({ navigation, route }) => {
 
 
           {/* Footer */}
-          <View style={{
-            width: "100%",
-            height: 50,
+          <Footer
+            items={[
+              {color: "white", title: "A", text: "EDIT"},
+              {color: "yellow", title: "B", text: "BACK"},
+              {color: "red", title: "C", text: "RESET"},
 
-            display: "flex",
-            justifyContent: "space-between",
-            flexDirection: "row",
-            flexWrap: "wrap",
-            // backgroundColor: "#132640",
-            backgroundColor: "#718096",
-            borderTopColor: "#ffff",
-            borderTopWidth: 1
-          }}>
-            <View style={{ margin: 5, border: "2px solid black", width: 45, height: 45, justifyContent: "center", backgroundColor: "white", borderRadius: 35 }}>
-              <Text style={{ alignSelf: "center", lineHeight: 16, fontSize: 17, fontWeight: "bold" }}>A</Text>
-              <Text style={{ alignSelf: "center", fontSize: 10, fontWeight: "bold" }}>EDIT</Text>
-            </View>
-            <View style={{ margin: 5, border: "2px solid black", width: 45, height: 45, justifyContent: "center", backgroundColor: "yellow", borderRadius: 35 }}>
-              <Text style={{ alignSelf: "center", fontSize: 17, lineHeight: 16, fontWeight: "bold" }}>B</Text>
-              <Text style={{ alignSelf: "center", fontSize: 10, fontWeight: "bold" }}>BACK</Text>
-            </View>
-            <View style={{ margin: 5, border: "2px solid black", width: 45, height: 45, justifyContent: "center", backgroundColor: "red", borderRadius: 35 }}>
-              <Text style={{ color: "white", alignSelf: "center", lineHeight: 16, fontSize: 17, fontWeight: "bold" }}>C</Text>
-              <Text style={{ color: "white", alignSelf: "center", fontSize: 10, fontWeight: "bold" }}>RESET</Text>
-            </View>
-
-
-          </View>
-
-        </View>
+            ]}
+          />
+        </LinearGradient>
 
       </SafeAreaView>
     </>

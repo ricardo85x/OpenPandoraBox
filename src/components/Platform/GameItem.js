@@ -1,18 +1,31 @@
 import React from 'react';
 import { Text, View } from 'react-native';
+import LinearGradient from 'react-native-linear-gradient';
+
 
 export const GameItem = ({ game, APP_HEIGHT, EXTRA_SPACE }) => {
 
     const height = (game?.selected && EXTRA_SPACE) ? ((50) + parseInt(EXTRA_SPACE)) : 50
 
-    if (game?.selected) {
-        console.log("EXTRA_SPACE", EXTRA_SPACE)
-        console.log("APP_HEIGHT", APP_HEIGHT)
+    let bgColor = ["#171923", "#1A202C", "#2D3748"]
+   
+    if (game?.selected) {        
+        bgColor = ['#A0AEC0', '#718096', '#4A5568']
+    } else {
+        if (game.id % 2 === 0) {
+            bgColor = ["#1A202C", "#2D3748", "#4A5568"]
+        }
     }
+
+
 
     return (
 
-        <View
+        <LinearGradient
+
+            start={{x: 0, y: 0}} end={{x: 1, y: 0}} 
+
+            colors={bgColor}
 
             style={{
                 justifyContent: "center",
@@ -21,19 +34,17 @@ export const GameItem = ({ game, APP_HEIGHT, EXTRA_SPACE }) => {
                 marginHorizontal: 2,
                 borderWidth: 1,
 
-                backgroundColor: game.selected ?
-                    // "#4A5568" :
-                    "#DD6B20" :
-                    // "#ED8936" :
-                    game.id % 2 === 0 ? "#080808" : "#181818"
-                // game.id % 2 === 0 ? "#FBD38D" : "#FEEBC8"
-                // game.id % 2 === 0 ? "#A0AEC0" : "#CBD5E0"
+
+                // backgroundColor: game.selected ?
+                //     "#DD6B20" :
+                //     game.id % 2 === 0 ? "#080808" : "#181818"
+        
 
             }}>
             <Text style={{
 
-                // color: game.selected ? "#ffff" : "#000000",
-                //                 color: game.selected ? "#ffff" : "#ffff",
+                // color: game.selected ? "#ED8936" : "#ffff" ,
+                //                color: game.selected ? "#ffff" : "#ffff",
                 fontSize: 17,
                 flex: 1,
                 textAlignVertical: "center",
@@ -43,6 +54,6 @@ export const GameItem = ({ game, APP_HEIGHT, EXTRA_SPACE }) => {
 
             }}>{game.name}</Text>
 
-        </View>
+        </LinearGradient>
     )
 }

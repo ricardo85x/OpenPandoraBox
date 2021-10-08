@@ -1,6 +1,8 @@
 import React, { useEffect, useState, useRef, useMemo } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
 import { SafeAreaView, View, Text } from 'react-native';
+import LinearGradient from 'react-native-linear-gradient';
+
 import KeyEvent from 'react-native-keyevent';
 
 import { Utils } from "../../utils";
@@ -194,6 +196,14 @@ export const Platform = ({ navigation, route }) => {
             readGameList(true)
         }
 
+        if ([...keyMap.P1_E, ...keyMap.P2_E].includes(keyEvent.keyCode)) {
+
+            // RANDOM
+       
+           selectRandomRom();
+
+        }
+
         if (keyMap.P1_B?.includes(keyEvent.keyCode)) {
 
             if (navigation.canGoBack()) {
@@ -218,6 +228,19 @@ export const Platform = ({ navigation, route }) => {
     );
 
 
+    const selectRandomRom = async () => {
+        const first = Math.floor(Math.random() * gamesRef.current.length -1);
+            
+        pageRef.current = (await readGameDB(first, PER_PAGE)).map((game) => {
+            return {
+                ...game,
+                selected: game.id === first
+            }
+        })
+
+        setPage(pageRef.current)
+    }
+
     const handleRunGame = () => {
         const selectedGameNow = pageRef.current.find(g => g.selected);
         if (selectedGameNow) {
@@ -226,9 +249,9 @@ export const Platform = ({ navigation, route }) => {
             onBackgroundRef.current = true
             setOnBackground(onBackgroundRef.current)
 
-      
 
-            db.addHistory({ id: selectedGameNow.id, platform: path} )
+
+            db.addHistory({ id: selectedGameNow.id, platform: path })
         }
     }
 
@@ -375,17 +398,23 @@ export const Platform = ({ navigation, route }) => {
     return (
         <>
             <SafeAreaView>
-                <View
+                <LinearGradient
+
+                    start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}
+
+                    colors={["#1A202C", "#2D3748", "#4A5568"]}
+
                     style={{
                         display: 'flex',
                         flexDirection: "row",
                         width: APP_WIDTH,
-                        height: APP_HEIGHT
+                        height: APP_HEIGHT,
+                        // backgroundColor: "#4A5568"
                     }}
                 >
-                    <GameList EXTRA_SPACE={EXTRA_SPACE} games={pageRef.current} /> 
+                    <GameList EXTRA_SPACE={EXTRA_SPACE} games={pageRef.current} />
                     <Main title={title} onBackground={onBackground} selectedGame={selectedGame} />
-                </View>
+                </LinearGradient>
 
             </SafeAreaView>
         </>
