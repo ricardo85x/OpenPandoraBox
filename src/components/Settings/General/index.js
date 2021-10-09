@@ -322,14 +322,14 @@ export const GeneralSettings = ({ navigation, route }) => {
         const updatedSettings = settingsRef.current.data
           .filter(s => s.type !== "save")
           .reduce((a, v) => {
-            a = {...a,[v.key]: v.value}
+            a = { ...a, [v.key]: v.value }
             return a
           }, {}
-        )
+          )
 
         const updated = await pandaConfig.updateConfig(updatedSettings);
 
-        if(updated){
+        if (updated) {
           console.log("Settings SAVED!")
           navigation.navigate('Settings')
 
@@ -366,13 +366,36 @@ export const GeneralSettings = ({ navigation, route }) => {
     return Math.floor(bodyH / (ITEM_HEIGHT + 1));
   }
 
+  const buttonAction = (buttonName) => {
+
+
+    if (settingsRef.current.folderIsOpen == false) {
+      switch (buttonName) {
+        case "A":
+          handleNavigation("A");
+          break;
+        case "B":
+          if (navigation.canGoBack()) {
+            navigation.goBack()
+          } else {
+            navigation.navigate('Settings');
+          }
+          break;
+        default:
+          break;
+      }
+    }
+
+
+  }
+
   return (
     <>
       <SafeAreaView>
         {/*  Modal File Browser  */}
-        <View 
+        <View
 
- 
+
           style={{
             elevation: 10,
             zIndex: 10,
@@ -396,10 +419,10 @@ export const GeneralSettings = ({ navigation, route }) => {
 
         </View>
 
-        <LinearGradient 
+        <LinearGradient
 
-          start={{x: 0, y: 0}} end={{x: 1, y: 0}} 
-          colors={["#1A202C", "#2D3748", "#4A5568"]}  
+          start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}
+          colors={["#1A202C", "#2D3748", "#4A5568"]}
 
           style={{
             elevation: -1,
@@ -413,10 +436,10 @@ export const GeneralSettings = ({ navigation, route }) => {
 
           }}
         >
-          
+
           {/* Header */}
           <Header title="General Settings" />
-         
+
           {/* Body */}
           <View style={{
             height: APP_HEIGHT - 50 - 50,
@@ -503,10 +526,11 @@ export const GeneralSettings = ({ navigation, route }) => {
 
           {/* Footer */}
           <Footer
+            buttonAction={buttonAction}
             items={[
-              {color: "white", title: "A", text: "EDIT"},
-              {color: "yellow", title: "B", text: "BACK"},
-              {color: "red", title: "C", text: "RESET"},
+              { color: "white", title: "A", text: "EDIT" },
+              { color: "yellow", title: "B", text: "BACK" },
+              // {color: "red", title: "C", text: "RESET"},
 
             ]}
           />

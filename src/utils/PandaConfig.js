@@ -103,7 +103,13 @@ export const PandaConfig = () => {
             CORE_DIR: "/data/data/com.retroarch.ra32/cores", // 
             THEME: {
                 settingsBackgroundImg:"",
-                historyBackgroundImg:""
+                historyBackgroundImg:"",
+                colorButton_A: "white",
+                colorButton_B: "yellow",
+                colorButton_C: "red",
+                colorButton_D: "pink",
+                colorButton_E: "green",
+                colorButton_F: "blue",                
             },
             PLATFORMS: {}
         }, null, 2)

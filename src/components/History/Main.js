@@ -6,7 +6,7 @@ import { Body } from "./Body"
 import { Header } from "./Header"
 import { Footer } from "../Footer"
 
-export const Main = ({selectedGame, onBackground}) => {
+export const Main = ({selectedGame, onBackground, buttonAction}) => {
 
     const { APP_WIDTH, APP_HEIGHT } = useSettingsContext()
 
@@ -23,6 +23,7 @@ export const Main = ({selectedGame, onBackground}) => {
             <Header title={selectedGame?.platformTitle} gameName={selectedGame?.name} />
             <Body onBackground={onBackground} selectedGame={selectedGame} />
             <Footer 
+                buttonAction={buttonAction}
                 items={[
                     {color: "white", title: "A", text: "SELECT"},
                     {color: "yellow", title: "B", text: "BACK"},
@@ -30,8 +31,6 @@ export const Main = ({selectedGame, onBackground}) => {
                     {color: "red", title: "C", text: "PREV"},
                     {color: "green", title: "F", text: "NEXT"}
                 ]}
-
-               
             />
         </View>
     )

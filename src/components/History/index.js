@@ -32,7 +32,7 @@ export const History = ({ navigation, route }) => {
 
     // const { title, text, path } = platform
 
-  
+
 
     const [page, setPage] = useState([])
     const pageRef = useRef([]);
@@ -44,7 +44,7 @@ export const History = ({ navigation, route }) => {
     const readGameDB = async (start, end) => {
 
         return gamesRef.current.slice(start, end)
-       
+
     }
 
     const readGameList = async (reload = false) => {
@@ -167,10 +167,10 @@ export const History = ({ navigation, route }) => {
 
         if (selectedGameNow) {
 
-            await db.removeFromHistory({ id: selectedGameNow.gameId, platform: selectedGameNow.platform})
-            
+            await db.removeFromHistory({ id: selectedGameNow.gameId, platform: selectedGameNow.platform })
+
             readGameList()
-            
+
         }
 
     }
@@ -181,10 +181,10 @@ export const History = ({ navigation, route }) => {
         if (selectedGameNow) {
             const pandaConfig = PandaConfig();
 
-            pandaConfig.runGame({ rom: selectedGameNow.path, platform: selectedGameNow.platform.split("/")[selectedGameNow.platform.split("/").length -1] })
+            pandaConfig.runGame({ rom: selectedGameNow.path, platform: selectedGameNow.platform.split("/")[selectedGameNow.platform.split("/").length - 1] })
             onBackgroundRef.current = true
             setOnBackground(onBackgroundRef.current)
-            db.addHistory({ id: selectedGameNow.gameId, platform: selectedGameNow.platform} )
+            db.addHistory({ id: selectedGameNow.gameId, platform: selectedGameNow.platform })
         }
     }
 
@@ -324,14 +324,43 @@ export const History = ({ navigation, route }) => {
         return pageRef.current.find(g => g.selected)
     }, [page]);
 
+    const buttonAction = (buttonName) => {
+
+        switch (buttonName) {
+            case "A":
+                handleRunGame();
+                break;
+            case "B":
+                if (navigation.canGoBack()) {
+                    navigation.goBack()
+                } else {
+                    navigation.navigate('Home');
+                }
+                break;
+            case "C":
+                handleSelection("BUTTON_C");
+                break;
+            case "D":
+                handleRemoveFromHistory();
+                break;
+            case "F":
+                handleSelection("BUTTON_F");
+                break;
+            default:
+                break;
+        }
+
+
+    }
+
     return (
         <>
             <SafeAreaView>
-                <LinearGradient 
+                <LinearGradient
 
-start={{x: 0, y: 0}} end={{x: 1, y: 0}} 
+                    start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}
 
-colors={["#1A202C", "#2D3748", "#4A5568"]} 
+                    colors={["#1A202C", "#2D3748", "#4A5568"]}
                     style={{
                         display: 'flex',
                         flexDirection: "row",
@@ -340,7 +369,7 @@ colors={["#1A202C", "#2D3748", "#4A5568"]}
                     }}
                 >
                     <GameList EXTRA_SPACE={EXTRA_SPACE} games={pageRef.current} />
-                    <Main title={selectedGame?.platform} onBackground={onBackground} selectedGame={selectedGame} />
+                    <Main buttonAction={buttonAction} title={selectedGame?.platform} onBackground={onBackground} selectedGame={selectedGame} />
                 </LinearGradient>
 
             </SafeAreaView>

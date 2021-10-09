@@ -391,6 +391,39 @@ export const Platform = ({ navigation, route }) => {
         return pageRef.current.find(g => g.selected)
     }, [page]);
 
+
+    const buttonAction = (buttonName) => {
+
+        switch (buttonName) {
+            case "A":
+                handleRunGame();
+                break;
+            case "B":
+                if (navigation.canGoBack()) {
+                    navigation.goBack()
+                } else {
+                    navigation.navigate('Home');
+                }
+                break;
+            case "C":
+                handleSelection("BUTTON_C");
+                break;
+            case "D":
+                readGameList(true);
+                break;
+            case "E":
+                selectRandomRom();
+                break;
+            case "F":
+                handleSelection("BUTTON_F");
+                break;
+            default:
+                break;
+        }
+
+
+    }
+
     // console.log("N_ITEMS", pageRef.current.length)
 
 
@@ -413,7 +446,7 @@ export const Platform = ({ navigation, route }) => {
                     }}
                 >
                     <GameList EXTRA_SPACE={EXTRA_SPACE} games={pageRef.current} />
-                    <Main title={title} onBackground={onBackground} selectedGame={selectedGame} />
+                    <Main buttonAction={buttonAction} title={title} onBackground={onBackground} selectedGame={selectedGame} />
                 </LinearGradient>
 
             </SafeAreaView>

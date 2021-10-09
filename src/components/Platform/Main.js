@@ -7,10 +7,9 @@ import { Body } from "./Body"
 import { Header } from "./Header"
 import { Footer } from "../../components/Footer/index"
 
-export const Main = ({title, selectedGame, onBackground}) => {
+export const Main = ({title, selectedGame, onBackground, buttonAction}) => {
 
     const { APP_WIDTH, APP_HEIGHT } = useSettingsContext()
-
 
     return (
 
@@ -26,6 +25,7 @@ export const Main = ({title, selectedGame, onBackground}) => {
             {/* <Footer /> */}
 
             <Footer
+                buttonAction={buttonAction}
                 items={[
                 {color: "white", title: "A", text: "SELECT"},
                 {color: "yellow", title: "B", text: "BACK"},

@@ -6,7 +6,7 @@ import { FooterItem } from "./FooterItem"
 import { useSettingsContext } from "../../hooks/useSettings";
 
 
-export const Footer = ( {  items = []}) => {
+export const Footer = ( {  items = [], buttonAction = (arg) => {} }) => {
     return (
         <LinearGradient
             start={{x: 0, y: 0}} end={{x: 1, y: 0}} 
@@ -19,6 +19,7 @@ export const Footer = ( {  items = []}) => {
             display: "flex",
             justifyContent: "space-around",
             alignContent: "center",
+            alignItems: "center",
             flexDirection: "row",
             flexWrap: "wrap",
             borderTopColor: "#4A5568",
@@ -26,7 +27,7 @@ export const Footer = ( {  items = []}) => {
         }}>
 
             { items.map(item => 
-                <FooterItem key={item.title} color={item.color}  btnName={item.title} btnText={item.text}  />  
+                <FooterItem buttonAction={buttonAction} key={item.title} color={item.color}  btnName={item.title} btnText={item.text}  />  
             )}
            
 

@@ -138,6 +138,26 @@ export const Settings = ({ navigation, route }) => {
         }, [])
     );
 
+    const buttonAction = (buttonName) => {
+
+        switch (buttonName) {
+            case "A":
+                handleSelection();
+                break;
+            case "B":
+                if (navigation.canGoBack()) {
+                    navigation.goBack()
+                } else {
+                    navigation.navigate('Home');
+                }
+                break;
+            default:
+                break;
+        }
+
+
+    }
+
     return (
         <>
             <SafeAreaView>
@@ -229,6 +249,7 @@ export const Settings = ({ navigation, route }) => {
 
           
                     <Footer 
+                        buttonAction={buttonAction}
                         items={[
                             {color: "white", title: "A", text: "SELECT"},
                             {color: "yellow", title: "B", text: "BACK"} 

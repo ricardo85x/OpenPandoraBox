@@ -38,7 +38,7 @@ export const PlatformSettings = ({ navigation, route }) => {
     type: "file"
   })
 
-  const [xIndex,setXIndex] = useState(0)
+  const [xIndex, setXIndex] = useState(0)
   const xIndexRef = useRef(0)
 
   useEffect(() => {
@@ -60,7 +60,7 @@ export const PlatformSettings = ({ navigation, route }) => {
       settingsRef.current.core_list = await pandaConfig.listCores()
       settingsRef.current.cores.push({
         key: settingsRef.current.cores.length,
-        dir : "save",
+        dir: "save",
         name: "Save Configuration", desc: "The configuration will be saved to file",
         type: "save",
         value: "save"
@@ -262,13 +262,13 @@ export const PlatformSettings = ({ navigation, route }) => {
         setSettings(settingsRef.current)
         break;
       case "RIGHT":
-        if(xIndexRef.current >= 0 && xIndexRef.current < 3){
+        if (xIndexRef.current >= 0 && xIndexRef.current < 3) {
           xIndexRef.current = xIndexRef.current + 1
           setXIndex(xIndexRef.current)
         }
         break;
       case "LEFT":
-        if(xIndexRef.current > 0 && xIndexRef.current <= 3){
+        if (xIndexRef.current > 0 && xIndexRef.current <= 3) {
           xIndexRef.current = xIndexRef.current - 1
           setXIndex(xIndexRef.current)
         }
@@ -293,26 +293,26 @@ export const PlatformSettings = ({ navigation, route }) => {
         const newPlatformSettings = settingsRef.current.cores
           .filter(f => f.type !== "save").reduce((acc, current) => {
             acc = {
-              ...acc, 
+              ...acc,
               [current.dir]: {
                 title: current.name,
                 backgroundImg: current.background,
                 core: {
-                    choices: [current.core],
-                    default: 0
+                  choices: [current.core],
+                  default: 0
                 },
                 enabled: current.enabled,
                 launcher: current.launcher,
               }
             }
             return acc
-        }, {})
+          }, {})
 
 
         const updated = await pandaConfig.updateConfig({ PLATFORMS: newPlatformSettings });
 
 
-        if(updated){
+        if (updated) {
           // forceUpdate()
           navigation.navigate('Settings')
 
@@ -328,50 +328,50 @@ export const PlatformSettings = ({ navigation, route }) => {
 
         const newValue = !selectedSettings.enabled
         pageSettingsRef.current = pageSettingsRef.current.map(p => {
-          if (p.key === selectedSettings.key){
+          if (p.key === selectedSettings.key) {
             return {
               ...p,
-              enabled:  newValue,
+              enabled: newValue,
             }
           }
           return p
-          
+
         })
-        
+
         settingsRef.current.cores[selectedSettings.key].enabled = newValue
         setPageSettings(pageSettingsRef.current)
         forceUpdate()
 
 
-      } else if (xIndexRef.current== 1) {
+      } else if (xIndexRef.current == 1) {
 
         const currentCoreIndex = settingsRef.current.core_list.indexOf(selectedSettings.core)
 
         let newValue = 0
 
-        if(currentCoreIndex !== -1) {
-          if(currentCoreIndex < settingsRef.current.core_list.length - 1){
+        if (currentCoreIndex !== -1) {
+          if (currentCoreIndex < settingsRef.current.core_list.length - 1) {
             newValue = currentCoreIndex + 1;
           }
         }
 
         pageSettingsRef.current = pageSettingsRef.current.map(p => {
-          if (p.key === selectedSettings.key){
+          if (p.key === selectedSettings.key) {
             return {
               ...p,
-              core:  settingsRef.current.core_list[newValue],
+              core: settingsRef.current.core_list[newValue],
             }
           }
           return p
-          
+
         })
-        
+
         settingsRef.current.cores[selectedSettings.key].core = settingsRef.current.core_list[newValue]
         setPageSettings(pageSettingsRef.current)
         forceUpdate()
 
       } else if (xIndexRef.current == 2) {
-  
+
 
         const launchers = ["retroarch", "Drastic", "MupenFz", "PPSSPP", "Reicast"]
 
@@ -379,23 +379,23 @@ export const PlatformSettings = ({ navigation, route }) => {
 
         let newValue = 0
 
-        if(currentLauncher !== -1) {
-          if(currentLauncher < launchers.length - 1){
+        if (currentLauncher !== -1) {
+          if (currentLauncher < launchers.length - 1) {
             newValue = currentLauncher + 1;
           }
         }
 
         pageSettingsRef.current = pageSettingsRef.current.map(p => {
-          if (p.key === selectedSettings.key){
+          if (p.key === selectedSettings.key) {
             return {
               ...p,
-              launcher:  launchers[newValue],
+              launcher: launchers[newValue],
             }
           }
           return p
-          
+
         })
-        
+
         settingsRef.current.cores[selectedSettings.key].launcher = launchers[newValue]
         setPageSettings(pageSettingsRef.current)
         forceUpdate()
@@ -405,28 +405,28 @@ export const PlatformSettings = ({ navigation, route }) => {
 
         let newValue = ""
 
-        if(selectedSettings.background === "") {
+        if (selectedSettings.background === "") {
 
           if (settingsRef.current.folderIsOpen == false) {
             settingsRef.current.selectedFileFolder = "/storage"
             settingsRef.current.folderIsOpen = true
-            setSettings(settingsRef.current)            
-            forceUpdate()  
+            setSettings(settingsRef.current)
+            forceUpdate()
           }
-          
+
         } else {
 
           pageSettingsRef.current = pageSettingsRef.current.map(p => {
-            if (p.key === selectedSettings.key){
+            if (p.key === selectedSettings.key) {
               return {
                 ...p,
-                background:  newValue,
+                background: newValue,
               }
             }
             return p
-            
+
           })
-          
+
           settingsRef.current.cores[selectedSettings.key].background = newValue
           setPageSettings(pageSettingsRef.current)
           forceUpdate()
@@ -441,18 +441,18 @@ export const PlatformSettings = ({ navigation, route }) => {
     const selectedSettingsIndex = pageSettingsRef.current.length ? pageSettingsRef.current.findIndex(g => g.selected) : undefined;
     const selectedSettings = selectedSettingsIndex !== -1 && selectedSettingsIndex !== undefined ? pageSettingsRef.current[selectedSettingsIndex] : undefined;
 
-    if(data && data.match(/.+[.](jpe?g|png)$/i)){
+    if (data && data.match(/.+[.](jpe?g|png)$/i)) {
       pageSettingsRef.current = pageSettingsRef.current.map(p => {
-        if (p.key === selectedSettings.key){
+        if (p.key === selectedSettings.key) {
           return {
             ...p,
-            background:  data,
+            background: data,
           }
         }
         return p
-        
+
       })
-      
+
       settingsRef.current.cores[selectedSettings.key].background = data
       setPageSettings(pageSettingsRef.current)
       forceUpdate()
@@ -465,6 +465,27 @@ export const PlatformSettings = ({ navigation, route }) => {
   const PER_PAGE = () => {
     const bodyH = (APP_HEIGHT - 50 - 50); // modal less header
     return Math.floor(bodyH / (ITEM_HEIGHT + 1));
+  }
+
+  const buttonAction = (buttonName) => {
+
+    if (settingsRef.current.folderIsOpen == false) {
+
+      switch (buttonName) {
+        case "A":
+          handleNavigation("A");
+          break;
+        case "B":
+          if (navigation.canGoBack()) {
+            navigation.goBack()
+          } else {
+            navigation.navigate('Settings');
+          }
+          break;
+        default:
+          break;
+      }
+    }
   }
 
   return (
@@ -509,46 +530,46 @@ export const PlatformSettings = ({ navigation, route }) => {
         >
           {/* Header */}
           <Header title="Platform Settings" />
-          
-          {/* Body */}
-          <LinearGradient 
 
-          start={{x: 0, y: 0}} end={{x: 1, y: 0}} 
-          colors={["#1A202C", "#2D3748", "#4A5568"]} 
-          
-          
-          style={{
-            height: APP_HEIGHT - 50 - 50, // app height less header and footer
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "flex-start",
-            padding: 10
-          }}
+          {/* Body */}
+          <LinearGradient
+
+            start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}
+            colors={["#1A202C", "#2D3748", "#4A5568"]}
+
+
+            style={{
+              height: APP_HEIGHT - 50 - 50, // app height less header and footer
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "flex-start",
+              padding: 10
+            }}
           >
 
             {pageSettings.map(item => {
 
-                if (item.key === settingsRef.current.cores[settingsRef.current.cores.length - 1].key) {
+              if (item.key === settingsRef.current.cores[settingsRef.current.cores.length - 1].key) {
 
-                  return (
-                    <View key={item.key} style={{
-                      height: 50,
-                      padding: 10,
-                      margin: 5,
-                      borderWidth: 1,
-                      width: 200,
-                      backgroundColor: item.selected ? "#9AE6B4" : "#CBD5E0",
-                      borderRadius: 10,
-                      alignItems: "center"
-                    }}>
+                return (
+                  <View key={item.key} style={{
+                    height: 50,
+                    padding: 10,
+                    margin: 5,
+                    borderWidth: 1,
+                    width: 200,
+                    backgroundColor: item.selected ? "#9AE6B4" : "#CBD5E0",
+                    borderRadius: 10,
+                    alignItems: "center"
+                  }}>
 
-                      <Text style={{
-                        fontSize: 20, fontWeight: "bold"
-                      }}>{item.name}</Text>
+                    <Text style={{
+                      fontSize: 20, fontWeight: "bold"
+                    }}>{item.name}</Text>
 
-                    </View>
-                  )
-                }
+                  </View>
+                )
+              }
 
               return (
                 <View key={item.dir} style={{
@@ -566,22 +587,22 @@ export const PlatformSettings = ({ navigation, route }) => {
 
                 }}>
 
+                  <View style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+
+                  }}>
+
                     <View style={{
-                      display: 'flex',
-                      flexDirection: 'column',
-                      
+                      display: 'flex', flexDirection: 'row', alignItems: 'center'
                     }}>
 
-                      <View style={{
-                        display: 'flex', flexDirection: 'row', alignItems: 'center'
-                      }}>
-                      
-                        <Text style={{
-                          fontSize: 20, fontWeight: "bold"
-                        }}>{item.name}</Text>
+                      <Text style={{
+                        fontSize: 20, fontWeight: "bold"
+                      }}>{item.name}</Text>
 
-                        <Text style={{ color: "#718096"}}> {item.dir}</Text>
-                      </View>
+                      <Text style={{ color: "#718096" }}> {item.dir}</Text>
+                    </View>
 
                     <View style={{
                       display: 'flex', flexDirection: 'row',
@@ -589,11 +610,11 @@ export const PlatformSettings = ({ navigation, route }) => {
 
                       <View style={{
 
-                        backgroundColor:  (item.selected && xIndexRef.current === 0) ? 
+                        backgroundColor: (item.selected && xIndexRef.current === 0) ?
                           item.enabled ? "#63B3ED" : "#C53030" :
-                          item.enabled ? "#E2E8F0" : "#FED7D7" ,
+                          item.enabled ? "#E2E8F0" : "#FED7D7",
 
-                        
+
                         height: 50,
                         justifyContent: "center",
                         padding: 10,
@@ -601,20 +622,20 @@ export const PlatformSettings = ({ navigation, route }) => {
                         marginRight: 10,
                         borderRadius: 10,
                         borderWidth: 1
-                        
+
                       }}>
-                          <Text style={{ 
-                            margin: "auto", 
-                            color:  (item.selected && xIndexRef.current === 0) ? 
+                        <Text style={{
+                          margin: "auto",
+                          color: (item.selected && xIndexRef.current === 0) ?
                             item.enabled ? "#171923" : "#FFF5F5" :
-                            "#171923" , 
-                            fontWeight: "bold"
-                          }}>{item.enabled ? "Enabled" : "Disabled"}</Text>
+                            "#171923",
+                          fontWeight: "bold"
+                        }}>{item.enabled ? "Enabled" : "Disabled"}</Text>
 
                       </View>
                       <View style={{
 
-                        backgroundColor: item.selected && xIndexRef.current === 1 ? "#63B3ED" : "#E2E8F0" ,
+                        backgroundColor: item.selected && xIndexRef.current === 1 ? "#63B3ED" : "#E2E8F0",
                         height: 50,
                         justifyContent: "center",
                         padding: 10,
@@ -622,97 +643,97 @@ export const PlatformSettings = ({ navigation, route }) => {
                         borderRadius: 10,
                         borderWidth: 1
 
-                        }}>
-                          <Text style={{ 
-                            fontWeight: "bold"
-                          }}>Core</Text>
-                          <Text style={{ 
-                            
-                          }}>{item.core}</Text>
+                      }}>
+                        <Text style={{
+                          fontWeight: "bold"
+                        }}>Core</Text>
+                        <Text style={{
 
-                        </View>
+                        }}>{item.core}</Text>
 
-                        <View style={{
+                      </View>
 
-
-                          backgroundColor: item.selected && xIndexRef.current === 2 ? "#63B3ED" : "#E2E8F0" ,
-                          height: 50,
-                          justifyContent: "center",
-                          padding: 10,
-                          marginTop: 5,
-                          borderRadius: 10,
-                          borderWidth: 1
+                      <View style={{
 
 
-                          }}>
-                            <Text style={{ 
-                              fontWeight: "bold"
-                            }}>Launcher</Text>
-                            <Text style={{ 
-                              
-                            }}>{item.launcher}</Text>
+                        backgroundColor: item.selected && xIndexRef.current === 2 ? "#63B3ED" : "#E2E8F0",
+                        height: 50,
+                        justifyContent: "center",
+                        padding: 10,
+                        marginTop: 5,
+                        borderRadius: 10,
+                        borderWidth: 1
 
-                          </View>
 
-                    </View>
+                      }}>
+                        <Text style={{
+                          fontWeight: "bold"
+                        }}>Launcher</Text>
+                        <Text style={{
+
+                        }}>{item.launcher}</Text>
+
+                      </View>
 
                     </View>
+
+                  </View>
+
+                  <View style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    marginTop: -5,
+
+                  }}>
 
                     <View style={{
-                      display: 'flex',
-                      flexDirection: 'column',
-                      marginTop: -5,
+                      width: 95,
+                      height: 75,
+                      backgroundColor: '#000',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      borderTopLeftRadius: 10,
+                      borderTopRightRadius: 10
 
                     }}>
 
-                      <View style={{
-                        width: 95,
-                        height: 75,
-                        backgroundColor: '#000',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        borderTopLeftRadius: 10,
-                        borderTopRightRadius: 10
-
-                      }}>
-
-                        { item?.background ? (
-                          <Image
-                          source={{ uri: `file://${item.background }` }}
+                      {item?.background ? (
+                        <Image
+                          source={{ uri: `file://${item.background}` }}
                           style={{
-                              alignSelf: "center",
-                              width: 90,
-                              height: 70
+                            alignSelf: "center",
+                            width: 90,
+                            height: 70
                           }}
                           resizeMode={'center'}
-                      />
-                        ) : (
-                          <Text style={{ 
-                            textAlign: 'center', 
-                            color: 'white'
-                          }}>Background image</Text>
+                        />
+                      ) : (
+                        <Text style={{
+                          textAlign: 'center',
+                          color: 'white'
+                        }}>Background image</Text>
 
-                        )}
-
-
-                      </View>
-                      <View style={{
-                        display: 'flex', 
-                        flexDirection: 'row', 
-                        justifyContent:"center",
-                        backgroundColor: item.selected && xIndexRef.current === 3 ? "#63B3ED" : "#E2E8F0" ,
-                        borderWidth: 1
-                      }}>
-                        { item?.background ? 
-                          ( <Text>Clear</Text>) : 
-                          (<Text>Add</Text>) 
-
-                        }
-                           
-                      </View>
+                      )}
 
 
-                    </View>  
+                    </View>
+                    <View style={{
+                      display: 'flex',
+                      flexDirection: 'row',
+                      justifyContent: "center",
+                      backgroundColor: item.selected && xIndexRef.current === 3 ? "#63B3ED" : "#E2E8F0",
+                      borderWidth: 1
+                    }}>
+                      {item?.background ?
+                        (<Text>Clear</Text>) :
+                        (<Text>Add</Text>)
+
+                      }
+
+                    </View>
+
+
+                  </View>
                 </View>
               )
 
@@ -744,12 +765,13 @@ export const PlatformSettings = ({ navigation, route }) => {
 
           {/* Footer */}
           <Footer
+            buttonAction={buttonAction}
             items={[
-              {color: "white", title: "A", text: "EDIT"},
-              {color: "yellow", title: "B", text: "BACK"},
+              { color: "white", title: "A", text: "EDIT" },
+              { color: "yellow", title: "B", text: "BACK" },
             ]}
           />
-         
+
         </View>
 
       </SafeAreaView>
