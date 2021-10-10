@@ -11,15 +11,23 @@ export const PandaConfig = () => {
         const updatedConfig = { ...currentConfig, ...newConfig}
 
         let updated = false;
-        Object.keys(currentConfig).forEach(key => {
-            if (updatedConfig[key] !== currentConfig[key]) {
+
+        
+        Object.keys(updatedConfig).forEach(key => {
+
+            if (Object.keys(currentConfig).includes(key) == false){
                 updated = true
+            } else {
+                if ( updatedConfig[key] !== currentConfig[key]) {
+                    updated = true
+                }
             }
+
         })
 
-        console.log("Le updated", updatedConfig)
-
         if(updated) {
+
+            console.log("SAVING")
             const updatedConfigText = JSON.stringify(updatedConfig, null, 2);
 
             await Promise.all(RNFS.writeFile(configFilePath, updatedConfigText, 'utf8')
@@ -33,6 +41,8 @@ export const PandaConfig = () => {
     
             return true;
         } else {
+            console.log("NOT SAVING")
+
             return false
         }
  
@@ -255,6 +265,7 @@ export const PandaConfig = () => {
 
         }
 
+        cores.sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()))
 
 
         return cores;

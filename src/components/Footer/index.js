@@ -6,6 +6,7 @@ import { FooterItem } from "./FooterItem"
 import { useSettingsContext } from "../../hooks/useSettings";
 
 
+
 export const Footer = ( {  items = [], buttonAction = (arg) => {} }) => {
 
     const {themeColor } = useSettingsContext();

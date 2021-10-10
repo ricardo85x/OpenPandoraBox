@@ -1,12 +1,12 @@
 import React, {useMemo} from 'react';
 
-import { TouchableOpacity, Text, StyleSheet, Dimensions, Image } from "react-native"
+import { TouchableOpacity, Text, StyleSheet, View, Image } from "react-native"
 
 import { useSettingsContext } from "../../hooks/useSettings"
 
 export const Item = ({ item, navigation, currentIndex, keyMaps }) => {
 
-  const { appSettings, APP_WIDTH, APP_HEIGHT } = useSettingsContext()
+  const { appSettings, APP_WIDTH, APP_HEIGHT, chakraColors, themeColor } = useSettingsContext()
 
   const SLIDER_WIDTH = APP_WIDTH + 80;
   const ITEM_HEIGHT = APP_HEIGHT;
@@ -66,6 +66,10 @@ export const Item = ({ item, navigation, currentIndex, keyMaps }) => {
         width: ITEM_WIDTH,
         height: ITEM_HEIGHT - (ITEM_HEIGHT * 0.2),
 
+        alignContent: "center",
+        alignItems: "center",
+        justifyContent: "center",
+
       }}
     >
 
@@ -84,10 +88,25 @@ export const Item = ({ item, navigation, currentIndex, keyMaps }) => {
         />
 
       ) : (
-        <>
-          <Text style={styles.header}>{title}</Text>
-          <Text style={styles.body}>{text}</Text>
-        </>
+        <View style={{ 
+          width: ITEM_WIDTH, 
+          backgroundColor: themeColor[5],
+          alignItems: "center",
+          alignContent: "center",
+          justifyContent: "center",
+          
+        }}>
+          <View style={{marginVertical: 15}}>
+          <Text style={{
+               color: "#ffff",
+               fontSize: 28,
+               fontWeight: "bold",
+            }}>{title}</Text>
+          </View>
+            
+            {/* <Text style={styles.body}>{text}</Text> */}
+      
+        </View>
       )}
 
     </TouchableOpacity>

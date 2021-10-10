@@ -15,7 +15,7 @@ import { Header } from "./Header"
 export const Settings = ({ navigation, route }) => {
 
 
-    const { APP_WIDTH, APP_HEIGHT, keyMap, themeColor } = useSettingsContext()
+    const { APP_WIDTH, APP_HEIGHT, keyMap, themeColor, chakraColors } = useSettingsContext()
 
 
 
@@ -198,16 +198,16 @@ export const Settings = ({ navigation, route }) => {
                                 style={{
                                     width: 170,
                                     height: 140,
-                                    backgroundColor: settings.active === item.index ? themeColor[0]  : themeColor[1] ,
+                                    backgroundColor: settings.active === item.index ? chakraColors.gray[0]  : chakraColors.gray[1] ,
                                     margin: 5,
-                                    borderColor: settings.active === item.index ? themeColor[5] : "black",
+                                    borderColor: settings.active === item.index ? themeColor[7] : "black",
                                     borderWidth: settings.active === item.index ? 4 : 2,
                                     // borderRadius: 10
                                 }}
                             >
                                 <LinearGradient 
                                 
-                                    colors={[themeColor[3], themeColor[4], themeColor[5]]}
+                                    colors={[chakraColors.gray[3], chakraColors.gray[4], chakraColors.gray[5]]}
                                 
                                     style={{
                                     display: "flex",

@@ -20,7 +20,7 @@ export const GameList = ( { games = [], EXTRA_SPACE } ) => {
                     <GameItem key={game.path} EXTRA_SPACE={EXTRA_SPACE} APP_WIDTH={APP_WIDTH} APP_HEIGHT={ APP_HEIGHT} game={game} />
                 ))
 
-                : <Text>Loading...</Text>
+                : <Text style={{ color: 'white'}}>Loading...</Text>
             
             }
        

@@ -11,7 +11,8 @@ const SettingsContext = createContext({
     APP_HEIGHT: Dimensions.get('window').height,
     APP_WIDTH: Dimensions.get('window').width,
     updateSettings: () => 1,
-    themeColor: chakraColors.orange
+    themeColor: chakraColors.orange,
+    chakraColors: chakraColors
 })
 
 export function SettingsContextProvider({ children }) {
@@ -31,8 +32,9 @@ export function SettingsContextProvider({ children }) {
         setAppSettings(_dirConfig)
 
         if(_dirConfig?.THEME?.themeColor){
-            if (Object.keys(chakraColors).includes(_dirConfig.THEME.themeColor)){
-                setThemeColor(chakraColors[_dirConfig.THEME.themeColor])
+            const _themeColor = _dirConfig?.THEME?.themeColor ?? "orange"
+            if (Object.keys(chakraColors).includes(_themeColor)){
+                setThemeColor(chakraColors[_themeColor])
             }
         }
 
@@ -50,7 +52,8 @@ export function SettingsContextProvider({ children }) {
         APP_HEIGHT,
         APP_WIDTH,
         updateSettings,
-        themeColor
+        themeColor,
+        chakraColors
     }
 
     return (

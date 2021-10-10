@@ -16,7 +16,7 @@ import LinearGradient from 'react-native-linear-gradient';
 
 export const ThemeSettings = ({ navigation, route }) => {
 
-  const { APP_WIDTH, APP_HEIGHT, keyMap, updateSettings } = useSettingsContext()
+  const { APP_WIDTH, APP_HEIGHT, keyMap, updateSettings, themeColor, chakraColors } = useSettingsContext()
 
   const fileBrowserRef = useRef();
 
@@ -46,49 +46,49 @@ export const ThemeSettings = ({ navigation, route }) => {
         index: 2, key: "colorButton_A",
         name: "Button A Color", desc: "select the button color",
         type: "color",
-        options: ["white", "red", "blue", "pink", "green", "yellow"],
+        options: Object.keys(chakraColors),
         value: "white"
       },
       {
         index: 3, key: "colorButton_B",
         name: "Button B Color", desc: "select the button color",
         type: "color",
-        options: ["white", "red", "blue", "pink", "green", "yellow"],
+        options: Object.keys(chakraColors),
         value: "white"
       },
       {
         index: 4, key: "colorButton_C",
         name: "Button C Color", desc: "select the button color",
         type: "color",
-        options: ["white", "red", "blue", "pink", "green", "yellow"],
+        options: Object.keys(chakraColors),
         value: "white"
       },
       {
         index: 5, key: "colorButton_D",
         name: "Button D Color", desc: "select the button color",
         type: "color",
-        options: ["white", "red", "blue", "pink", "green", "yellow"],
+        options: Object.keys(chakraColors),
         value: "white"
       },
       {
         index: 6, key: "colorButton_E",
         name: "Button E Color", desc: "select the button color",
         type: "color",
-        options: ["white", "red", "blue", "pink", "green", "yellow"],
+        options: Object.keys(chakraColors),
         value: "white"
       },
       {
         index: 7, key: "colorButton_F",
         name: "Button F Color", desc: "select the button color",
         type: "color",
-        options: ["white", "red", "blue", "pink", "green", "yellow"],
+        options: Object.keys(chakraColors),
         value: "white"
       },
       {
         index: 8, key: "themeColor",
         name: "Theme Color", desc: "select the button color",
         type: "color",
-        options: ["orange", "gray", "red", "yellow", "green", "teal", "blue","cyan", "purple","pink"],
+        options: Object.keys(chakraColors),
         value: "orange"
       },
       {
@@ -119,7 +119,7 @@ export const ThemeSettings = ({ navigation, route }) => {
         ...settingsRef.current,
         data: settingsRef.current.data.map(item => {
           const key = settingKeys.find(k => k == item.key)
-          if (key && Object.keys(_dirConfig?.THEME).includes(key)) {
+          if (key && _dirConfig?.THEME && Object.keys(_dirConfig.THEME).includes(key)) {
             return { ...item, value: _dirConfig.THEME[key] }
           }
           return item
@@ -516,7 +516,7 @@ export const ThemeSettings = ({ navigation, route }) => {
                     margin: 5,
                     borderWidth: 1,
                     width: 200,
-                    backgroundColor: item.selected ? "#9AE6B4" : "#CBD5E0",
+                    backgroundColor: item.selected ? chakraColors.green[4] : chakraColors.gray[3],
                     borderRadius: 10,
                     alignItems: "center"
                   }}>
@@ -537,7 +537,8 @@ export const ThemeSettings = ({ navigation, route }) => {
                   margin: 5,
                   borderWidth: 1,
                   width: "100%",
-                  backgroundColor: item.selected ? "#FEEBC8" : "#CBD5E0",
+                  backgroundColor: item.selected ? themeColor[1] : chakraColors.gray[3],
+
                   borderRadius: 10
                 }}>
                   <Text style={{
@@ -549,7 +550,7 @@ export const ThemeSettings = ({ navigation, route }) => {
 
                       width: 75,
                       height: 55,
-                      backgroundColor: '#38B2AC',
+                      backgroundColor: '#000',
                       alignItems: 'center',
                       justifyContent: 'center',
 

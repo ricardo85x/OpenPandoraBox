@@ -16,7 +16,7 @@ import LinearGradient from 'react-native-linear-gradient';
 
 export const GeneralSettings = ({ navigation, route }) => {
 
-  const { APP_WIDTH, APP_HEIGHT, keyMap, themeColor } = useSettingsContext()
+  const { APP_WIDTH, APP_HEIGHT, keyMap, themeColor, chakraColors } = useSettingsContext()
 
   const fileBrowserRef = useRef();
 
@@ -46,9 +46,9 @@ export const GeneralSettings = ({ navigation, route }) => {
       },
       // {
       //   index: 2, key: "CORE_DIR",
-      //   name: "Core Directory", desc: "Directory where retroarch core is stored",
+      //   name: "Core Directory", desc: "Directory where retroarch cores is stored",
       //   type: "dir",
-      //   value: "/storage/external_storage/sdcard1/retroarch/cores"
+      //   value: "/data/data/com.retroarch.ra32/cores"
       // },
       {
         index: 2, key: "BASE_ROOM_DIR",
@@ -322,11 +322,17 @@ export const GeneralSettings = ({ navigation, route }) => {
         const updatedSettings = settingsRef.current.data
           .filter(s => s.type !== "save")
           .reduce((a, v) => {
-            a = { ...a, [v.key]: v.value }
+            if(v.key === "RETROARCH_APK_ID"){
+              a = { ...a, [v.key]: v.value, CORE_DIR: `/data/data/${v.value}/cores` }
+
+            } else {
+              a = { ...a, [v.key]: v.value }
+            }
             return a
           }, {}
-          )
+        )
 
+        console.log(updatedSettings)
         const updated = await pandaConfig.updateConfig(updatedSettings);
 
         if (updated) {
@@ -461,7 +467,7 @@ export const GeneralSettings = ({ navigation, route }) => {
                     margin: 5,
                     borderWidth: 1,
                     width: 200,
-                    backgroundColor: item.selected ? "#9AE6B4" : "#CBD5E0",
+                    backgroundColor: item.selected ? chakraColors.green[4] : chakraColors.gray[3],
                     borderRadius: 10,
                     alignItems: "center"
                   }}>
@@ -481,8 +487,10 @@ export const GeneralSettings = ({ navigation, route }) => {
                   margin: 5,
                   borderWidth: 1,
                   width: "100%",
-                  backgroundColor: item.selected ? themeColor[1] : themeColor[3],
+                  backgroundColor: item.selected ? themeColor[1] : chakraColors.gray[3],
                   borderRadius: 10
+
+
                 }}>
                   <Text style={{
                     fontSize: 20, fontWeight: "bold"
@@ -491,7 +499,7 @@ export const GeneralSettings = ({ navigation, route }) => {
                   <Text style={{
                     padding: 10,
                     marginVertical: "auto",
-                    backgroundColor: item.selected ? themeColor[0] : themeColor[2],
+                    backgroundColor: item.selected ? chakraColors.gray[0] : chakraColors.gray[2],
                     borderWidth: 1
                   }}>{item.value}</Text>
                 </View>

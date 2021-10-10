@@ -16,7 +16,7 @@ import LinearGradient from 'react-native-linear-gradient';
 
 export const PlatformSettings = ({ navigation, route }) => {
 
-  const { APP_WIDTH, APP_HEIGHT, keyMap } = useSettingsContext()
+  const { APP_WIDTH, APP_HEIGHT, keyMap, chakraColors, themeColor } = useSettingsContext()
 
   const fileBrowserRef = useRef();
 
@@ -488,6 +488,7 @@ export const PlatformSettings = ({ navigation, route }) => {
     }
   }
 
+
   return (
     <>
       <SafeAreaView>
@@ -547,6 +548,16 @@ export const PlatformSettings = ({ navigation, route }) => {
             }}
           >
 
+            {settingsRef.current.cores.length === 1 && (
+              <View>
+                <Text style={{ color: 'white', fontSize: 30}}>
+                  Rom Directory is empty or not configured on <Text style={{ fontWeight: "bold"}}>General Settings</Text>
+                </Text>
+                <Text style={{fontSize: 16, color: 'white'}}><Text style={{ fontWeight: "bold"}}>Note</Text>: The Rom Directory should contain platform folders (snes, megadrive, fba) with a gamelist.xml inside</Text>
+                <Text style={{fontSize: 16, color: 'white'}}>You can generate the gamelist.xml with skraper tool</Text>
+              </View>
+            )}
+
             {pageSettings.map(item => {
 
               if (item.key === settingsRef.current.cores[settingsRef.current.cores.length - 1].key) {
@@ -558,7 +569,7 @@ export const PlatformSettings = ({ navigation, route }) => {
                     margin: 5,
                     borderWidth: 1,
                     width: 200,
-                    backgroundColor: item.selected ? "#9AE6B4" : "#CBD5E0",
+                    backgroundColor: item.selected ? chakraColors.green[4] : chakraColors.gray[3],
                     borderRadius: 10,
                     alignItems: "center"
                   }}>
@@ -578,7 +589,7 @@ export const PlatformSettings = ({ navigation, route }) => {
                   margin: 5,
                   borderWidth: 1,
                   width: "100%",
-                  backgroundColor: item.selected ? "#FEEBC8" : "#CBD5E0",
+                  backgroundColor: item.selected ? themeColor[1] : chakraColors.gray[2],
                   borderRadius: 10,
 
                   display: "flex",
@@ -601,7 +612,7 @@ export const PlatformSettings = ({ navigation, route }) => {
                         fontSize: 20, fontWeight: "bold"
                       }}>{item.name}</Text>
 
-                      <Text style={{ color: "#718096" }}> {item.dir}</Text>
+                      <Text style={{ color: chakraColors.gray[5] }}> {item.dir}</Text>
                     </View>
 
                     <View style={{
@@ -611,8 +622,8 @@ export const PlatformSettings = ({ navigation, route }) => {
                       <View style={{
 
                         backgroundColor: (item.selected && xIndexRef.current === 0) ?
-                          item.enabled ? "#63B3ED" : "#C53030" :
-                          item.enabled ? "#E2E8F0" : "#FED7D7",
+                          item.enabled ? themeColor[3] : chakraColors.red[5] :
+                          item.enabled ? chakraColors.gray[2] : chakraColors.red[1],
 
 
                         height: 50,
@@ -627,15 +638,15 @@ export const PlatformSettings = ({ navigation, route }) => {
                         <Text style={{
                           margin: "auto",
                           color: (item.selected && xIndexRef.current === 0) ?
-                            item.enabled ? "#171923" : "#FFF5F5" :
-                            "#171923",
+                            item.enabled ? chakraColors.gray[9] : chakraColors.red[0] :
+                            chakraColors.gray[9],
                           fontWeight: "bold"
                         }}>{item.enabled ? "Enabled" : "Disabled"}</Text>
 
                       </View>
                       <View style={{
 
-                        backgroundColor: item.selected && xIndexRef.current === 1 ? "#63B3ED" : "#E2E8F0",
+                        backgroundColor: item.selected && xIndexRef.current === 1 ? themeColor[3] : chakraColors.gray[2],
                         height: 50,
                         justifyContent: "center",
                         padding: 10,
@@ -656,7 +667,7 @@ export const PlatformSettings = ({ navigation, route }) => {
                       <View style={{
 
 
-                        backgroundColor: item.selected && xIndexRef.current === 2 ? "#63B3ED" : "#E2E8F0",
+                        backgroundColor: item.selected && xIndexRef.current === 2 ? themeColor[3] : chakraColors.gray[2],
                         height: 50,
                         justifyContent: "center",
                         padding: 10,
@@ -721,7 +732,7 @@ export const PlatformSettings = ({ navigation, route }) => {
                       display: 'flex',
                       flexDirection: 'row',
                       justifyContent: "center",
-                      backgroundColor: item.selected && xIndexRef.current === 3 ? "#63B3ED" : "#E2E8F0",
+                      backgroundColor: item.selected && xIndexRef.current === 3 ? themeColor[3] : chakraColors.gray[2],
                       borderWidth: 1
                     }}>
                       {item?.background ?
@@ -749,7 +760,7 @@ export const PlatformSettings = ({ navigation, route }) => {
                 margin: 5,
                 borderWidth: 1,
                 width: "100%",
-                backgroundColor: "#E2E8F0",
+                backgroundColor: chakraColors.gray[2],
                 borderRadius: 10
               }}>
                 <Text style={{
