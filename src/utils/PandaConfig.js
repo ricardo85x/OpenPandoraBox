@@ -109,7 +109,8 @@ export const PandaConfig = () => {
                 colorButton_C: "red",
                 colorButton_D: "pink",
                 colorButton_E: "green",
-                colorButton_F: "blue",                
+                colorButton_F: "blue", 
+                themeColor: "orange"               
             },
             PLATFORMS: {}
         }, null, 2)

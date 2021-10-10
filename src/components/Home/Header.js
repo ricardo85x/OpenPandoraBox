@@ -1,11 +1,18 @@
 import React from 'react';
 import LinearGradient from 'react-native-linear-gradient';
 import { View, Text, Image } from 'react-native';
+import { useSettingsContext } from "../../hooks/useSettings";
+
 
 export const Header = ({ height, title }) => {
 
+    const { themeColor } = useSettingsContext()
+
+
     return (
-        <LinearGradient colors={['#F6AD55', '#ED8936', '#DD6B20']}  
+        <LinearGradient 
+        
+            colors={[themeColor[3], themeColor[4], themeColor[5]]}
         
             style={{
             display: 'flex',

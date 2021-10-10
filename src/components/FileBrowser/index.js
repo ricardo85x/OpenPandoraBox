@@ -85,6 +85,8 @@ export const FileBrowser = forwardRef((
             return
         }
 
+        console.log("VAIIIII")
+
         if (selectedItem.type === "dir") {
             if (selectedItem.value === "..") {
                 const folders = selectedFileFolder.split("/").filter(f => !!f) // empty not allowed
@@ -99,6 +101,8 @@ export const FileBrowser = forwardRef((
                 setSelectedFileFolder(selected_value)
             }
         } else if(selectedItem.type === "file" && type === "file"){
+
+            console.log("AHHH")
             const current_file = `${selected.dir}/${selected.value}`
             console.log("Selected file: ",current_file)
 
@@ -112,6 +116,8 @@ export const FileBrowser = forwardRef((
             setFolderIsOpen(false)
 
 
+        } else {
+            console.log("NADA", `${selectedItem.type}, ${type}`)
         }
     }
 

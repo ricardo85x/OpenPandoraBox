@@ -7,10 +7,12 @@ import { useSettingsContext } from "../../hooks/useSettings";
 
 export const Header = ( { title, gameName = ""}) => {
 
-    const { APP_WIDTH  } = useSettingsContext()
+    const { APP_WIDTH, themeColor  } = useSettingsContext()
 
     return (
-        <LinearGradient colors={['#F6AD55', '#ED8936', '#DD6B20']} 
+        <LinearGradient 
+        
+            colors={[themeColor[3], themeColor[4], themeColor[5]]}
         
             style={{
             height: 50,

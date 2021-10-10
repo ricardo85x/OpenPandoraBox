@@ -1,7 +1,7 @@
 import React from 'react'
 import { useEffect, createContext, useContext, useState } from "react"
 import { Dimensions } from "react-native"
-
+import chakraColors from "../utils/colors"
 
 import { PandaConfig } from "../utils/PandaConfig"
 
@@ -10,13 +10,15 @@ const SettingsContext = createContext({
     keyMap: {},
     APP_HEIGHT: Dimensions.get('window').height,
     APP_WIDTH: Dimensions.get('window').width,
-    updateSettings: () => 1
+    updateSettings: () => 1,
+    themeColor: chakraColors.orange
 })
 
 export function SettingsContextProvider({ children }) {
 
     const [appSettings, setAppSettings] = useState({})
     const [keyMap, setKeyMap] = useState({})
+    const [themeColor, setThemeColor] = useState(chakraColors.orange)
 
     const [APP_HEIGHT, setAPP_HEIGHT] = useState(Dimensions.get('window').height)
     const [APP_WIDTH, setAPP_WIDTH] = useState(Dimensions.get('window').width)
@@ -25,7 +27,16 @@ export function SettingsContextProvider({ children }) {
 
     const updateSettings = async () => {
         setKeyMap(await pandaConfig.keyMapConfig())
-        setAppSettings(await pandaConfig.dirConfig())
+        const _dirConfig = await pandaConfig.dirConfig()
+        setAppSettings(_dirConfig)
+
+        if(_dirConfig?.THEME?.themeColor){
+            if (Object.keys(chakraColors).includes(_dirConfig.THEME.themeColor)){
+                setThemeColor(chakraColors[_dirConfig.THEME.themeColor])
+            }
+        }
+
+
     }
 
     useEffect(() => {
@@ -38,7 +49,8 @@ export function SettingsContextProvider({ children }) {
         keyMap,
         APP_HEIGHT,
         APP_WIDTH,
-        updateSettings
+        updateSettings,
+        themeColor
     }
 
     return (

@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef, useReducer } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
-import { SafeAreaView, View, Text } from 'react-native';
+import { SafeAreaView, View, Text, Image } from 'react-native';
 import KeyEvent from 'react-native-keyevent';
 
 import { useSettingsContext } from "../../../hooks/useSettings"
@@ -14,9 +14,9 @@ import { PandaConfig } from "../../../utils/PandaConfig"
 import LinearGradient from 'react-native-linear-gradient';
 
 
-export const GeneralSettings = ({ navigation, route }) => {
+export const ThemeSettings = ({ navigation, route }) => {
 
-  const { APP_WIDTH, APP_HEIGHT, keyMap, themeColor } = useSettingsContext()
+  const { APP_WIDTH, APP_HEIGHT, keyMap, updateSettings } = useSettingsContext()
 
   const fileBrowserRef = useRef();
 
@@ -27,38 +27,72 @@ export const GeneralSettings = ({ navigation, route }) => {
   const defaultSettings = {
     folderIsOpen: false,
     selectedFileFolder: "",
-    type: "",
+    type: "file",
     active: 0,
     data: [
       {
-        index: 0, key: "RETROARCH_CONFIG",
-        name: "Retroarch config dir", desc: "Folder where retroarch.cfg is saved",
-        type: "dir",
-        value: "/data/data/com.openpanda/files",
-        fileName: "retroarch.cfg",
+        index: 0, key: "settingsBackgroundImg",
+        name: "Settings Background", desc: "This image will show on home screen",
+        type: "file",
+        value: "",
       },
       {
-        index: 1, key: "RETROARCH_APK_ID",
-        name: "Retroarch 32 or 64", desc: "whether the retroarch is 64 or 32 bits",
-        type: "choice",
-        options: ["com.retroarch.ra32", "com.retroarch"],
-        value: "com.retroarch.ra32"
+        index: 1, key: "historyBackgroundImg",
+        name: "History Background", desc: "This image will show on home screen",
+        type: "file",
+        value: "",
       },
-      // {
-      //   index: 2, key: "CORE_DIR",
-      //   name: "Core Directory", desc: "Directory where retroarch core is stored",
-      //   type: "dir",
-      //   value: "/storage/external_storage/sdcard1/retroarch/cores"
-      // },
       {
-        index: 2, key: "BASE_ROOM_DIR",
-        name: "Roms Directory", desc: "Directory where platform with roms is stored",
-        type: "dir",
-        value: "/storage/external_storage/sdcard1/roms"
+        index: 2, key: "colorButton_A",
+        name: "Button A Color", desc: "select the button color",
+        type: "color",
+        options: ["white", "red", "blue", "pink", "green", "yellow"],
+        value: "white"
       },
-
       {
-        index: 3, key: "SAVE_CONFIG",
+        index: 3, key: "colorButton_B",
+        name: "Button B Color", desc: "select the button color",
+        type: "color",
+        options: ["white", "red", "blue", "pink", "green", "yellow"],
+        value: "white"
+      },
+      {
+        index: 4, key: "colorButton_C",
+        name: "Button C Color", desc: "select the button color",
+        type: "color",
+        options: ["white", "red", "blue", "pink", "green", "yellow"],
+        value: "white"
+      },
+      {
+        index: 5, key: "colorButton_D",
+        name: "Button D Color", desc: "select the button color",
+        type: "color",
+        options: ["white", "red", "blue", "pink", "green", "yellow"],
+        value: "white"
+      },
+      {
+        index: 6, key: "colorButton_E",
+        name: "Button E Color", desc: "select the button color",
+        type: "color",
+        options: ["white", "red", "blue", "pink", "green", "yellow"],
+        value: "white"
+      },
+      {
+        index: 7, key: "colorButton_F",
+        name: "Button F Color", desc: "select the button color",
+        type: "color",
+        options: ["white", "red", "blue", "pink", "green", "yellow"],
+        value: "white"
+      },
+      {
+        index: 8, key: "themeColor",
+        name: "Theme Color", desc: "select the button color",
+        type: "color",
+        options: ["orange", "gray", "red", "yellow", "green", "teal", "blue","cyan", "purple","pink"],
+        value: "orange"
+      },
+      {
+        index: 9, key: "SAVE_CONFIG",
         name: "Save Configuration", desc: "The configuration will be saved to file",
         type: "save",
         value: "save"
@@ -85,8 +119,8 @@ export const GeneralSettings = ({ navigation, route }) => {
         ...settingsRef.current,
         data: settingsRef.current.data.map(item => {
           const key = settingKeys.find(k => k == item.key)
-          if (key && Object.keys(_dirConfig).includes(key)) {
-            return { ...item, value: _dirConfig[key] }
+          if (key && Object.keys(_dirConfig?.THEME).includes(key)) {
+            return { ...item, value: _dirConfig.THEME[key] }
           }
           return item
         })
@@ -184,35 +218,26 @@ export const GeneralSettings = ({ navigation, route }) => {
 
     switch (direction) {
       case "UP":
-
         if (selected.index !== 0) {
-
           if (selected.index !== first_item.index) {
-
             const currentIndex = pageSettingsRef.current.findIndex(g => g.selected)
-
             _pageSettingsRef = pageSettingsRef.current?.map(p => {
               return {
                 ...p,
                 selected: pageSettingsRef.current[currentIndex - 1].index === p.index
               }
             })
-
             pageSettingsRef.current = _pageSettingsRef
             setPageSettings(pageSettingsRef.current)
-
           } else {
-
             _pageSettingsRef = settingsRef.current.data.slice(first_item.index - 1, first_item.index - 1 + PER_PAGE()).map((page) => {
               return {
                 ...page,
                 selected: page.index === first_item.index - 1
               }
             })
-
             pageSettingsRef.current = _pageSettingsRef
             setPageSettings(pageSettingsRef.current)
-
           }
         } else {
           // console.log("No more items UP")
@@ -223,7 +248,6 @@ export const GeneralSettings = ({ navigation, route }) => {
 
         if (selected.index !== last_item.index) {
           const currentIndex = pageSettingsRef.current.findIndex(g => g.selected)
-
           _pageSettingsRef = pageSettingsRef.current.map(game => {
             return {
               ...game,
@@ -261,7 +285,6 @@ export const GeneralSettings = ({ navigation, route }) => {
       case "B":
         settingsRef.current.folderIsOpen = !settingsRef.current.folderIsOpen
         setSettings(settingsRef.current)
-
         break;
       default:
         break
@@ -269,18 +292,18 @@ export const GeneralSettings = ({ navigation, route }) => {
 
   }
 
+
   const handleSelection = async () => {
 
     const selectedSettingsIndex = pageSettingsRef.current.length ? pageSettingsRef.current.findIndex(g => g.selected) : undefined;
     const selectedSettings = selectedSettingsIndex !== -1 && selectedSettingsIndex !== undefined ? pageSettingsRef.current[selectedSettingsIndex] : undefined;
 
     if (selectedSettings) {
-      if (selectedSettings.type == "choice") {
+      if (selectedSettings.type == "color") {
         const choiceIndex = selectedSettings.options.findIndex(o => o === selectedSettings.value);
 
         let newValue;
         if (choiceIndex !== -1) {
-
           if (choiceIndex >= (selectedSettings.options.length - 1)) {
             newValue = selectedSettings.options[0]
           } else {
@@ -293,44 +316,62 @@ export const GeneralSettings = ({ navigation, route }) => {
           setPageSettings(pageSettingsRef.current)
           forceUpdate()
         }
-      } else if (selectedSettings.type == "dir") {
+      } else if (selectedSettings.type == "file") {
 
-        if (settingsRef.current.folderIsOpen == false) {
+        if (selectedSettings.value === "") {
 
-          if (selectedSettings?.fileName && selectedSettings.value) {
-
-            const new_path = selectedSettings.value.substr(0, selectedSettings.value.length - selectedSettings.fileName.length - 1)
-            settingsRef.current.selectedFileFolder = new_path
-
-          } else {
-            settingsRef.current.selectedFileFolder = selectedSettings.value
-
+          if (settingsRef.current.folderIsOpen == false) {
+            settingsRef.current.selectedFileFolder = "/storage"
+            settingsRef.current.folderIsOpen = true
+            setSettings(settingsRef.current)
+            forceUpdate()
           }
 
-          settingsRef.current.type = "dir"
-          settingsRef.current.folderIsOpen = true
+        } else {
 
-          setSettings(settingsRef.current)
-          setTimeout(() => {
-            forceUpdate()
-          }, 100);
+          pageSettingsRef.current = pageSettingsRef.current.map(p => {
+            if (p.key === selectedSettings.key) {
+              return {
+                ...p,
+                value: "",
+              }
+            }
+            return p
+          })
+
+          // settingsRef.current.data[selectedSettings.key].value = ""
+
+          settingsRef.current.data = settingsRef.current.data.map(item => {
+            return {
+              ...item,
+              value: item.key === selectedSettings.key ? "" : item.value
+            }
+          })
+
+          setPageSettings(pageSettingsRef.current)
+          forceUpdate()
 
         }
 
       } else if (selectedSettings.type == "save") {
 
-        const updatedSettings = settingsRef.current.data
-          .filter(s => s.type !== "save")
-          .reduce((a, v) => {
-            a = { ...a, [v.key]: v.value }
-            return a
-          }, {}
-          )
+        const updatedSettings = {
+          THEME: settingsRef.current.data
+            .filter(s => s.type !== "save")
+            .reduce((a, v) => {
+              a = { ...a, [v.key]: v.value }
+              return a
+            }, {}
+            )
+        }
+
 
         const updated = await pandaConfig.updateConfig(updatedSettings);
 
         if (updated) {
           console.log("Settings SAVED!")
+
+          updateSettings()
           navigation.navigate('Settings')
 
         } else {
@@ -345,18 +386,32 @@ export const GeneralSettings = ({ navigation, route }) => {
     const selectedSettingsIndex = pageSettingsRef.current.length ? pageSettingsRef.current.findIndex(g => g.selected) : undefined;
     const selectedSettings = selectedSettingsIndex !== -1 && selectedSettingsIndex !== undefined ? pageSettingsRef.current[selectedSettingsIndex] : undefined;
 
-    let updated_path = data
+    if (data && data.match(/.+[.](jpe?g|png)$/i)) {
+      pageSettingsRef.current = pageSettingsRef.current.map(p => {
+        if (p.key === selectedSettings.key) {
+          return {
+            ...p,
+            value: data,
+          }
+        }
+        return p
 
-    if (selectedSettings?.fileName) {
-      console.log("FileName", selectedSettings?.fileName)
-      console.log("data", data)
-      updated_path = `${data}/${selectedSettings.fileName}`;
+      })
+
+
+
+      settingsRef.current.data = settingsRef.current.data.map(item => {
+        return {
+          ...item,
+          value: item.key === selectedSettings.key ? data : item.value
+        }
+      })
+
+
+      // settingsRef.current.data[selectedSettings.key].value = data
+      setPageSettings(pageSettingsRef.current)
+      forceUpdate()
     }
-
-    pageSettingsRef.current[selectedSettingsIndex].value = updated_path
-    settingsRef.current.data[selectedSettings.index].value = updated_path
-    setPageSettings(pageSettingsRef.current)
-    forceUpdate()
   }
 
   const ITEM_HEIGHT = 105;
@@ -438,7 +493,7 @@ export const GeneralSettings = ({ navigation, route }) => {
         >
 
           {/* Header */}
-          <Header title="General Settings" />
+          <Header title="Theme Settings" />
 
           {/* Body */}
           <View style={{
@@ -474,6 +529,7 @@ export const GeneralSettings = ({ navigation, route }) => {
                 )
               }
 
+
               return (
                 <View key={item.key} style={{
                   height: ITEM_HEIGHT,
@@ -481,19 +537,59 @@ export const GeneralSettings = ({ navigation, route }) => {
                   margin: 5,
                   borderWidth: 1,
                   width: "100%",
-                  backgroundColor: item.selected ? themeColor[1] : themeColor[3],
+                  backgroundColor: item.selected ? "#FEEBC8" : "#CBD5E0",
                   borderRadius: 10
                 }}>
                   <Text style={{
                     fontSize: 20, fontWeight: "bold"
                   }}>{item.name}</Text>
-                  <Text>{item.desc}</Text>
-                  <Text style={{
-                    padding: 10,
-                    marginVertical: "auto",
-                    backgroundColor: item.selected ? themeColor[0] : themeColor[2],
-                    borderWidth: 1
-                  }}>{item.value}</Text>
+
+                  {item.type === "file" ? (
+                    <View style={{
+
+                      width: 75,
+                      height: 55,
+                      backgroundColor: '#38B2AC',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+
+                    }}>
+
+                      {item?.value ? (
+                        <Image
+                          source={{ uri: `file://${item.value}` }}
+                          style={{
+                            alignSelf: "center",
+                            width: 75,
+                            height: 55
+                          }}
+                          resizeMode={'center'}
+                        />
+                      ) : (
+                        <Text style={{
+                          textAlign: 'center',
+                          fontSize: 15,
+                          color: 'white'
+                        }}>Image</Text>
+
+                      )}
+
+
+                    </View>
+                  ) : (
+                  
+                      <View style={{
+
+                        width: 55,
+                        height: 55,
+                        borderRadius: 27.5,
+                        backgroundColor: item.value,
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        borderWidth: 1
+
+                      }}></View>
+                  )}
                 </View>
               )
 

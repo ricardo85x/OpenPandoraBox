@@ -15,7 +15,7 @@ import { Header } from "./Header"
 export const Settings = ({ navigation, route }) => {
 
 
-    const { APP_WIDTH, APP_HEIGHT, keyMap } = useSettingsContext()
+    const { APP_WIDTH, APP_HEIGHT, keyMap, themeColor } = useSettingsContext()
 
 
 
@@ -24,6 +24,7 @@ export const Settings = ({ navigation, route }) => {
         items: [
             { key: "general", name: "General", desc: "Directory/Folder settings", index: 0 },
             { key: "platform", name: "Platforms", desc: "Add/Edit/Remove platforms ", index: 1 },
+            { key: "theme", name: "Theme", desc: "Theme settings", index: 2 },
         ]
     }
 
@@ -62,6 +63,8 @@ export const Settings = ({ navigation, route }) => {
                 navigation.push('PlatformSettings')
             } else if (selectedItem.key === "general") {
                 navigation.push('GeneralSettings')
+            } else if (selectedItem.key === "theme") {
+                navigation.push('ThemeSettings')
             }
         }
     }
@@ -193,16 +196,18 @@ export const Settings = ({ navigation, route }) => {
                         {settings.items.map(item => (
                             <View key={item.index}
                                 style={{
-                                    width: 200,
+                                    width: 170,
                                     height: 140,
-                                    backgroundColor: settings.active === item.index ? "#FFFAF0" : "#FEEBC8",
-                                    margin: 10,
-                                    borderColor: settings.active === item.index ? "#DD6B20" : "black",
+                                    backgroundColor: settings.active === item.index ? themeColor[0]  : themeColor[1] ,
+                                    margin: 5,
+                                    borderColor: settings.active === item.index ? themeColor[5] : "black",
                                     borderWidth: settings.active === item.index ? 4 : 2,
                                     // borderRadius: 10
                                 }}
                             >
-                                <LinearGradient colors={['#F6AD55', '#ED8936', '#DD6B20']}  
+                                <LinearGradient 
+                                
+                                    colors={[themeColor[3], themeColor[4], themeColor[5]]}
                                 
                                     style={{
                                     display: "flex",

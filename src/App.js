@@ -10,6 +10,7 @@ import { Settings } from "./components/Settings"
 import { History } from "./components/History"
 import { PlatformSettings } from "./components/Settings/Platform"
 import { GeneralSettings } from "./components/Settings/General"
+import { ThemeSettings } from "./components/Settings/Theme"
 
 import { DbContextProvider } from "./hooks/useDb"
 import { SettingsContextProvider } from "./hooks/useSettings"
@@ -37,6 +38,7 @@ const App = () => {
             <Stack.Screen name="History" component={History} />
             <Stack.Screen name="PlatformSettings" component={PlatformSettings} />
             <Stack.Screen name="GeneralSettings" component={GeneralSettings} />
+            <Stack.Screen name="ThemeSettings" component={ThemeSettings} />
           </Stack.Navigator>
         </NavigationContainer>
       </SettingsContextProvider>

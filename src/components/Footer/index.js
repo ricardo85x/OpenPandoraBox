@@ -7,11 +7,14 @@ import { useSettingsContext } from "../../hooks/useSettings";
 
 
 export const Footer = ( {  items = [], buttonAction = (arg) => {} }) => {
+
+    const {themeColor } = useSettingsContext();
+
     return (
         <LinearGradient
             start={{x: 0, y: 0}} end={{x: 1, y: 0}} 
 
-            colors={['#F6AD55', '#ED8936', '#DD6B20']}
+            colors={[themeColor[3], themeColor[4], themeColor[5]]}
         
             style={{
             width: "100%",
