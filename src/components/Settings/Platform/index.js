@@ -28,6 +28,8 @@ export const PlatformSettings = ({ navigation, route }) => {
 
   const [settings, setSettings] = useState(defaultSettings)
   const [cores, setCores] = useState([])
+
+  const lastDirectory = useRef("/storage")
   const pageSettingsRef = useRef([])
   const [pageSettings, setPageSettings] = useState([])
   const settingsRef = useRef({
@@ -408,7 +410,7 @@ export const PlatformSettings = ({ navigation, route }) => {
         if (selectedSettings.background === "") {
 
           if (settingsRef.current.folderIsOpen == false) {
-            settingsRef.current.selectedFileFolder = "/storage"
+            settingsRef.current.selectedFileFolder = lastDirectory.current
             settingsRef.current.folderIsOpen = true
             setSettings(settingsRef.current)
             forceUpdate()
@@ -455,6 +457,13 @@ export const PlatformSettings = ({ navigation, route }) => {
 
       settingsRef.current.cores[selectedSettings.key].background = data
       setPageSettings(pageSettingsRef.current)
+
+      const matchDir = String(data).match(/(.*)\/([^\/]+)$/)
+
+      if(matchDir && matchDir.length > 1){
+        lastDirectory.current = matchDir[1]
+      }
+
       forceUpdate()
     }
 

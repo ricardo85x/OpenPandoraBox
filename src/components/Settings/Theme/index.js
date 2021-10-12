@@ -19,6 +19,8 @@ export const ThemeSettings = ({ navigation, route }) => {
   const { APP_WIDTH, APP_HEIGHT, keyMap, updateSettings, themeColor, chakraColors } = useSettingsContext()
 
   const fileBrowserRef = useRef();
+  const lastDirectory = useRef("/storage")
+
 
   const [, forceUpdate] = useReducer(x => x + 1, 0);
 
@@ -321,7 +323,7 @@ export const ThemeSettings = ({ navigation, route }) => {
         if (selectedSettings.value === "") {
 
           if (settingsRef.current.folderIsOpen == false) {
-            settingsRef.current.selectedFileFolder = "/storage"
+            settingsRef.current.selectedFileFolder = lastDirectory.current
             settingsRef.current.folderIsOpen = true
             setSettings(settingsRef.current)
             forceUpdate()
@@ -406,6 +408,14 @@ export const ThemeSettings = ({ navigation, route }) => {
           value: item.key === selectedSettings.key ? data : item.value
         }
       })
+
+
+
+      const matchDir = String(data).match(/(.*)\/([^\/]+)$/)
+
+      if(matchDir && matchDir.length > 1){
+        lastDirectory.current = matchDir[1]
+      }
 
 
       // settingsRef.current.data[selectedSettings.key].value = data
