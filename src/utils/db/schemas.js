@@ -88,6 +88,11 @@ export const Tables = {
             type: SupportedTypes.TEXT,
             primary_key: false,
             default_value: null,
+        },
+        normalizedName: {
+            type: SupportedTypes.TEXT,
+            primary_key: false,
+            default_value: null,
         }
     },
 

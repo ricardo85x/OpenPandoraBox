@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef, useMemo } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
-import { SafeAreaView, View } from 'react-native';
+import { SafeAreaView } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 
 import KeyEvent from 'react-native-keyevent';
@@ -12,12 +12,16 @@ import { GameList } from "./GameList"
 import { Main } from "./Main"
 
 import { useDbContext } from "../../hooks/useDb"
+import { useKeyboardContext } from "../../hooks/keyboardHook"
 
-export const History = ({ navigation, route }) => {
+export const Search = ({ navigation, route }) => {
 
     const { db } = useDbContext();
+    const { searchText, setKeyboardActive, keyboardActiveRef } = useKeyboardContext()
 
-    const { APP_WIDTH, APP_HEIGHT, keyMap } = useSettingsContext()
+    const keyboardRef = useRef();
+
+    const { APP_WIDTH, APP_HEIGHT, keyMap, chakraColors } = useSettingsContext()
 
     const ITEM_SIZE = 50;
     const getPerItem = () => {
@@ -29,6 +33,7 @@ export const History = ({ navigation, route }) => {
     const EXTRA_SPACE = APP_HEIGHT - ((PER_PAGE) * ITEM_SIZE)
 
     const [page, setPage] = useState([])
+
     const pageRef = useRef([]);
     const gamesRef = useRef([]);
 
@@ -39,15 +44,20 @@ export const History = ({ navigation, route }) => {
         return gamesRef.current.slice(start, start+end)
     }
 
-    const readGameList = async (reload = false) => {
+    useEffect(() => {
+        readGameList()
+    }, [searchText])
+
+    const readGameList = async () => {
 
         const pandaConfig = PandaConfig();
 
         const baseConfig = await pandaConfig.dirConfig()
 
-        gamesRef.current = (await db.getHistory()).map((game, id) => {
+        gamesRef.current = (await db.searchRom(searchText)).map((game, id) => {
 
             const platform_name = game.platform.split('/')[game.platform.split('/').length - 1]
+            const platformTitle = baseConfig?.PLATFORMS[platform_name]?.title ?? platform_name;
 
             return {
                 path: game?.path,
@@ -60,7 +70,7 @@ export const History = ({ navigation, route }) => {
                 gameId: game?.id,
                 loadVideo: false,
                 platform: game?.platform,
-                platformTitle: baseConfig?.PLATFORMS[platform_name]?.title
+                platformTitle: platformTitle
             }
         }).map(g => {
             return {
@@ -69,6 +79,7 @@ export const History = ({ navigation, route }) => {
                     g.path.split('/')[g.path.split('/').length - 1] : ""
             }
         })
+
 
         pageRef.current = gamesRef.current.slice(0, PER_PAGE).map((game, i) => {
             return {
@@ -94,49 +105,62 @@ export const History = ({ navigation, route }) => {
 
     const ListenKeyBoard = (keyEvent) => {
 
-        if (keyMap.upKeyCode?.includes(keyEvent.keyCode)) {
-            handleSelection("UP")
-        }
+        if (keyboardActiveRef?.current) {
 
-        if (keyMap.downKeyCode?.includes(keyEvent.keyCode)) {
-            handleSelection("DOWN")
-        }
+            keyboardRef.current?.listenInput(keyEvent.keyCode)
+      
+        } else {
 
-        if (keyMap.P1_A?.includes(keyEvent.keyCode)
-            || keyMap.P2_A?.includes(keyEvent.keyCode)
-        ) {
-            handleRunGame()
-        }
-
-        if (keyMap.P1_C?.includes(keyEvent.keyCode)
-            || keyMap.P2_C?.includes(keyEvent.keyCode)
-        ) {
-            // console.log("KEY C")
-            handleSelection("BUTTON_C")
-        }
-
-        if (keyMap.P1_F?.includes(keyEvent.keyCode)
-            || keyMap.P2_F?.includes(keyEvent.keyCode)
-        ) {
-            // console.log("KEY F")
-            handleSelection("BUTTON_F")
-        }
-
-        if ([...keyMap.P1_D, ...keyMap.P2_D].includes(keyEvent.keyCode)) {
-            // console.log("RELOAD")
-            handleRemoveFromHistory()
-        }
-
-        if (keyMap.P1_B?.includes(keyEvent.keyCode)) {
-
-            if (navigation.canGoBack()) {
-                navigation.goBack()
-                // console.log("BACK")
-            } else {
-                navigation.navigate('Home');
-                // console.log("To the home")
+            if (keyMap.upKeyCode?.includes(keyEvent.keyCode)) {
+                handleSelection("UP")
             }
+    
+            if (keyMap.downKeyCode?.includes(keyEvent.keyCode)) {
+                handleSelection("DOWN")
+            }
+
+            if (keyMap.rightKeyCode?.includes(keyEvent.keyCode)) {
+                console.log("Pressed Right")
+                keyboardActiveRef.current = true
+                setKeyboardActive(keyboardActiveRef.current)
+            }
+    
+            if (keyMap.P1_A?.includes(keyEvent.keyCode)
+                || keyMap.P2_A?.includes(keyEvent.keyCode)
+            ) {
+                handleRunGame()
+            }
+    
+            if (keyMap.P1_C?.includes(keyEvent.keyCode)
+                || keyMap.P2_C?.includes(keyEvent.keyCode)
+            ) {
+                // console.log("KEY C")
+                handleSelection("BUTTON_C")
+            }
+    
+            if (keyMap.P1_F?.includes(keyEvent.keyCode)
+                || keyMap.P2_F?.includes(keyEvent.keyCode)
+            ) {
+                // console.log("KEY F")
+                handleSelection("BUTTON_F")
+    
+            }
+    
+    
+            if (keyMap.P1_B?.includes(keyEvent.keyCode)) {
+    
+                if (navigation.canGoBack()) {
+                    navigation.goBack()
+                    // console.log("BACK")
+                } else {
+                    navigation.navigate('Home');
+                    // console.log("To the home")
+                }
+            }
+
         }
+
+        
     }
 
     useFocusEffect(
@@ -150,26 +174,10 @@ export const History = ({ navigation, route }) => {
         }, [])
     );
 
-
-    const handleRemoveFromHistory = async () => {
-        const selectedGameNow = pageRef.current.find(g => g.selected);
-
-        if (selectedGameNow) {
-
-            await db.removeFromHistory({ id: selectedGameNow.gameId, platform: selectedGameNow.platform })
-
-            readGameList()
-
-        }
-
-    }
-
-
     const handleRunGame = () => {
         const selectedGameNow = pageRef.current.find(g => g.selected);
         if (selectedGameNow) {
             const pandaConfig = PandaConfig();
-
             pandaConfig.runGame({ rom: selectedGameNow.path, platform: selectedGameNow.platform.split("/")[selectedGameNow.platform.split("/").length - 1] })
             onBackgroundRef.current = true
             setOnBackground(onBackgroundRef.current)
@@ -248,7 +256,9 @@ export const History = ({ navigation, route }) => {
 
                 } else {
                     // check if has more items
+                   
                     if (last_item.id < (gamesRef.current.length - 1)) {
+
                         pageRef.current = (await readGameDB(first_item.id + 1, PER_PAGE)).map((game) => {
                             return {
                                 ...game,
@@ -256,7 +266,8 @@ export const History = ({ navigation, route }) => {
                             }
                         })
 
-                        setPage(pageRef.current)
+                       setPage(pageRef.current)
+
                     } else {
 
                         pageRef.current = (await readGameDB(0, PER_PAGE)).map((game) => {
@@ -329,9 +340,6 @@ export const History = ({ navigation, route }) => {
             case "C":
                 handleSelection("BUTTON_C");
                 break;
-            case "D":
-                handleRemoveFromHistory();
-                break;
             case "F":
                 handleSelection("BUTTON_F");
                 break;
@@ -342,6 +350,9 @@ export const History = ({ navigation, route }) => {
 
     }
 
+    const colorsBg = [chakraColors.gray[8], chakraColors.gray[7], chakraColors.gray[6]]
+
+
     return (
         <>
             <SafeAreaView>
@@ -349,7 +360,7 @@ export const History = ({ navigation, route }) => {
 
                     start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}
 
-                    colors={["#1A202C", "#2D3748", "#4A5568"]}
+                    colors={colorsBg}
                     style={{
                         display: 'flex',
                         flexDirection: "row",
@@ -357,8 +368,8 @@ export const History = ({ navigation, route }) => {
                         height: APP_HEIGHT
                     }}
                 >
-                    <GameList EXTRA_SPACE={EXTRA_SPACE} games={pageRef.current} />
-                    <Main buttonAction={buttonAction} title={selectedGame?.platform} onBackground={onBackground} selectedGame={selectedGame} />
+                    <GameList keyboardActiveRef={keyboardActiveRef}   EXTRA_SPACE={EXTRA_SPACE} games={pageRef.current} />
+                    <Main  keyboardActiveRef={keyboardActiveRef} keyboardRef={keyboardRef} buttonAction={buttonAction} title={selectedGame?.platform} onBackground={onBackground} selectedGame={selectedGame} />
                 </LinearGradient>
 
             </SafeAreaView>

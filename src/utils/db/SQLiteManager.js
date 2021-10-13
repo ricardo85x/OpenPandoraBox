@@ -277,6 +277,41 @@ class SQLiteManager {
         }
     }
 
+    async searchRom(text) {
+        let resultData = []
+
+        const text_parts = text.trim().split(" ").map(t => `%${t.toLocaleUpperCase()}%`)
+
+        if((!! text.trim() && text.trim().length > 2) == false){
+            return []
+        }
+
+        const questions = text_parts.reduce(acc => {
+            if(acc.length == 0){
+                acc = 'normalizedName like ? '
+            } else {
+                acc = acc + 'and normalizedName like ? '
+            }
+            return acc
+        },'')
+
+
+        const results = await this.db.executeSql(`select * from Rom where ${questions} order by normalizedName COLLATE NOCASE ASC LIMIT 100`, text_parts)
+        
+
+        if(results.length){
+            for (let i = 0; i < results.length; i++){
+                const current_result = results[i]
+
+                for(let j = 0; j < current_result.rows.length ; j++) {
+                    const current_row = results[i].rows.item(j)
+                    resultData.push(current_row)
+                }
+            }
+        }
+        return resultData
+    }
+
     async getHistory() {
 
         let resultData = []
@@ -310,7 +345,7 @@ class SQLiteManager {
             this.db
                 .transaction((tx) => {
                     for (let i = 0; i < roms.length; i++) {
-                        tx.executeSql('INSERT OR REPLACE INTO Rom VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)', [
+                        tx.executeSql('INSERT OR REPLACE INTO Rom VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', [
                             roms[i].platform,
                             roms[i].id,
                             roms[i].name,
@@ -320,6 +355,7 @@ class SQLiteManager {
                             roms[i].video,
                             roms[i].desc,
                             roms[i].romName,
+                            roms[i].romName?.normalize("NFD")?.replace(/\p{Diacritic}/gu, "")
                         ]).then(([tx, results]) => {
                             resolve("done");
                         });

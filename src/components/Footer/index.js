@@ -31,7 +31,7 @@ export const Footer = ( {  items = [], buttonAction = (arg) => {} }) => {
         }}>
 
             { items.map(item => 
-                <FooterItem buttonAction={buttonAction} key={item.title} color={item.color}  btnName={item.title} btnText={item.text}  />  
+                <FooterItem buttonAction={buttonAction} key={item.title}  btnName={item.title} btnText={item.text}  />  
             )}
            
 

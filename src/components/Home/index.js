@@ -159,6 +159,10 @@ export const HomeScreen = ({ navigation, route }) => {
 
                     navigation.navigate('History', { keyMaps: keyMap })
 
+                } else if (currentItem.type === "search") {
+
+                    navigation.navigate('Search', { keyMaps: keyMap })
+
                 } else if (currentItem.type === "platform") {
                     navigation.navigate('Platform', { keyMaps: keyMap, platform: currentItem })
                 }

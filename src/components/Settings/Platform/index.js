@@ -13,7 +13,6 @@ import { Footer } from "../../Footer"
 import { PandaConfig } from "../../../utils/PandaConfig"
 import LinearGradient from 'react-native-linear-gradient';
 
-
 export const PlatformSettings = ({ navigation, route }) => {
 
   const { APP_WIDTH, APP_HEIGHT, keyMap, chakraColors, themeColor } = useSettingsContext()

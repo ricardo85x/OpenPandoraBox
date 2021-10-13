@@ -8,12 +8,14 @@ import { HomeScreen } from "./components/Home"
 import { Platform } from "./components/Platform"
 import { Settings } from "./components/Settings"
 import { History } from "./components/History"
+import { Search } from "./components/Search"
 import { PlatformSettings } from "./components/Settings/Platform"
 import { GeneralSettings } from "./components/Settings/General"
 import { ThemeSettings } from "./components/Settings/Theme"
 
 import { DbContextProvider } from "./hooks/useDb"
 import { SettingsContextProvider } from "./hooks/useSettings"
+import { KeyboardContextProvider } from "./hooks/keyboardHook"
 
 
 const App = () => {
@@ -22,6 +24,8 @@ const App = () => {
 
   return (
     <DbContextProvider>
+      <KeyboardContextProvider>
+
       <SettingsContextProvider>
         <NavigationContainer>
           <Stack.Navigator screenOptions={{
@@ -36,12 +40,14 @@ const App = () => {
             <Stack.Screen name="Platform" component={Platform} />
             <Stack.Screen name="Settings" component={Settings} />
             <Stack.Screen name="History" component={History} />
+            <Stack.Screen name="Search" component={Search} />
             <Stack.Screen name="PlatformSettings" component={PlatformSettings} />
             <Stack.Screen name="GeneralSettings" component={GeneralSettings} />
             <Stack.Screen name="ThemeSettings" component={ThemeSettings} />
           </Stack.Navigator>
         </NavigationContainer>
       </SettingsContextProvider>
+      </KeyboardContextProvider>
     </DbContextProvider>
 
   )

@@ -1,5 +1,6 @@
 import RNFS from "react-native-fs"
 import { RunLocalCommand } from "../modules/RunLocalCommand";
+import ListSystem from "./list_system"
 
 export const PandaConfig = () => {
 
@@ -281,7 +282,6 @@ export const PandaConfig = () => {
         if (_dirConfig?.BASE_ROOM_DIR) {
             const base_dir = _dirConfig.BASE_ROOM_DIR;
 
-
             const file_exists = await RNFS.exists(base_dir);
             if (file_exists) {
 
@@ -298,7 +298,9 @@ export const PandaConfig = () => {
 
                             const enabled = _dirConfig?.PLATFORMS[file.name]?.enabled
 
-                            const title = _dirConfig?.PLATFORMS[file.name]?.title
+
+
+                            const title = _dirConfig?.PLATFORMS[file.name]?.title ?? Object.keys(ListSystem).includes(file.name) ? ListSystem[file.name] : ""
                             const bg = _dirConfig?.PLATFORMS[file.name]?.backgroundImg
                             const core = _dirConfig?.PLATFORMS[file.name]?.core;
 
@@ -399,6 +401,11 @@ export const PandaConfig = () => {
                 type: "history",
                 title: "HISTORY",
                 text: "Past played games"
+            },
+            {
+                type: "search",
+                title: "SEARCH",
+                text: "Search a game in all platforms"
             },
             ...defaultConfig
         ]
