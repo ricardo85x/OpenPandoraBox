@@ -16,6 +16,7 @@ export const Main = ({ keyboardActiveRef, keyboardRef, selectedGame, onBackgroun
     [
         { title: "A", text: "SELECT" },
         { title: "B", text: "DEL" },
+        { title: "C", text: "SPACE" },
 
     ] :
     [

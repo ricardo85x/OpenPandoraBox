@@ -133,6 +133,57 @@ export const PandaConfig = () => {
         return path.substring(path.lastIndexOf('/') + 1)
     }
 
+    const runOpenBor = async (rom, old = false) => {
+
+        const pak_dir = "/storage/emulated/legacy/OpenBOR/Paks"
+        const pak_bk_dir = "/storage/emulated/legacy/OpenBOR/Paks_BK"
+        const generic_name = "current_game.pak"
+
+
+
+    
+
+        if(await RNFS.exists(pak_dir) && await RNFS.exists(rom)) {
+
+            if((await RNFS.exists(pak_bk_dir)) == false) {
+                await RNFS.mkdir(pak_bk_dir)
+            }
+
+            const listOfFiles = await RNFS.readDir(pak_dir);
+
+            if (listOfFiles.length) {
+
+                for (let i = 0; i < listOfFiles.length; i++) {
+                    const file = listOfFiles[i];
+
+                    if (file.isFile) {
+
+                        const dest_path =  `${pak_bk_dir}/${file.name}`;
+                        
+                        if ((await RNFS.exists(dest_path)) == false){
+                            if(file.name == generic_name){
+                                await RNFS.unlink(file.path)
+                            } else {
+                                await RNFS.moveFile(file.path, `${pak_bk_dir}/${file.name}`)
+                            }
+                        } else {
+                            await RNFS.unlink(dest_path)
+                        }
+                    }
+                }
+            }    
+            
+
+            await RNFS.copyFile(rom, `${pak_dir}/${generic_name}` )
+            if (old){
+                RunLocalCommand().openOpenBorOld();
+            } else {
+                RunLocalCommand().openOpenBor();
+
+            }
+        }
+    }
+
     const runGame = async ({ rom, platform }) => {
 
         const _baseConfig = await dirConfig()
@@ -163,6 +214,17 @@ export const PandaConfig = () => {
             RunLocalCommand().openReicast(rom);
             return
         }
+
+        if (launcher == "openBor"){
+            runOpenBor(rom);
+            return
+        }
+        if (launcher == "openBor old"){
+            runOpenBor(rom, true);
+            return
+        }
+
+
 
         if (platformCore && platformCore.choices.length > platformCore.default) {
             core = platformCore.choices[

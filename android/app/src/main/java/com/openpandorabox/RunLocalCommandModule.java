@@ -83,6 +83,52 @@ public class RunLocalCommandModule extends ReactContextBaseJavaModule {
     }
   }
 
+
+  @ReactMethod
+  public void openOpenBor(){
+    Intent requestedIntent = new Intent("android.intent.action.VIEW");
+
+    if (requestedIntent != null) {
+
+      ComponentName componentName = new ComponentName("org.openbor.engine", "org.openbor.engine.GameActivity");
+
+      requestedIntent.setComponent(componentName);
+      requestedIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+      
+      _context.startActivity(requestedIntent);
+
+    } else {
+      Log.d(
+        "ERROR",
+        "Error no intent org.mupen64plusae.v3.fzurita found"
+      );
+    }
+  }
+
+
+  @ReactMethod
+  public void openOpenBorOld(){
+    Intent requestedIntent = new Intent("android.intent.action.VIEW");
+
+    if (requestedIntent != null) {
+
+      ComponentName componentName = new ComponentName("org.openbor.engine", "org.libsdl.app.SDLActivity");
+
+      requestedIntent.setComponent(componentName);
+      requestedIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+      
+      _context.startActivity(requestedIntent);
+
+    } else {
+      Log.d(
+        "ERROR",
+        "Error no intent org.mupen64plusae.v3.fzurita found"
+      );
+    }
+  }
+
+
+
   @ReactMethod
   public void openMupenPlusFZ(String rom){
     Intent requestedIntent = new Intent("android.intent.action.VIEW");

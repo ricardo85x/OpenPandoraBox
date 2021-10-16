@@ -4,7 +4,9 @@ import RNFS from "react-native-fs"
 
 export const ParseGameList = () => {
 
-    const getJsonData = async (gamelistPath = "/storage/sdcard1/panda/roms/nes/gamelist.xml") => {
+    const getJsonData = async (gamelistPath = "") => {
+
+        console.log("getJsonData", gamelistPath)
 
         try {
             if (await RNFS.exists(gamelistPath)){
@@ -12,6 +14,8 @@ export const ParseGameList = () => {
 
                 if( parser.validate(xmlData) === true) { //optional (it'll return an object in case it's not valid)
                     var jsonObj = parser.parse(xmlData,{});
+                    console.log("Finish getJsonData")
+
                     return jsonObj;
                 } else {
                     console.log("INVALID XML DATA",xmlData)
@@ -19,10 +23,11 @@ export const ParseGameList = () => {
 
             } 
         } catch (e) {
-            console.log("Error", e)
+            console.log("Error PARSE", e)
         }
 
-        return { error: "Error processing"}
+        return []
+        // return { error: "Error processing"}
     }
 
     return {

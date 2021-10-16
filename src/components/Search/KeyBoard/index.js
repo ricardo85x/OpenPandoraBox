@@ -185,6 +185,8 @@ export const KeyBoard = forwardRef((
             }
         } else if (pressedKey === "B") {
             setSearchText(searchText.slice(0, -1))
+        } else if (pressedKey === "C"){
+            setSearchText(searchText.concat(" "))
         }
 
     }
@@ -197,6 +199,8 @@ export const KeyBoard = forwardRef((
                 handlePressKey("A")
             } else if ([...keyMap.P1_B, ...keyMap.P2_B].some(key => key === keyCode)) {
                 handlePressKey("B")
+            } else if ([...keyMap.P1_C, ...keyMap.P2_C].some(key => key === keyCode)) {
+                handlePressKey("C")
             } else if (keyMap.upKeyCode.some(key => key === keyCode)) {
                 handleKeyNavigation("UP")
             } else if (keyMap.downKeyCode.some(key => key === keyCode)) {

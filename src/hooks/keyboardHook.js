@@ -2,7 +2,6 @@ import React from 'react'
 import { createContext, useContext, useState, useRef } from "react"
 
 const KeyboardContext = createContext({
-
     searchText: "",
     setSearchText: (text) => { console.log("setSearchText NOT initialized ", text)},
     keyboardActive: false,

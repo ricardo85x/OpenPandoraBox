@@ -58,6 +58,7 @@ module.exports = {
     "lynx": "Atari Lynx",
     "gamegear": "Game Gear",
     "supervision": "Watara Supervision",
+    "openbor": "OpenBor",
     "gbc": "Game Boy Color",
     "gbc2players": "Game Boy Color 2 Players",
     "ngp": "Neo Geo Pocket",

@@ -17,6 +17,8 @@ import { useDbContext } from "../../hooks/useDb"
 
 export const Platform = ({ navigation, route }) => {
 
+
+
     const { db } = useDbContext();
 
     const { decodeText } = Utils()
@@ -51,14 +53,114 @@ export const Platform = ({ navigation, route }) => {
 
     const readGameList = async (reload = false) => {
 
+        let lastGame;
 
-        if (!reload) {
+        try {
 
-            const _pages = await readGameDB(0, PER_PAGE);
+            if (!reload) {
 
-            if (!!_pages && !!_pages.length) {
+                const _pages = await readGameDB(0, PER_PAGE);
 
-                pageRef.current = _pages.map((game, i) => {
+                if (!!_pages && !!_pages.length) {
+
+                    pageRef.current = _pages.map((game, i) => {
+                        return {
+                            ...game,
+                            selected: i === 0
+                        }
+                    })
+
+                    setPage(pageRef.current)
+
+                    const _size = await db.sizeRomPlatform(path)
+
+                    if (!!_size && Number(_size) !== NaN) {
+
+                        const _storageGames = [...new Array(parseInt(_size))].map((g, i) => {
+                            return {
+                                id: i
+                            }
+                        })
+
+                        if (!!_storageGames && !!_storageGames.length) {
+                            gamesRef.current = _storageGames;
+                            KeyEvent.onKeyDownListener((keyEvent) => ListenKeyBoard(keyEvent));
+                            return;
+                        } else {
+
+                        }
+                    } else {
+
+                    }
+
+                }
+
+            }
+
+            const parseGameList = ParseGameList();
+            const jsonGame = await parseGameList.getJsonData(`${path}/gamelist.xml`)
+            const { gameList } = jsonGame;
+
+            let gamesRef_current = []
+
+            if (gameList) {
+
+
+                let cur_id = 0
+
+                gamesRef_current = gameList.game
+                    .sort((a, b) => a.name > b.name)
+                    .filter(game => !!game?.path?.substr)
+                    .reduce((acc, game) => {
+
+                        lastGame = game
+
+                        try {
+
+                            const data_ = {
+                                path: decodeText(`${path}${game?.path?.substr(1)}`),
+                                thumbnail: decodeText(`file:///${path}${game?.thumbnail?.substr(1)}`),
+                                image: decodeText(`file:///${path}${game?.image?.substr(1)}`),
+                                desc: decodeText(game?.desc),
+                                video: decodeText(`file:///${path}${game?.video?.substr(1)}`),
+                                name: decodeText(game?.name),
+                                id: cur_id,
+                                loadVideo: false
+                            }
+
+                            acc.push(data_);
+                            cur_id++
+
+
+
+                        } catch (e) {
+                            console.log("ERROR ADDING ROM", e, game)
+                        }
+
+                        return acc
+
+
+                    }, []).map(g => {
+                        return {
+                            ...g,
+                            romName: !!g.path.split('/').length ?
+                                g.path.split('/')[g.path.split('/').length - 1] : ""
+                        }
+                    })
+
+
+
+                await db.cleanPlatform(path);
+
+                await db.addRoms(gamesRef_current.map(g => {
+                    return {
+                        ...g,
+                        platform: path
+                    }
+                }))
+                
+
+                pageRef.current = gamesRef_current.slice(0, PER_PAGE).map((game, i) => {
                     return {
                         ...game,
                         selected: i === 0
@@ -67,90 +169,51 @@ export const Platform = ({ navigation, route }) => {
 
                 setPage(pageRef.current)
 
-                const _size = await db.sizeRomPlatform(path)
-
-                if (!!_size && Number(_size) !== NaN) {
-
-                    const _storageGames = [...new Array(parseInt(_size))].map((g, i) => {
-                        return {
-                            id: i
-                        }
-                    })
-
-                    if (!!_storageGames && !!_storageGames.length) {
-                        gamesRef.current = _storageGames;
-                        KeyEvent.onKeyDownListener((keyEvent) => ListenKeyBoard(keyEvent));
-                        return;
-                    } else {
-
+                gamesRef.current = [...new Array(parseInt(gamesRef_current.length))].map((g, i) => {
+                    return {
+                        id: i
                     }
-                } else {
+                })
 
-                }
+
+            } else {
+
+            }
+
+        } catch (err) {
+            console.log("Error loading game list", err)
+            console.log("Last Game", lastGame)
+            // KeyEvent.onKeyDownListener((keyEvent) => ListenKeyBoard(keyEvent));
+
+        }
+
+
+    }
+
+    useEffect(() => {
+
+        const loadGameList = async () => {
+
+            try {
+                await  readGameList()
+                KeyEvent.onKeyDownListener((keyEvent) => ListenKeyBoard(keyEvent));
+
+
+            } catch {
+                KeyEvent.onKeyDownListener((keyEvent) => ListenKeyBoard(keyEvent));
 
             }
 
         }
 
-        const parseGameList = ParseGameList();
-        const jsonGame = await parseGameList.getJsonData(`${path}/gamelist.xml`)
-        const { gameList } = jsonGame;
+        loadGameList()
 
-        let gamesRef_current = []
 
-        if (gameList) {
+       
 
-            gamesRef_current = gameList.game.sort((a, b) => a.name > b.name).map((game, id) => {
-                return {
-                    path: decodeText(`${path}${game?.path.substr(1)}`),
-                    thumbnail: decodeText(`file:///${path}${game?.thumbnail?.substr(1)}`),
-                    image: decodeText(`file:///${path}${game?.image?.substr(1)}`),
-                    desc: decodeText(game?.desc),
-                    video: decodeText(`file:///${path}${game?.video?.substr(1)}`),
-                    name: decodeText(game?.name),
-                    id: id,
-                    loadVideo: false
-                }
-            }).map(g => {
-                return {
-                    ...g,
-                    romName: !!g.path.split('/').length ?
-                        g.path.split('/')[g.path.split('/').length - 1] : ""
-                }
-            })
 
-            pageRef.current = gamesRef_current.slice(0, PER_PAGE).map((game, i) => {
-                return {
-                    ...game,
-                    selected: i === 0
-                }
-            })
 
-            setPage(pageRef.current)
 
-            gamesRef.current = [...new Array(parseInt(gamesRef_current.length))].map((g, i) => {
-                return {
-                    id: i
-                }
-            })
-
-            await db.cleanPlatform(path);
-
-            await db.addRoms(gamesRef_current.map(g => {
-                return {
-                    ...g,
-                    platform: path
-                }
-            }))
-
-        } else {
-
-        }
-        KeyEvent.onKeyDownListener((keyEvent) => ListenKeyBoard(keyEvent));
-    }
-
-    useEffect(() => {
-        readGameList()
     }, [])
 
 
@@ -199,8 +262,8 @@ export const Platform = ({ navigation, route }) => {
         if ([...keyMap.P1_E, ...keyMap.P2_E].includes(keyEvent.keyCode)) {
 
             // RANDOM
-       
-           selectRandomRom();
+
+            selectRandomRom();
 
         }
 
@@ -229,8 +292,8 @@ export const Platform = ({ navigation, route }) => {
 
 
     const selectRandomRom = async () => {
-        const first = Math.floor(Math.random() * gamesRef.current.length -1);
-            
+        const first = Math.floor(Math.random() * gamesRef.current.length - 1);
+
         pageRef.current = (await readGameDB(first, PER_PAGE)).map((game) => {
             return {
                 ...game,
