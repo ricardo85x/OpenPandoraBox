@@ -14,6 +14,18 @@ It could be used with **NVIDIA Shield Portable** as well as I am using it to deb
 
 ![Game Selection](src/assets/screenshots/platform.png)
 
+
+### Features
+- Touch screen is not required anywhere.
+- Use same configuration for images, videos and descriptions as **EmulationStation** (batocera, recalbox, etc)
+- Select which Retroarch core to use for each platform
+- Works with Drastic, Retroarch, Reicast, MupenPlus FZ, PPSSPP
+- History Games
+- Select a random game, because you can't decide what to play next \o/
+- Search a game in all platforms
+- Custom **file browser**, so you do not need a xkeyboard or touch screen to set a configuration option
+- Custom **keyboard viewer**, so you can search a game without using touch screen
+
 ## Installation
 
 1 - Install the apk
