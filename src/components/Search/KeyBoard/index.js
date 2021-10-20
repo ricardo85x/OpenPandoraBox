@@ -14,10 +14,23 @@ export const KeyBoard = forwardRef((
     ref
 ) => {
 
+
+
+
+
+
     const { chakraColors, themeColor, keyMap } = useSettingsContext()
 
-    const { setSearchText, searchText, keyboardActive, setKeyboardActive } = useKeyboardContext()
+    const { setSearchText, searchText, keyboardActive, setKeyBoardHeight, setKeyboardActive } = useKeyboardContext()
 
+
+    const onLayout = (event) => {
+
+        const {height} = event.nativeEvent.layout;
+
+        setKeyBoardHeight(height)
+    }
+    
     const [keyboardTable, setKeyboardTable] = useState([])
 
     const loadKeyboardTable = () => {
@@ -228,13 +241,16 @@ export const KeyBoard = forwardRef((
     return (
         <LinearGradient
 
+
+            onLayout={onLayout}
+
             start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}
             colors={colorsBg}
-            style={{ flexDirection: "column", alignItems: "center", justifyContent: "center", width: '100%', height: '100%' }}>
+            style={{ flexDirection: "column", alignItems: "center", justifyContent: "center", width: '100%' }}>
 
 
 
-            <View style={{ width: '100%', justifyContent: "center", alignItems: "center", height: 50, backgroundColor: chakraColors.gray[2] }}>
+            <View style={{ width: '100%', justifyContent: "center", alignItems: "center", height: 40, backgroundColor: chakraColors.gray[2] }}>
                 <Text style={{
                     color: searchText.trim().length > 0 ? chakraColors.gray[9] : chakraColors.gray[5],
                     fontSize: searchText.trim().length > 0 ? 20 : 30,

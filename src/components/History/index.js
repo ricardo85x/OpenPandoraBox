@@ -8,7 +8,7 @@ import KeyEvent from 'react-native-keyevent';
 import { useSettingsContext } from "../../hooks/useSettings";
 import { PandaConfig } from "../../utils/PandaConfig"
 
-import { GameList } from "./GameList"
+import { GameList } from "../Platform/GameList"
 import { Main } from "./Main"
 
 import { useDbContext } from "../../hooks/useDb"

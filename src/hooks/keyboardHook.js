@@ -6,15 +6,20 @@ const KeyboardContext = createContext({
     setSearchText: (text) => { console.log("setSearchText NOT initialized ", text)},
     keyboardActive: false,
     setKeyboardActive: (active) => {console.log("setKeyboardActive NOT initialized ", active)},
-    keyboardActiveRef: undefined
+    keyboardActiveRef: undefined,
+    keyBoardHeight: 50,
+    setKeyBoardHeight: (height) => {console.log("setKeyBoardHeight NOT initialized ", height)},
 })
 
 export function KeyboardContextProvider({ children }) {
 
     const [searchText, setSearchText] = useState("")
     const [keyboardActive, setKeyboardActive] = useState(false)
+    const [keyBoardHeight, setKeyBoardHeight] = useState(50)
+
 
     const keyboardActiveRef = useRef(keyboardActive)
+
 
     // const [, forceUpdateKeyboard] = useReducer(x => x + 1, 0);
 
@@ -25,7 +30,9 @@ export function KeyboardContextProvider({ children }) {
         setSearchText,
         keyboardActive,
         setKeyboardActive,
-        keyboardActiveRef
+        keyboardActiveRef,
+        keyBoardHeight,
+        setKeyBoardHeight
         // keyboardData, setKeyboardData, forceUpdateKeyboard
     }
 

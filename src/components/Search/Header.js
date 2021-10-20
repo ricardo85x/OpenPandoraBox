@@ -15,11 +15,11 @@ export const Header = ( { romName, title, gameName = ""}) => {
         colors={[themeColor[3], themeColor[4], themeColor[5]]}
         
         style={{
-            height: 60,
-            width: (APP_WIDTH * 0.65) - 2,
+            height: 50,
+            width: (APP_WIDTH * 0.65),
             display: "flex",
             flexDirection: "column",
-            justifyContent: "space-between",
+            justifyContent: "space-around",
             marginTop: 2,
             marginRight: 2,
             paddingLeft: 10,
@@ -40,12 +40,6 @@ export const Header = ( { romName, title, gameName = ""}) => {
                 color: 'black',
             }}>
                 {gameName}
-            </Text>
-            <Text style={{ 
-                fontSize: 12, 
-                color: 'black'
-            }}>
-                {romName}
             </Text>
         </LinearGradient>
     )

@@ -1,12 +1,9 @@
 var parser = require('fast-xml-parser');
-var he = require('he');
 import RNFS from "react-native-fs"
 
 export const ParseGameList = () => {
 
     const getJsonData = async (gamelistPath = "") => {
-
-        console.log("getJsonData", gamelistPath)
 
         try {
             if (await RNFS.exists(gamelistPath)){
@@ -14,7 +11,6 @@ export const ParseGameList = () => {
 
                 if( parser.validate(xmlData) === true) { //optional (it'll return an object in case it's not valid)
                     var jsonObj = parser.parse(xmlData,{});
-                    console.log("Finish getJsonData")
 
                     return jsonObj;
                 } else {

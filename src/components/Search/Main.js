@@ -36,7 +36,7 @@ export const Main = ({ keyboardActiveRef, keyboardRef, selectedGame, onBackgroun
             flexDirection: "column"
         }}>
             <Header romName={selectedGame?.romName} title={selectedGame?.platformTitle} gameName={selectedGame?.name} />
-            <Body selectedGame={selectedGame} keyboardActiveRef={keyboardActiveRef} keyboardRef={keyboardRef} onBackground={onBackground} selectedGame={selectedGame} />
+            <Body onBackground={onBackground} selectedGame={selectedGame} keyboardActiveRef={keyboardActiveRef} keyboardRef={keyboardRef} onBackground={onBackground} selectedGame={selectedGame} />
             <Footer
                 buttonAction={buttonAction}
                 items={footItems}

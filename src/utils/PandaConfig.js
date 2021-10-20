@@ -362,7 +362,12 @@ export const PandaConfig = () => {
 
 
 
-                            const title = _dirConfig?.PLATFORMS[file.name]?.title ?? Object.keys(ListSystem).includes(file.name) ? ListSystem[file.name] : ""
+                            const title = (!! _dirConfig?.PLATFORMS[file.name]?.title ) ? 
+                                _dirConfig.PLATFORMS[file.name].title :  
+                                    Object.keys(ListSystem).includes(file.name) ? 
+                                        ListSystem[file.name] : 
+                                        file.name.toUpperCase()
+
                             const bg = _dirConfig?.PLATFORMS[file.name]?.backgroundImg
                             const core = _dirConfig?.PLATFORMS[file.name]?.core;
 
@@ -391,7 +396,7 @@ export const PandaConfig = () => {
             }
         }
 
-        platforms.sort((a, b) => a.dir > b.dir)
+        platforms.sort((a, b) => a.name > b.name)
 
 
         return platforms.map((e,i) => {

@@ -277,6 +277,41 @@ class SQLiteManager {
         }
     }
 
+
+    async getHistory() {
+
+        let resultData = []
+
+        const results = await this.db.executeSql('select * from History order by updated_at DESC', [])
+
+        if (results.length) {
+            for (let i = 0; i < results.length; i++) {
+                const current_result = results[i]
+
+                for (let j = 0; j < current_result.rows.length; j++) {
+                    const current_row = results[i].rows.item(j)
+
+                    const results_rom = await this.db.executeSql(
+                        'select * from rom where id = ? and platform = ?',
+                        [current_row.romId, current_row.platform]
+                    )
+
+                    if (results_rom.length && results_rom[0].rows.length) {
+
+                        const current = results_rom[0].rows.item(0)
+
+                        if(resultData.findIndex(d => d.id === current.id) === -1) {
+                            resultData.push(current)
+                        }
+                    }
+                }
+            }
+        }
+
+        return resultData
+    }
+
+
     async searchRom(text) {
         let resultData = []
 
@@ -312,43 +347,12 @@ class SQLiteManager {
         return resultData
     }
 
-    async getHistory() {
-
-        let resultData = []
-
-        const results = await this.db.executeSql('select * from History order by updated_at DESC', [])
-
-        if (results.length) {
-            for (let i = 0; i < results.length; i++) {
-                const current_result = results[i]
-
-                for (let j = 0; j < current_result.rows.length; j++) {
-                    const current_row = results[i].rows.item(j)
-
-                    const results_rom = await this.db.executeSql(
-                        'select * from rom where id = ? and platform = ?',
-                        [current_row.romId, current_row.platform]
-                    )
-
-                    if (results_rom.length && results_rom[0].rows.length) {
-                        resultData.push(results_rom[0].rows.item(0))
-                    }
-                }
-            }
-        }
-
-        return resultData
-    }
-
     async addRoms(roms) {
 
         const NUMBER_OF_TRANSACTIONS_AT_TIME = 350
         let transactions = []
         let params = []
         let args = ""
-
-
-        console.log("addRoms")
 
         roms.forEach(rom => {
 
@@ -397,7 +401,6 @@ class SQLiteManager {
 
             try {
 
-                console.log("Waiting transaction", i, transactions.length)
 
                 const current = transactions[i]
 
@@ -409,7 +412,6 @@ class SQLiteManager {
             }
             
         }
-        console.log("FINISHED INSERT!")
 
         
     }

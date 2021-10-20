@@ -1,9 +1,9 @@
 import React from 'react';
-import { Text, View } from 'react-native';
+import { Text } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 
 
-export const GameItem = ({ game, APP_HEIGHT, EXTRA_SPACE }) => {
+export const GameItem = ({ game, EXTRA_SPACE }) => {
 
     const height = (game?.selected && EXTRA_SPACE) ? ((50) + parseInt(EXTRA_SPACE)) : 50
 
@@ -16,8 +16,6 @@ export const GameItem = ({ game, APP_HEIGHT, EXTRA_SPACE }) => {
             bgColor = ["#1A202C", "#2D3748", "#4A5568"]
         }
     }
-
-
 
     return (
 
@@ -33,25 +31,14 @@ export const GameItem = ({ game, APP_HEIGHT, EXTRA_SPACE }) => {
                 marginVertical: 2,
                 marginHorizontal: 2,
                 borderWidth: 1,
-
-
-                // backgroundColor: game.selected ?
-                //     "#DD6B20" :
-                //     game.id % 2 === 0 ? "#080808" : "#181818"
-        
-
             }}>
             <Text style={{
-
-                // color: game.selected ? "#ED8936" : "#ffff" ,
-                //                color: game.selected ? "#ffff" : "#ffff",
                 fontSize: 17,
                 flex: 1,
                 textAlignVertical: "center",
                 marginLeft: 5,
                 color: '#ffff',
                 overflow: "hidden",
-
             }}>{game.name}</Text>
 
         </LinearGradient>

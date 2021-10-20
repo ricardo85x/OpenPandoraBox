@@ -1,23 +1,45 @@
-import React  from 'react';
-import { View } from 'react-native';
+import React, { useState}  from 'react';
+import { View, Text } from 'react-native';
 
 import { useSettingsContext } from "../../hooks/useSettings";
+import { MediaPreview } from "./MediaPreview"
 
 import { KeyBoard } from "./KeyBoard"
 
-export const Body = ({ selectedGame, keyboardActiveRef, keyboardRef }) => {
+export const Body = ({ onBackground, selectedGame, keyboardActiveRef, keyboardRef }) => {
 
-    const { APP_HEIGHT } = useSettingsContext()
+    const { APP_HEIGHT, APP_WIDTH } = useSettingsContext()
+
+
+
 
     return (
         <View style={{
-            height: APP_HEIGHT - 50 - 60,
+            height: APP_HEIGHT - 50 - 50,
             width: "100%",
             display: "flex",
-            justifyContent: "flex-start",
+            justifyContent: "flex-end",
             flexDirection: "column"
         }}>
-            <KeyBoard selectedGame={selectedGame} keyboardActiveRef={keyboardActiveRef} ref={keyboardRef}  />
+
+
+            <Text style={{
+                color: 'white',
+                width: APP_WIDTH * 0.65,
+                paddingStart: 10,
+                overflow: "hidden",
+                fontSize: 13,
+                flex: 1
+                }}>{selectedGame?.romName}</Text>
+
+        <MediaPreview 
+            selectedGame={selectedGame} 
+            APP_HEIGHT={APP_HEIGHT} 
+            onBackground={onBackground}
+            
+        /> 
+
+            <KeyBoard  selectedGame={selectedGame} keyboardActiveRef={keyboardActiveRef} ref={keyboardRef}  />
         </View>
     )
 }
