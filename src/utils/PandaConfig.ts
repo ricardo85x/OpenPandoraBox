@@ -1,10 +1,11 @@
 import RNFS from "react-native-fs"
 import { RunLocalCommand } from "../modules/RunLocalCommand";
-import ListSystem from "./list_system"
+import {NamedPlatform} from "./NamedPlatform"
+import { IAppLauchers, IAppSettings } from "./types";
 
 export const PandaConfig = () => {
 
-    const updateConfig = async (newConfig) => {
+    const updateConfig = async (newConfig: any) => {
 
         const configFilePath = RNFS.DocumentDirectoryPath + "/config.json";
         const currentConfig = await dirConfig();
@@ -16,10 +17,13 @@ export const PandaConfig = () => {
         
         Object.keys(updatedConfig).forEach(key => {
 
+
+            
+
             if (Object.keys(currentConfig).includes(key) == false){
                 updated = true
             } else {
-                if ( updatedConfig[key] !== currentConfig[key]) {
+                if ( updatedConfig[key] !== currentConfig[key as keyof typeof currentConfig]) {
                     updated = true
                 }
             }
@@ -31,15 +35,15 @@ export const PandaConfig = () => {
             console.log("SAVING")
             const updatedConfigText = JSON.stringify(updatedConfig, null, 2);
 
-            await Promise.all(RNFS.writeFile(configFilePath, updatedConfigText, 'utf8')
-                .then(() => {
-                    console.log('Settings updated successfully', configFilePath);
-                })
-                .catch((err) => {
-                    console.log("Error on update settings", err.message);
-                })
-            );
-    
+
+            try {   
+                await RNFS.writeFile(configFilePath, updatedConfigText, 'utf8')
+                console.log('Settings updated successfully', configFilePath);
+
+            } catch (err: any) {
+                console.log("Error on update settings", err?.message);
+            }
+            
             return true;
         } else {
             console.log("NOT SAVING")
@@ -51,10 +55,10 @@ export const PandaConfig = () => {
     }
 
 
-    const baseConfig = async (configFilePath, defaultConfig) => {
+    const baseConfig = async (configFilePath: string, defaultConfig: string) => {
 
         try {
-            const json_config = JSON.parse(defaultConfig);
+            const json_config : IAppSettings = JSON.parse(defaultConfig);
 
             const retroArchConfigPath = json_config.RETROARCH_CONFIG;
 
@@ -71,7 +75,7 @@ export const PandaConfig = () => {
                     });
 
             }
-        } catch (err) {
+        } catch (err: any) {
             console.log("error on baseConfig", err.message);
         }
 
@@ -83,10 +87,10 @@ export const PandaConfig = () => {
 
             try {
                 const jsonContent = JSON.parse(content)
-                return jsonContent;
+                return jsonContent as IAppSettings;
             } catch (e) {
                 console.log("Error reading config file", e)
-                return JSON.parse(defaultConfig);
+                return JSON.parse(defaultConfig) as IAppSettings;
             }
         } else {
             RNFS.writeFile(configFilePath, defaultConfig, 'utf8')
@@ -96,7 +100,7 @@ export const PandaConfig = () => {
                 .catch((err) => {
                     console.log("Error to create file", err.message);
                 });
-            return JSON.parse(defaultConfig);
+            return JSON.parse(defaultConfig) as IAppSettings;
         }
 
     }
@@ -115,6 +119,7 @@ export const PandaConfig = () => {
             THEME: {
                 settingsBackgroundImg:"",
                 historyBackgroundImg:"",
+                searchBackgroundImg: "",
                 colorButton_A: "white",
                 colorButton_B: "yellow",
                 colorButton_C: "red",
@@ -129,19 +134,11 @@ export const PandaConfig = () => {
         return await baseConfig(configFilePath, defaultConfig);
     }
 
-    const basename = (path) => {
-        return path.substring(path.lastIndexOf('/') + 1)
-    }
-
-    const runOpenBor = async (rom, old = false) => {
+    const runOpenBor = async (rom:string, old = false) => {
 
         const pak_dir = "/storage/emulated/legacy/OpenBOR/Paks"
         const pak_bk_dir = "/storage/emulated/legacy/OpenBOR/Paks_BK"
         const generic_name = "current_game.pak"
-
-
-
-    
 
         if(await RNFS.exists(pak_dir) && await RNFS.exists(rom)) {
 
@@ -156,7 +153,7 @@ export const PandaConfig = () => {
                 for (let i = 0; i < listOfFiles.length; i++) {
                     const file = listOfFiles[i];
 
-                    if (file.isFile) {
+                    if (file.isFile()) {
 
                         const dest_path =  `${pak_bk_dir}/${file.name}`;
                         
@@ -184,7 +181,8 @@ export const PandaConfig = () => {
         }
     }
 
-    const runGame = async ({ rom, platform }) => {
+    type runGameProps = { rom: string, platform: string }
+    const runGame = async ({ rom, platform } : runGameProps ) => {
 
         const _baseConfig = await dirConfig()
 
@@ -335,11 +333,20 @@ export const PandaConfig = () => {
     }
 
 
+    type platformType = {
+        name: string,
+        dir: string,
+        enabled: boolean,
+        background: string,
+        core: string,
+        launcher: IAppLauchers
+    }
+
     const listPlatforms = async () => {
 
         const _dirConfig = await dirConfig();
 
-        let platforms = []
+        let platforms :platformType[] = []
 
         if (_dirConfig?.BASE_ROOM_DIR) {
             const base_dir = _dirConfig.BASE_ROOM_DIR;
@@ -364,8 +371,8 @@ export const PandaConfig = () => {
 
                             const title = (!! _dirConfig?.PLATFORMS[file.name]?.title ) ? 
                                 _dirConfig.PLATFORMS[file.name].title :  
-                                    Object.keys(ListSystem).includes(file.name) ? 
-                                        ListSystem[file.name] : 
+                                    Object.keys(NamedPlatform).includes(file.name) ? 
+                                        NamedPlatform[file.name as keyof typeof NamedPlatform] : 
                                         file.name.toUpperCase()
 
                             const bg = _dirConfig?.PLATFORMS[file.name]?.backgroundImg
@@ -396,7 +403,9 @@ export const PandaConfig = () => {
             }
         }
 
-        platforms.sort((a, b) => a.name > b.name)
+        // platforms.sort((a, b) => a.name > b.name)
+
+        platforms.sort((a, b) => b.name.localeCompare(a.name) )
 
 
         return platforms.map((e,i) => {
@@ -412,7 +421,16 @@ export const PandaConfig = () => {
 
         const _dirConfig = await dirConfig();
 
-        let defaultConfig = []
+
+       
+
+        let defaultConfig : {
+            type: string,
+            text: string,
+            title: string,
+            path: string,
+            background: string
+        }[] = []
 
         if (_dirConfig?.BASE_ROOM_DIR) {
             const base_dir = _dirConfig.BASE_ROOM_DIR;
@@ -455,7 +473,7 @@ export const PandaConfig = () => {
             }
         }
 
-        defaultConfig.sort((a, b) => a.title > b.title)
+        defaultConfig.sort((a, b) => b.title.localeCompare(b.title))
 
 
         return [

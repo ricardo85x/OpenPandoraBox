@@ -7,7 +7,7 @@
     "ios": "react-native run-ios",
     "start": "react-native start",
     "test": "jest",
-    "lint": "eslint ."
+    "lint": "tslint -p \".\" -t stylish"
   },
   "dependencies": {
     "@react-native-community/masked-view": "^0.1.11",
@@ -33,11 +33,19 @@
     "@babel/core": "^7.8.4",
     "@babel/runtime": "^7.8.4",
     "@react-native-community/eslint-config": "^1.1.0",
+    "@types/react": "^17.0.30",
+    "@types/react-native": "^0.65.9",
     "babel-jest": "^25.1.0",
     "eslint": "^6.5.1",
     "jest": "^25.1.0",
     "metro-react-native-babel-preset": "^0.59.0",
-    "react-test-renderer": "16.13.1"
+    "react-native-typescript-transformer": "^1.2.13",
+    "react-test-renderer": "16.13.1",
+    "tslint": "^6.1.3",
+    "tslint-eslint-rules": "^5.4.0",
+    "tslint-react": "^5.0.0",
+    "tslint-react-recommended": "^1.0.15",
+    "typescript": "^4.4.4"
   },
   "jest": {
     "preset": "react-native"
