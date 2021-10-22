@@ -1,7 +1,15 @@
 import RNFS from "react-native-fs"
 
-export const listDir = async ({ directory, showFiles = true, showDir = true, regexFilter = undefined }) => {
+interface listDirProps {
+    directory: string,
+    showFiles: boolean,
+    showDir: boolean,
+    regexFilter?: string
+}
 
+export const listDir = async ({ 
+        directory, showFiles = true, showDir = true, regexFilter = undefined 
+    } : listDirProps ) => {
     try {
 
         if (!! directory && (await RNFS.exists(directory))) {
@@ -51,7 +59,7 @@ export const listDir = async ({ directory, showFiles = true, showDir = true, reg
         }
 
 
-    } catch (e) {
+    } catch (e: any) {
         console.log("Error on listDir", e.message)
 
         return {

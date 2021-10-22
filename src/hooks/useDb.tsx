@@ -1,15 +1,19 @@
-import React from 'react'
+import React, { ReactNode } from 'react'
 import { useEffect, createContext, useContext, useState } from "react"
 import SQLiteManager from '../utils/db/SQLiteManager';
 
 const DbContext = createContext({})
 
-export function DbContextProvider({ children }) {
+interface DbContextProviderProps {
+    children: ReactNode
+}
 
-    const [db, setDb] = useState()
+export function DbContextProvider({ children }: DbContextProviderProps) {
+
+    const [db, setDb] = useState(SQLiteManager)
 
     useEffect(() => {
-
+        
         SQLiteManager.initDB();
         setDb(SQLiteManager);
 

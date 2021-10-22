@@ -4,7 +4,7 @@ import { Dimensions } from 'react-native';
 
 export const Utils = () => {
 
-    const decodeText = (text) => {
+    const decodeText = (text: string) => {
 
         if(text){
             return decode(text, {level: 'html5'})

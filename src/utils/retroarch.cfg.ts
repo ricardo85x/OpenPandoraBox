@@ -1,4 +1,4 @@
-module.exports = `accessibility_enable = "false"
+const RetroArchConfig  = `accessibility_enable = "false"
 accessibility_narrator_speech_speed = "5"
 ai_service_enable = "true"
 ai_service_mode = "1"
@@ -3088,3 +3088,5 @@ xmb_theme = "0"
 xmb_vertical_thumbnails = "false"
 youtube_stream_key = ""
 `
+
+export default RetroArchConfig;

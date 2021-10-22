@@ -28,9 +28,11 @@ const App = () => {
 
       <SettingsContextProvider>
         <NavigationContainer>
-          <Stack.Navigator screenOptions={{
+          <Stack.Navigator 
+            initialRouteName="Home"
+            screenOptions={{
             headerShown: false,
-            initialRouteName: "Home"
+            
           }} >
             <Stack.Screen
               name="Home"

@@ -1,12 +1,20 @@
 import RNFS from "react-native-fs"
 
+interface checkFileProps {
+    file_path: string,
+    valid_extensions: string[],
+    minSizeKb: number
+}
+
 export const FileSystemHelper = () => {
 
-    const checkFile = async ({ file_path, valid_extensions = [], minSizeKb = 1 }) => {
+    const checkFile = async ({ 
+        file_path , valid_extensions = [], minSizeKb = 1 
+    }: checkFileProps ) => {
 
         const minSize = minSizeKb * 1000; // 300 kb
 
-        if (file_path) {
+        if (!! file_path) {
 
             let pass_extension = false
 
