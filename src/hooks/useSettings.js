@@ -1,33 +1,28 @@
-import React, { ReactNode } from 'react';
+import React from 'react'
 import { useEffect, createContext, useContext, useState } from "react"
 import { Dimensions } from "react-native"
 import chakraColors from "../utils/colors"
 
 import { PandaConfig } from "../utils/PandaConfig"
-import { IAppSettings } from '../utils/types';
 
 const SettingsContext = createContext({
     appSettings: {},
     keyMap: {},
     APP_HEIGHT: Dimensions.get('window').height,
     APP_WIDTH: Dimensions.get('window').width,
-    updateSettings: async () => console.log(),
+    updateSettings: () => 1,
     themeColor: chakraColors.orange,
     chakraColors: chakraColors
 })
 
-interface SettingsContextProviderProps {
-    children: ReactNode
-}
+export function SettingsContextProvider({ children }) {
 
-export function SettingsContextProvider({ children }: SettingsContextProviderProps) {
-    
-    const [appSettings, setAppSettings] = useState<IAppSettings>({} as IAppSettings)
+    const [appSettings, setAppSettings] = useState({})
     const [keyMap, setKeyMap] = useState({})
     const [themeColor, setThemeColor] = useState(chakraColors.orange)
 
-    const APP_HEIGHT = Dimensions.get('window').height
-    const APP_WIDTH = Dimensions.get('window').width
+    const [APP_HEIGHT, setAPP_HEIGHT] = useState(Dimensions.get('window').height)
+    const [APP_WIDTH, setAPP_WIDTH] = useState(Dimensions.get('window').width)
 
     const pandaConfig = PandaConfig();
 
@@ -42,6 +37,8 @@ export function SettingsContextProvider({ children }: SettingsContextProviderPro
                 setThemeColor(chakraColors[_themeColor])
             }
         }
+
+
     }
 
     useEffect(() => {

@@ -1,4 +1,4 @@
-export const NamedPlatform = {
+module.exports = {
     "mame": "Multiple Arcade Machine Emulator",
     "fbneo": "FinalBurn Neo",
     "fba": "FinalBurn Neo",
@@ -95,4 +95,3 @@ export const NamedPlatform = {
     "amiga1200": "Amiga 1200",
     "msxturbor": "Microsoft MSX turboR"
 }
-

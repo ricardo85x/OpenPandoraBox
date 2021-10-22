@@ -1,4 +1,4 @@
-const colors = {
+module.exports = {
     white: ["#FFFFFF", "#F7FAFC", "#EDF2F7", "#E2E8F0","#CBD5E0","#A0AEC0","#718096","#4A5568", "#2D3748","#1A202C"],
     gray: ["#F7FAFC","#EDF2F7","#E2E8F0","#CBD5E0","#A0AEC0","#718096","#4A5568","#2D3748","#1A202C","#171923"],
     red: ["#FFF5F5", "#FED7D7", "#FEB2B2", "#FC8181", "#F56565", "#E53E3E", "#C53030", "#9B2C2C", "#822727", "#63171B"],
@@ -11,6 +11,4 @@ const colors = {
     purple: ["#FAF5FF", "#E9D8FD", "#D6BCFA", "#B794F4", "#9F7AEA", "#805AD5", "#6B46C1", "#553C9A", "#44337A", "#322659"],
     pink: ["#FFF5F7", "#FED7E2", "#FBB6CE", "#F687B3", "#ED64A6", "#D53F8C", "#B83280", "#97266D", "#702459", "#521B41"]
 }
-
-export default colors;
 
