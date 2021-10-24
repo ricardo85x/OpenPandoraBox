@@ -5,12 +5,20 @@ import { Utils } from "../../utils";
 import { GameItem } from "./GameItem";
 
 import {useKeyboardContext} from "../../hooks/keyboardHook"
+import { IRomSearch } from '../../utils/types';
 
-export const GameList = ( { keyboardActiveRef, games = [], EXTRA_SPACE } ) => {
+
+interface GameListProps {
+    keyboardActiveRef: any
+    games: IRomSearch[]
+    EXTRA_SPACE: number
+}
+
+export const GameList = ( { keyboardActiveRef, games = [], EXTRA_SPACE } : GameListProps ) => {
 
     const { searchText } = useKeyboardContext()
 
-    const { APP_WIDTH, APP_HEIGHT } = Utils()
+    const { APP_WIDTH } = Utils()
 
     return (
         <View style={{ 
@@ -20,7 +28,7 @@ export const GameList = ( { keyboardActiveRef, games = [], EXTRA_SPACE } ) => {
             { 
                 games.length ? 
                 games.map((game) => (
-                    <GameItem keyboardActiveRef={keyboardActiveRef} key={game.path} EXTRA_SPACE={EXTRA_SPACE} APP_WIDTH={APP_WIDTH} APP_HEIGHT={ APP_HEIGHT} game={game} />
+                    <GameItem keyboardActiveRef={keyboardActiveRef} key={game.path} EXTRA_SPACE={EXTRA_SPACE} game={game} />
                 ))
 
                 : <Text style={{ color: 'white'}}>{searchText.trim() ? "No game found" : "Search a game" }</Text>

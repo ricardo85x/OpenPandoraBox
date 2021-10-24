@@ -2,10 +2,16 @@ import React  from 'react';
 import { Text, View } from 'react-native';
 
 import { useSettingsContext } from "../../hooks/useSettings";
+import { IRomPlatform } from '../../utils/types';
 
 import { MediaPreview } from "./MediaPreview"
 
-export const Body = ({ selectedGame, onBackground }) => {
+interface BodyProps {
+    selectedGame: IRomPlatform | undefined
+    onBackground: boolean
+}
+
+export const Body = ({ selectedGame, onBackground } : BodyProps ) => {
 
     const { APP_WIDTH, APP_HEIGHT } = useSettingsContext()
 
@@ -22,7 +28,6 @@ export const Body = ({ selectedGame, onBackground }) => {
             {selectedGame && !!selectedGame?.image &&
                 <MediaPreview 
                     selectedGame={selectedGame} 
-                    APP_WIDTH={APP_WIDTH} 
                     APP_HEIGHT={APP_HEIGHT} 
                     onBackground={onBackground}
                 /> 

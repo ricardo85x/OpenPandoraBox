@@ -1,51 +1,47 @@
-import React, { useRef, useEffect, useState, forwardRef, useImperativeHandle } from 'react';
-import { View, Text } from 'react-native';
+import React, { useEffect, useState, forwardRef, useImperativeHandle } from 'react';
+import { View, Text, LayoutChangeEvent } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 
-import KeyBoardData from "./layout_keys/main.json"
+import { KeyBoardData } from "./layout_keys/main"
 
 import { useSettingsContext } from "../../../hooks/useSettings"
 import { useKeyboardContext } from "../../../hooks/keyboardHook"
+import { KeyboardKeyProps } from '../../../utils/types';
+
+interface KeyBoardProps {
+    keyboardActiveRef: any
+}
+
 
 export const KeyBoard = forwardRef((
     {
         keyboardActiveRef
-    },
+    }: KeyBoardProps,
     ref
 ) => {
 
-
-
-
-
-
     const { chakraColors, themeColor, keyMap } = useSettingsContext()
+    const { setSearchText, searchText, setKeyBoardHeight, setKeyboardActive } = useKeyboardContext()
 
-    const { setSearchText, searchText, keyboardActive, setKeyBoardHeight, setKeyboardActive } = useKeyboardContext()
-
-
-    const onLayout = (event) => {
-
+    const onLayout = (event : LayoutChangeEvent ) => {
         const {height} = event.nativeEvent.layout;
-
         setKeyBoardHeight(height)
     }
     
-    const [keyboardTable, setKeyboardTable] = useState([])
+    const [keyboardTable, setKeyboardTable] = useState<KeyboardKeyProps[]>([])
 
     const loadKeyboardTable = () => {
-
-        let preData = [];
-
-        KeyBoardData.order.forEach((e, i) => {
-            const el = KeyBoardData[e];
+        let preData : KeyboardKeyProps[] = [];
+        KeyBoardData.order.forEach((e , i) => {
+            const key = e as keyof typeof KeyBoardData.keys
+            const el = KeyBoardData.keys[key];
 
             if (!el?.x) {
                 console.log("Undefined key", el, e)
             }
 
             preData.push({
-                key: e,
+                key: key,
                 x: el.x,
                 y: el.y,
                 type: el.type,
@@ -53,7 +49,6 @@ export const KeyBoard = forwardRef((
                 selected: i === 0 ? true : false
             });
         });
-
 
         setKeyboardTable(preData);
 
@@ -64,27 +59,19 @@ export const KeyBoard = forwardRef((
     }, []);
 
 
-    const handleKeyNavigation = (direction) => {
+    const handleKeyNavigation = (direction: string) => {
 
         const previousSelectedKey = keyboardTable.find(k => k.selected)
+
+        if (!previousSelectedKey) {
+            return
+        }
 
         const currentRow = keyboardTable.filter(k => k.y == previousSelectedKey.y)
         const rowAbove = keyboardTable.filter(k => k.y == previousSelectedKey.y - 1)
         const rowBelow = keyboardTable.filter(k => k.y == previousSelectedKey.y + 1)
         const lastKeyRow = currentRow[currentRow.length - 1]
         const firstKeyRow = currentRow[0]
-
-        const lastKeyRowAbove = rowAbove.length ?
-            rowAbove[rowAbove.length - 1] : undefined
-
-        const lastKeyRowBelow = rowBelow.length ?
-            rowBelow[rowBelow.length - 1] : undefined
-
-        const firstKeyRowBelow = rowBelow.length ?
-            rowBelow[0] : undefined
-
-        const firstKeyRowAbove = rowAbove.length ?
-            rowAbove[0] : undefined
 
         if (direction === "RIGHT") {
             if (previousSelectedKey.x < lastKeyRow.x) {
@@ -178,7 +165,7 @@ export const KeyBoard = forwardRef((
 
     }
 
-    const handlePressKey = (pressedKey) => {
+    const handlePressKey = (pressedKey: string) => {
 
         const currentKey = keyboardTable.find(k => k.selected)
 
@@ -206,7 +193,7 @@ export const KeyBoard = forwardRef((
 
     useImperativeHandle(ref, () => ({
 
-        listenInput: (keyCode) => {
+        listenInput: (keyCode: number) => {
 
             if ([...keyMap.P1_A, ...keyMap.P2_A].some(key => key === keyCode)) {
                 handlePressKey("A")
@@ -236,19 +223,13 @@ export const KeyBoard = forwardRef((
         [chakraColors.gray[8], chakraColors.gray[7], chakraColors.gray[6]] :
         [chakraColors.gray[6], chakraColors.gray[5], chakraColors.gray[4]]
 
-
-
     return (
         <LinearGradient
 
-
             onLayout={onLayout}
-
             start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}
             colors={colorsBg}
             style={{ flexDirection: "column", alignItems: "center", justifyContent: "center", width: '100%' }}>
-
-
 
             <View style={{ width: '100%', justifyContent: "center", alignItems: "center", height: 40, backgroundColor: chakraColors.gray[2] }}>
                 <Text style={{
@@ -262,9 +243,8 @@ export const KeyBoard = forwardRef((
             >
 
                 {
-                    Array(KeyBoardData.lines).fill().map((_, r) => {
+                    Array(KeyBoardData.lines).fill(0).map((_, r) => {
                         const row = r + 1;
-
 
                         return (
                             <View key={`row_${row}`} >

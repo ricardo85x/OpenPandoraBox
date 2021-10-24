@@ -1,32 +1,32 @@
 import React from 'react';
-import { Text, View } from 'react-native';
+import { Text } from 'react-native';
+
+import {useSettingsContext} from "../../hooks/useSettings";
 import LinearGradient from 'react-native-linear-gradient';
 
+interface HeaderProps {
+    title: string | undefined;
+    gameName: string | undefined
+}
 
-import { useSettingsContext } from "../../hooks/useSettings";
+export const Header = ( { title, gameName = ""}: HeaderProps) => {
 
-export const Header = ( { title, gameName = ""}) => {
-
-    const { APP_WIDTH, themeColor  } = useSettingsContext()
+    const { APP_WIDTH, themeColor } = useSettingsContext()
 
     return (
         <LinearGradient 
         
-            colors={[themeColor[3], themeColor[4], themeColor[5]]}
+        colors={[themeColor[3], themeColor[4], themeColor[5]]}
         
-            style={{
+        style={{
             height: 50,
-            width: (APP_WIDTH * 0.65) - 2,
+            width: (APP_WIDTH * 0.65),
             display: "flex",
             flexDirection: "column",
-            justifyContent: "space-between",
+            justifyContent: "space-around",
             marginTop: 2,
             marginRight: 2,
             paddingLeft: 10,
-       
-            // backgroundColor: "#718096",
-            // backgroundColor: "orange",
-            
 
         }}>
             <Text style={{ 
@@ -35,19 +35,16 @@ export const Header = ( { title, gameName = ""}) => {
                 fontWeight: "bold", 
                 color: '#F7FAFC' 
             }}>
-                {title ? title : "loading..."}
+                {title ? title : "Search"}
             </Text>
 
             <Text style={{ 
                 fontSize: 14, 
                 fontWeight: "bold", 
                 color: 'black',
-                flex: 1,
-
             }}>
                 {gameName}
             </Text>
-
         </LinearGradient>
     )
 }

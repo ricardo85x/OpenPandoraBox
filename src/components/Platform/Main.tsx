@@ -5,9 +5,17 @@ import { useSettingsContext } from "../../hooks/useSettings";
 
 import { Body } from "./Body"
 import { Header } from "./Header"
-import { Footer } from "../../components/Footer/index"
+import { Footer } from "../Footer/index"
+import { IRomPlatform } from '../../utils/types';
 
-export const Main = ({title, selectedGame, onBackground, buttonAction}) => {
+interface MainProps {
+    title: string;
+    selectedGame: IRomPlatform | undefined;
+    onBackground: boolean;
+    buttonAction: (...args: any[]) => void;
+}
+
+export const Main = ({title, selectedGame, onBackground, buttonAction}: MainProps) => {
 
     const { APP_WIDTH, APP_HEIGHT } = useSettingsContext()
 

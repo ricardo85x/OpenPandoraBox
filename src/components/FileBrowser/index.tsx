@@ -1,11 +1,32 @@
-import React, { useState, useEffect, forwardRef, useImperativeHandle } from "react";
-
-import { Text, TouchableOpacity, View } from "react-native";
+import React, { useState, useEffect, forwardRef, useImperativeHandle } from "react"
+import { Text, TouchableOpacity, View } from "react-native"
 
 import { listDir } from "../../utils/listDir"
-
 import { useSettingsContext } from "../../hooks/useSettings"
 
+interface FileBrowserProps {
+    setFolderIsOpen: (args: boolean) => void
+    folderIsOpen: boolean
+    selectedFileFolder: string
+    type: string
+    setSelectedFileFolder: (args: string) => void
+    handleSetFolderReturn: (...args: any[]) => void
+}
+
+interface DirDataProps {
+    index: number;
+    type: string;
+    value: string;
+    dir?: string;
+}
+
+interface PageItemProps {
+    selected: boolean;
+    index: number;
+    type: string;
+    value: string;
+    dir?: string;
+}
 
 export const FileBrowser = forwardRef((
     {
@@ -15,21 +36,17 @@ export const FileBrowser = forwardRef((
         type,
         setSelectedFileFolder,
         handleSetFolderReturn
-    },
+    }: FileBrowserProps,
     ref
 ) => {
 
-
     const { APP_WIDTH, APP_HEIGHT, keyMap } = useSettingsContext()
 
-    const [dirData, setDirData] = useState([])
-    const [pageItems, setPageItems] = useState([])
-
+    const [dirData, setDirData] = useState<DirDataProps[]>([])
+    const [pageItems, setPageItems] = useState<PageItemProps[]>([])
     const [selectedIndex, setSelectedIndex] = useState(0)
 
     const handleLoadDirData = async () => {
-
-        
 
         if (!folderIsOpen) {
             return
@@ -85,7 +102,6 @@ export const FileBrowser = forwardRef((
             return
         }
 
-        console.log("VAIIIII")
 
         if (selectedItem.type === "dir") {
             if (selectedItem.value === "..") {
@@ -103,11 +119,15 @@ export const FileBrowser = forwardRef((
         } else if(selectedItem.type === "file" && type === "file"){
 
             console.log("AHHH")
-            const current_file = `${selected.dir}/${selected.value}`
-            console.log("Selected file: ",current_file)
 
-            handleSetFolderReturn(`${current_file}`)
-            setFolderIsOpen(false)
+            if (selected){
+                const current_file = `${selected.dir}/${selected.value}`
+                console.log("Selected file: ",current_file)
+    
+                handleSetFolderReturn(`${current_file}`)
+                setFolderIsOpen(false)
+            }
+           
 
             
         } else if(selectedItem.type === "save"){
@@ -234,7 +254,7 @@ export const FileBrowser = forwardRef((
 
     useImperativeHandle(ref, () => ({
 
-        listenInput: (keyCode) => {
+        listenInput: (keyCode: number) => {
 
             if ([...keyMap.P1_A, ...keyMap.P2_A].some(key => key === keyCode)) {
                 handleSelectItem()

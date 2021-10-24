@@ -2,7 +2,13 @@ import React, { ReactNode } from 'react'
 import { useEffect, createContext, useContext, useState } from "react"
 import SQLiteManager from '../utils/db/SQLiteManager';
 
-const DbContext = createContext({})
+
+interface DbContextPropsValue {
+    db: typeof SQLiteManager | null
+}
+const DbContext = createContext<DbContextPropsValue>({
+    db: null  
+})
 
 interface DbContextProviderProps {
     children: ReactNode

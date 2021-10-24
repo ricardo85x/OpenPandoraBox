@@ -1,17 +1,24 @@
-import React, { useState}  from 'react';
+import React  from 'react';
 import { View, Text } from 'react-native';
 
 import { useSettingsContext } from "../../hooks/useSettings";
 import { MediaPreview } from "./MediaPreview"
 
 import { KeyBoard } from "./KeyBoard"
+import { IRomSearch } from '../../utils/types';
+import { RefAttributes } from 'react';
 
-export const Body = ({ onBackground, selectedGame, keyboardActiveRef, keyboardRef }) => {
+interface BodyProps {
+    onBackground: boolean;
+    selectedGame: IRomSearch | undefined
+    keyboardActiveRef: RefAttributes<any>
+    keyboardRef: any
+    
+}
+
+export const Body = ({ onBackground, selectedGame, keyboardActiveRef, keyboardRef } : BodyProps) => {
 
     const { APP_HEIGHT, APP_WIDTH } = useSettingsContext()
-
-
-
 
     return (
         <View style={{
@@ -21,7 +28,6 @@ export const Body = ({ onBackground, selectedGame, keyboardActiveRef, keyboardRe
             justifyContent: "flex-end",
             flexDirection: "column"
         }}>
-
 
             <Text style={{
                 color: 'white',
@@ -39,7 +45,7 @@ export const Body = ({ onBackground, selectedGame, keyboardActiveRef, keyboardRe
             
         /> 
 
-            <KeyBoard  selectedGame={selectedGame} keyboardActiveRef={keyboardActiveRef} ref={keyboardRef}  />
+            <KeyBoard keyboardActiveRef={keyboardActiveRef} ref={keyboardRef}  />
         </View>
     )
 }

@@ -2,8 +2,8 @@ import RNFS from "react-native-fs"
 
 interface listDirProps {
     directory: string,
-    showFiles: boolean,
-    showDir: boolean,
+    showFiles?: boolean,
+    showDir?: boolean,
     regexFilter?: string
 }
 

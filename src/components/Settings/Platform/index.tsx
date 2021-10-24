@@ -12,33 +12,55 @@ import { Footer } from "../../Footer"
 
 import { PandaConfig } from "../../../utils/PandaConfig"
 import LinearGradient from 'react-native-linear-gradient';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { IAppLauchers, IKeyEvent } from '../../../utils/types';
 
-export const PlatformSettings = ({ navigation, route }) => {
+interface PlatformSettingsProps {
+  navigation: StackNavigationProp<any,any>
+}
+
+interface defaultSettingsProps {
+  key: number;
+  name: string;
+  dir: string;
+  enabled: boolean;
+  background: string;
+  core: string;
+  launcher: IAppLauchers;
+  desc?: string
+  type?: string;
+  value?: string
+  selected?: boolean
+}
+
+export const PlatformSettings = ({ navigation } : PlatformSettingsProps) => {
 
   const { APP_WIDTH, APP_HEIGHT, keyMap, chakraColors, themeColor } = useSettingsContext()
 
-  const fileBrowserRef = useRef();
+  const fileBrowserRef = useRef<any>();
 
   const [, forceUpdate] = useReducer(x => x + 1, 0);
 
   const pandaConfig = PandaConfig();
 
-  const defaultSettings = []
 
-  const [settings, setSettings] = useState(defaultSettings)
+  const defaultSettings : defaultSettingsProps[] = []
+
+  const [, setSettings] = useState(defaultSettings)
 
   const lastDirectory = useRef("/storage")
-  const pageSettingsRef = useRef([])
-  const [pageSettings, setPageSettings] = useState([])
+  const pageSettingsRef = useRef<defaultSettingsProps[]>([])
+  const [pageSettings, setPageSettings] = useState<defaultSettingsProps[]>([])
+
   const settingsRef = useRef({
     cores: defaultSettings,
     folderIsOpen: false,
     selectedFileFolder: "",
-    core_list: [],
+    core_list: [] as string[],
     type: "file"
   })
 
-  const [xIndex, setXIndex] = useState(0)
+  const [, setXIndex] = useState(0)
   const xIndexRef = useRef(0)
 
   useEffect(() => {
@@ -50,9 +72,14 @@ export const PlatformSettings = ({ navigation, route }) => {
       settingsRef.current.cores.push({
         key: settingsRef.current.cores.length,
         dir: "save",
-        name: "Save Configuration", desc: "The configuration will be saved to file",
+        name: "Save Configuration", 
+        desc: "The configuration will be saved to file",
         type: "save",
-        value: "save"
+        value: "save",
+        enabled: true,
+        background: "",
+        core: "",
+        launcher: "retroarch",
       })
 
       setSettings(settingsRef.current.cores)
@@ -67,7 +94,7 @@ export const PlatformSettings = ({ navigation, route }) => {
       setPageSettings(pageSettingsRef.current)
       // hack to ListenKeyBoard work
       await new Promise(resolve => setTimeout(resolve, 1000))
-      KeyEvent.onKeyDownListener((keyEvent) => ListenKeyBoard(keyEvent));
+      KeyEvent.onKeyDownListener((keyEvent: IKeyEvent) => ListenKeyBoard(keyEvent));
     }
     loadSettings()
   }, [])
@@ -77,7 +104,7 @@ export const PlatformSettings = ({ navigation, route }) => {
     setPageSettings(pageSettingsRef.current)
   }, [pageSettingsRef])
 
-  const ListenKeyBoard = (keyEvent) => {
+  const ListenKeyBoard = (keyEvent: IKeyEvent) => {
 
     if (settingsRef.current.folderIsOpen) {
 
@@ -112,7 +139,7 @@ export const PlatformSettings = ({ navigation, route }) => {
 
   useFocusEffect(
     React.useCallback(() => {
-      KeyEvent.onKeyDownListener((keyEvent) => ListenKeyBoard(keyEvent));
+      KeyEvent.onKeyDownListener((keyEvent: IKeyEvent) => ListenKeyBoard(keyEvent));
       return () => {
         KeyEvent.removeKeyDownListener();
       };
@@ -120,19 +147,19 @@ export const PlatformSettings = ({ navigation, route }) => {
   );
 
 
-  const setFolderIsOpen = (value) => {
+  const setFolderIsOpen = (value: boolean) => {
     settingsRef.current.folderIsOpen = value
-    setSettings(settingsRef.current)
+    setSettings(settingsRef.current.cores)
     setTimeout(() => {
       forceUpdate()
     }, 100);
 
   }
 
-  const setSelectedFileFolder = (value) => {
+  const setSelectedFileFolder = (value: string) => {
 
     settingsRef.current.selectedFileFolder = value
-    setSettings(settingsRef.current)
+    setSettings(settingsRef.current.cores)
 
     setTimeout(() => {
       forceUpdate()
@@ -149,7 +176,7 @@ export const PlatformSettings = ({ navigation, route }) => {
 
     let _pageSettingsRef = pageSettingsRef.current;
 
-    if (!selected) {
+    if (!selected || !first_item) {
       return;
     }
 
@@ -182,7 +209,7 @@ export const PlatformSettings = ({ navigation, route }) => {
             _pageSettingsRef = settingsRef.current.cores.slice(first_item.key - 1, first_item.key - 1 + PER_PAGE()).map((page) => {
               return {
                 ...page,
-                selected: page.key === first_item.key - 1
+                selected: page.key === first_item!.key - 1
               }
             })
 
@@ -203,7 +230,7 @@ export const PlatformSettings = ({ navigation, route }) => {
         // xIndexRef.current = 0
         // setXIndex(xIndexRef.current)
 
-        if (selected.key !== last_item.key) {
+        if (last_item && selected.key !== last_item.key) {
           const currentIndex = pageSettingsRef.current.findIndex(g => g.selected)
           _pageSettingsRef = pageSettingsRef.current.map(game => {
             return {
@@ -222,12 +249,12 @@ export const PlatformSettings = ({ navigation, route }) => {
 
 
           // check if has more items
-          if (last_item.key < (settingsRef.current.cores.length - 1)) {
+          if (last_item && last_item.key < (settingsRef.current.cores.length - 1)) {
 
             _pageSettingsRef = settingsRef.current.cores.slice(first_item.key + 1, first_item.key + 1 + PER_PAGE()).map((game) => {
               return {
                 ...game,
-                selected: game.key === selected.key + 1
+                selected: game.key === selected!.key + 1
               }
             })
 
@@ -248,7 +275,7 @@ export const PlatformSettings = ({ navigation, route }) => {
         break;
       case "B":
         settingsRef.current.folderIsOpen = !settingsRef.current.folderIsOpen
-        setSettings(settingsRef.current)
+        setSettings(settingsRef.current.cores)
         break;
       case "RIGHT":
         if (xIndexRef.current >= 0 && xIndexRef.current < 3) {
@@ -373,19 +400,21 @@ export const PlatformSettings = ({ navigation, route }) => {
             newValue = currentLauncher + 1;
           }
         }
+  // launcher: IAppLauchers;
+
 
         pageSettingsRef.current = pageSettingsRef.current.map(p => {
           if (p.key === selectedSettings.key) {
             return {
               ...p,
-              launcher: launchers[newValue],
+              launcher: launchers[newValue] as IAppLauchers,
             }
           }
           return p
 
         })
 
-        settingsRef.current.cores[selectedSettings.key].launcher = launchers[newValue]
+        settingsRef.current.cores[selectedSettings.key].launcher = launchers[newValue] as IAppLauchers
         setPageSettings(pageSettingsRef.current)
         forceUpdate()
 
@@ -399,7 +428,7 @@ export const PlatformSettings = ({ navigation, route }) => {
           if (settingsRef.current.folderIsOpen == false) {
             settingsRef.current.selectedFileFolder = lastDirectory.current
             settingsRef.current.folderIsOpen = true
-            setSettings(settingsRef.current)
+            setSettings(settingsRef.current.cores)
             forceUpdate()
           }
 
@@ -425,12 +454,12 @@ export const PlatformSettings = ({ navigation, route }) => {
     }
   }
 
-  const handleSetFolderReturn = async (data) => {
+  const handleSetFolderReturn = async (data: string) => {
 
     const selectedSettingsIndex = pageSettingsRef.current.length ? pageSettingsRef.current.findIndex(g => g.selected) : undefined;
     const selectedSettings = selectedSettingsIndex !== -1 && selectedSettingsIndex !== undefined ? pageSettingsRef.current[selectedSettingsIndex] : undefined;
 
-    if (data && data.match(/.+[.](jpe?g|png)$/i)) {
+    if (selectedSettings && data && data.match(/.+[.](jpe?g|png)$/i)) {
       pageSettingsRef.current = pageSettingsRef.current.map(p => {
         if (p.key === selectedSettings.key) {
           return {
@@ -463,7 +492,7 @@ export const PlatformSettings = ({ navigation, route }) => {
     return Math.floor(bodyH / (ITEM_HEIGHT + 1));
   }
 
-  const buttonAction = (buttonName) => {
+  const buttonAction = (buttonName: string) => {
 
     if (settingsRef.current.folderIsOpen == false) {
 

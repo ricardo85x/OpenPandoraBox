@@ -12,19 +12,45 @@ import { Footer } from "../../Footer"
 import { PandaConfig } from "../../../utils/PandaConfig"
 
 import LinearGradient from 'react-native-linear-gradient';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { IKeyEvent } from '../../../utils/types';
+
+interface GeneralSettingsProps {
+  navigation: StackNavigationProp<any, any>
+}
 
 
-export const GeneralSettings = ({ navigation, route }) => {
+interface defaultSettingsDataProps {
+  index: number
+  key: string
+  name: string
+  desc: string
+  type: string
+  value: string
+  fileName?: string
+  options?: string[]
+  selected?: boolean
+}
+
+interface defaultSettingsProps {
+  folderIsOpen: boolean,
+  selectedFileFolder: string,
+  type: string,
+  active: number,
+  data: defaultSettingsDataProps[]
+}
+
+export const GeneralSettings = ({ navigation } : GeneralSettingsProps) => {
 
   const { APP_WIDTH, APP_HEIGHT, keyMap, themeColor, chakraColors } = useSettingsContext()
 
-  const fileBrowserRef = useRef();
+  const fileBrowserRef = useRef<any>();
 
   const [, forceUpdate] = useReducer(x => x + 1, 0);
 
   const pandaConfig = PandaConfig();
 
-  const defaultSettings = {
+  const defaultSettings : defaultSettingsProps = {
     folderIsOpen: false,
     selectedFileFolder: "",
     type: "",
@@ -68,10 +94,10 @@ export const GeneralSettings = ({ navigation, route }) => {
 
   }
 
-  const [settings, setSettings] = useState(defaultSettings)
-  const pageSettingsRef = useRef([])
-  const [pageSettings, setPageSettings] = useState([])
-  const settingsRef = useRef(defaultSettings)
+  const [, setSettings] = useState<defaultSettingsProps>(defaultSettings)
+  const pageSettingsRef = useRef<defaultSettingsDataProps[]>([])
+  const [pageSettings, setPageSettings] = useState<defaultSettingsDataProps[]>([])
+  const settingsRef = useRef<defaultSettingsProps>(defaultSettings)
 
   useEffect(() => {
 
@@ -86,7 +112,8 @@ export const GeneralSettings = ({ navigation, route }) => {
         data: settingsRef.current.data.map(item => {
           const key = settingKeys.find(k => k == item.key)
           if (key && Object.keys(_dirConfig).includes(key)) {
-            return { ...item, value: _dirConfig[key] }
+            const newValue = { ...item, value: _dirConfig[key as keyof typeof _dirConfig] as string }
+            return newValue
           }
           return item
         })
@@ -102,7 +129,7 @@ export const GeneralSettings = ({ navigation, route }) => {
       setPageSettings(pageSettingsRef.current)
       // hack to ListenKeyBoard work
       await new Promise(resolve => setTimeout(resolve, 1000))
-      KeyEvent.onKeyDownListener((keyEvent) => ListenKeyBoard(keyEvent));
+      KeyEvent.onKeyDownListener((keyEvent: IKeyEvent) => ListenKeyBoard(keyEvent));
     }
     loadSettings()
   }, [])
@@ -112,7 +139,7 @@ export const GeneralSettings = ({ navigation, route }) => {
     setPageSettings(pageSettingsRef.current)
   }, [pageSettingsRef])
 
-  const ListenKeyBoard = (keyEvent) => {
+  const ListenKeyBoard = (keyEvent : IKeyEvent) => {
 
     if (settingsRef.current.folderIsOpen) {
 
@@ -143,14 +170,14 @@ export const GeneralSettings = ({ navigation, route }) => {
 
   useFocusEffect(
     React.useCallback(() => {
-      KeyEvent.onKeyDownListener((keyEvent) => ListenKeyBoard(keyEvent));
+      KeyEvent.onKeyDownListener((keyEvent: IKeyEvent) => ListenKeyBoard(keyEvent));
       return () => {
         KeyEvent.removeKeyDownListener();
       };
     }, [])
   );
 
-  const setFolderIsOpen = (value) => {
+  const setFolderIsOpen = (value: boolean) => {
     settingsRef.current.folderIsOpen = value
     setSettings(settingsRef.current)
     setTimeout(() => {
@@ -158,7 +185,7 @@ export const GeneralSettings = ({ navigation, route }) => {
     }, 100);
   }
 
-  const setSelectedFileFolder = (value) => {
+  const setSelectedFileFolder = (value: string) => {
 
     settingsRef.current.selectedFileFolder = value
     setSettings(settingsRef.current)
@@ -185,7 +212,7 @@ export const GeneralSettings = ({ navigation, route }) => {
     switch (direction) {
       case "UP":
 
-        if (selected.index !== 0) {
+        if (first_item && selected.index !== 0) {
 
           if (selected.index !== first_item.index) {
 
@@ -206,7 +233,7 @@ export const GeneralSettings = ({ navigation, route }) => {
             _pageSettingsRef = settingsRef.current.data.slice(first_item.index - 1, first_item.index - 1 + PER_PAGE()).map((page) => {
               return {
                 ...page,
-                selected: page.index === first_item.index - 1
+                selected: page.index === first_item!.index - 1
               }
             })
 
@@ -221,7 +248,7 @@ export const GeneralSettings = ({ navigation, route }) => {
         break;
       case "DOWN":
 
-        if (selected.index !== last_item.index) {
+        if (selected.index !== last_item!.index) {
           const currentIndex = pageSettingsRef.current.findIndex(g => g.selected)
 
           _pageSettingsRef = pageSettingsRef.current.map(game => {
@@ -237,12 +264,12 @@ export const GeneralSettings = ({ navigation, route }) => {
         } else {
 
           // check if has more items
-          if (last_item.index < (settingsRef.current.data.length - 1)) {
+          if (first_item && last_item && last_item.index < (settingsRef.current.data.length - 1)) {
 
             _pageSettingsRef = settingsRef.current.data.slice(first_item.index + 1, first_item.index + 1 + PER_PAGE()).map((game) => {
               return {
                 ...game,
-                selected: game.index === selected.index + 1
+                selected: game.index === selected!.index + 1
               }
             })
 
@@ -271,11 +298,16 @@ export const GeneralSettings = ({ navigation, route }) => {
 
   const handleSelection = async () => {
 
+
     const selectedSettingsIndex = pageSettingsRef.current.length ? pageSettingsRef.current.findIndex(g => g.selected) : undefined;
     const selectedSettings = selectedSettingsIndex !== -1 && selectedSettingsIndex !== undefined ? pageSettingsRef.current[selectedSettingsIndex] : undefined;
 
+
+    console.log("Selected",selectedSettings)
+
+
     if (selectedSettings) {
-      if (selectedSettings.type == "choice") {
+      if (selectedSettings.type == "choice" && selectedSettings?.options ) {
         const choiceIndex = selectedSettings.options.findIndex(o => o === selectedSettings.value);
 
         let newValue;
@@ -287,7 +319,7 @@ export const GeneralSettings = ({ navigation, route }) => {
             newValue = selectedSettings.options[choiceIndex + 1]
           }
         }
-        if (newValue) {
+        if (newValue && selectedSettingsIndex !== undefined) {
           pageSettingsRef.current[selectedSettingsIndex].value = newValue
           settingsRef.current.data[selectedSettings.index].value = newValue
           setPageSettings(pageSettingsRef.current)
@@ -346,23 +378,26 @@ export const GeneralSettings = ({ navigation, route }) => {
     }
   }
 
-  const handleSetFolderReturn = async (data) => {
+  const handleSetFolderReturn = async (data: string) => {
 
     const selectedSettingsIndex = pageSettingsRef.current.length ? pageSettingsRef.current.findIndex(g => g.selected) : undefined;
     const selectedSettings = selectedSettingsIndex !== -1 && selectedSettingsIndex !== undefined ? pageSettingsRef.current[selectedSettingsIndex] : undefined;
 
-    let updated_path = data
+    if (selectedSettingsIndex !== undefined && selectedSettings){
+      let updated_path = data
 
-    if (selectedSettings?.fileName) {
-      console.log("FileName", selectedSettings?.fileName)
-      console.log("data", data)
-      updated_path = `${data}/${selectedSettings.fileName}`;
+      if (selectedSettings?.fileName) {
+        console.log("FileName", selectedSettings?.fileName)
+        console.log("data", data)
+        updated_path = `${data}/${selectedSettings.fileName}`;
+      }
+  
+      pageSettingsRef.current[selectedSettingsIndex].value = updated_path
+      settingsRef.current.data[selectedSettings.index].value = updated_path
+      setPageSettings(pageSettingsRef.current)
+      forceUpdate()
     }
-
-    pageSettingsRef.current[selectedSettingsIndex].value = updated_path
-    settingsRef.current.data[selectedSettings.index].value = updated_path
-    setPageSettings(pageSettingsRef.current)
-    forceUpdate()
+   
   }
 
   const ITEM_HEIGHT = 105;
@@ -372,7 +407,7 @@ export const GeneralSettings = ({ navigation, route }) => {
     return Math.floor(bodyH / (ITEM_HEIGHT + 1));
   }
 
-  const buttonAction = (buttonName) => {
+  const buttonAction = (buttonName: string) => {
 
 
     if (settingsRef.current.folderIsOpen == false) {

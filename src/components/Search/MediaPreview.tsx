@@ -1,28 +1,39 @@
 import React, { useRef, useEffect, useState } from 'react';
 
-import { Image } from 'react-native';
+import { Image, View } from 'react-native';
 import Video from 'react-native-video';
 
 import { FileSystemHelper } from "../../utils/FileUtils"
 
-export const MediaPreview = ({ selectedGame, APP_HEIGHT, onBackground }) => {
+import { useKeyboardContext } from "../../hooks/keyboardHook"
+import { IRomSearch } from '../../utils/types';
 
-    const timeoutRef = useRef()
+interface MediaPreviewProps {
+    selectedGame: IRomSearch | undefined
+    APP_HEIGHT: number;
+    onBackground: boolean;
+}
+
+export const MediaPreview = ({ selectedGame, APP_HEIGHT, onBackground } : MediaPreviewProps) => {
+
+    const timeoutRef = useRef(setTimeout(() => console.log("loading MediaPreview"), 0))
     const [loadVideo, setLoadVideo] = useState(false);
     const [loadImage, setLoadImage] = useState(false)
-
+    const { keyBoardHeight } = useKeyboardContext()
 
     const handleLoadVideo = async () => {
 
         const { checkFile } = FileSystemHelper()
 
         if (await checkFile({ 
-            file_path: selectedGame?.video,
+            file_path: selectedGame?.video ?? "",
             minSizeKb: 300,
             valid_extensions: [".mp4"]
 
         })) {
             setLoadVideo(true)
+        } else {
+            setLoadVideo(false)
         }
 
     }
@@ -32,18 +43,19 @@ export const MediaPreview = ({ selectedGame, APP_HEIGHT, onBackground }) => {
         const { checkFile } = FileSystemHelper()
 
         if (await checkFile({ 
-            file_path: selectedGame?.image,
+            file_path: selectedGame?.image ?? "",
             minSizeKb: 20,
             valid_extensions: [".jpeg", "jpg", "png"]
         })) {
             setLoadImage(true)
+        } else {
+            setLoadImage(false)
+
         }
 
     }
 
-    useEffect(() => {
-        handleLoadImage()
-    }, [])
+  
 
     useEffect(() => {
 
@@ -51,6 +63,11 @@ export const MediaPreview = ({ selectedGame, APP_HEIGHT, onBackground }) => {
             clearTimeout(timeoutRef.current)
         }
         setLoadVideo(false)
+        setLoadImage(false)
+
+        handleLoadImage()
+
+
         timeoutRef.current = setTimeout(() => {
 
             handleLoadVideo()
@@ -62,10 +79,16 @@ export const MediaPreview = ({ selectedGame, APP_HEIGHT, onBackground }) => {
     }, [selectedGame])
 
     return (
-        <>
+        <View style={{
+            display: 'flex',
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'center'
+        }}>
+            
             {
                 loadVideo &&
-                onBackground == false
+                onBackground == false && selectedGame?.video
                 ? (
 
                     <Video
@@ -77,22 +100,23 @@ export const MediaPreview = ({ selectedGame, APP_HEIGHT, onBackground }) => {
                         style={{
                             alignSelf: "center",
                             width: '100%',
-                            height: APP_HEIGHT * 0.5
+                            height: APP_HEIGHT - 50 - 50 - keyBoardHeight - 20
+                           
                         }}
                     />
 
-                ) : loadImage && (
+                ) : loadImage && selectedGame?.image && (
                     <Image
                         source={{ uri: `${selectedGame.image}` }}
                         style={{
                             alignSelf: "center",
                             width: '100%',
-                            height: APP_HEIGHT * 0.5
+                            height: APP_HEIGHT - 50 - 50 - keyBoardHeight - 20
                         }}
-                        resizeMode={'center'}
+                        resizeMode={'contain'}
                     />
                 ) 
             }
-        </>
+        </View>
     )
 }

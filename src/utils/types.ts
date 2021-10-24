@@ -57,7 +57,7 @@ export interface IMenuItem {
 }
 
 export interface IKeyEvent {
-    keyCode: number
+  keyCode: number;
 }
 
 export interface IKeyMap {
@@ -91,4 +91,60 @@ export interface IKeyMap {
   P2_DOWN: number[];
   P2_LEFT: number[];
   P2_RIGHT: number[];
+}
+
+export interface IRomCustom {
+  platform: string;
+  id: number;
+  name: string;
+  path: string;
+  thumbnail: string;
+  image: string;
+  video: string;
+  desc: string;
+  romName?: string;
+  normalizedName?: string;
+  gameId: number;
+  loadVideo: boolean;
+  platformTitle: string;
+  selected?: boolean;
+}
+
+export type IRomPlatform = Omit<
+  IRomCustom,
+  'gameId' | 'platform' | 'platformTitle'
+>;
+
+export type IRomSearch = Omit<IRomCustom, 'normalizedName'>;
+
+// export type IRomSearch = Partial<Omit<
+//   IRomCustom, 'normalizedName' | 'selected'
+// >> & {
+//   romName?: string
+// }
+
+export interface IGameList {
+  lang: string;
+  region: string;
+  path: string;
+  name: string;
+  desc: string;
+  rating: string;
+  releasedate: string;
+  developer: string;
+  publisher: string;
+  genre: string;
+  players: string;
+  image: string;
+  thumbnail: string;
+  video: string;
+}
+
+export interface KeyboardKeyProps {
+  key: string;
+  x: number;
+  y: number;
+  type: string;
+  size: number;
+  selected: boolean;
 }

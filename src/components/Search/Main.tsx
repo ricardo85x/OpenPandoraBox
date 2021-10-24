@@ -5,12 +5,20 @@ import { useSettingsContext } from "../../hooks/useSettings";
 import { Body } from "./Body"
 import { Header } from "./Header"
 import { Footer } from "../Footer"
+import { IRomSearch } from '../../utils/types';
 
-export const Main = ({ keyboardActiveRef, keyboardRef, selectedGame, onBackground, buttonAction }) => {
+interface MainProps {
+    keyboardActiveRef: any
+    keyboardRef: any
+    selectedGame: IRomSearch| undefined
+    onBackground: boolean
+    buttonAction: (...args: any[]) => void
+}
+
+
+export const Main = ({ keyboardActiveRef, keyboardRef, selectedGame, onBackground, buttonAction } : MainProps ) => {
 
     const { APP_WIDTH, APP_HEIGHT } = useSettingsContext()
-
-
 
     const footItems = keyboardActiveRef?.current ?
     [
@@ -35,8 +43,13 @@ export const Main = ({ keyboardActiveRef, keyboardRef, selectedGame, onBackgroun
             justifyContent: "space-between",
             flexDirection: "column"
         }}>
-            <Header romName={selectedGame?.romName} title={selectedGame?.platformTitle} gameName={selectedGame?.name} />
-            <Body onBackground={onBackground} selectedGame={selectedGame} keyboardActiveRef={keyboardActiveRef} keyboardRef={keyboardRef} onBackground={onBackground} selectedGame={selectedGame} />
+            <Header  title={selectedGame?.platformTitle} gameName={selectedGame?.name} />
+            <Body 
+                onBackground={onBackground} 
+                selectedGame={selectedGame} 
+                keyboardActiveRef={keyboardActiveRef} 
+                keyboardRef={keyboardRef} 
+            />
             <Footer
                 buttonAction={buttonAction}
                 items={footItems}

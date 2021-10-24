@@ -12,13 +12,38 @@ import { Footer } from "../../Footer"
 import { PandaConfig } from "../../../utils/PandaConfig"
 
 import LinearGradient from 'react-native-linear-gradient';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { IKeyEvent } from '../../../utils/types';
 
+interface ThemeSettingsProps {
+  navigation: StackNavigationProp<any,any>
+}
 
-export const ThemeSettings = ({ navigation, route }) => {
+interface SettingDataProps {
+
+  index: number
+  key: string
+  name: string 
+  desc: string
+  type: string
+  options?: string[],
+  selected?: boolean
+  value: string
+}
+
+interface defaultSettingsProps {
+  folderIsOpen: boolean,
+  selectedFileFolder: string,
+  type: string,
+  active: number,
+  data: SettingDataProps[]
+}
+
+export const ThemeSettings = ({ navigation }: ThemeSettingsProps) => {
 
   const { APP_WIDTH, APP_HEIGHT, keyMap, updateSettings, themeColor, chakraColors } = useSettingsContext()
 
-  const fileBrowserRef = useRef();
+  const fileBrowserRef = useRef<any>();
   const lastDirectory = useRef("/storage")
 
 
@@ -26,7 +51,7 @@ export const ThemeSettings = ({ navigation, route }) => {
 
   const pandaConfig = PandaConfig();
 
-  const defaultSettings = {
+  const defaultSettings : defaultSettingsProps = {
     folderIsOpen: false,
     selectedFileFolder: "",
     type: "file",
@@ -45,68 +70,74 @@ export const ThemeSettings = ({ navigation, route }) => {
         value: "",
       },
       {
-        index: 2, key: "colorButton_A",
+        index: 2, key: "searchBackgroundImg",
+        name: "Search Background", desc: "This image will show on home screen",
+        type: "file",
+        value: "",
+      },
+      {
+        index: 3, key: "colorButton_A",
         name: "Button A Color", desc: "select the button color",
         type: "color",
         options: Object.keys(chakraColors),
         value: "white"
       },
       {
-        index: 3, key: "colorButton_B",
+        index: 4, key: "colorButton_B",
         name: "Button B Color", desc: "select the button color",
         type: "color",
         options: Object.keys(chakraColors),
         value: "white"
       },
       {
-        index: 4, key: "colorButton_C",
+        index: 5, key: "colorButton_C",
         name: "Button C Color", desc: "select the button color",
         type: "color",
         options: Object.keys(chakraColors),
         value: "white"
       },
       {
-        index: 5, key: "colorButton_D",
+        index: 6, key: "colorButton_D",
         name: "Button D Color", desc: "select the button color",
         type: "color",
         options: Object.keys(chakraColors),
         value: "white"
       },
       {
-        index: 6, key: "colorButton_E",
+        index: 7, key: "colorButton_E",
         name: "Button E Color", desc: "select the button color",
         type: "color",
         options: Object.keys(chakraColors),
         value: "white"
       },
       {
-        index: 7, key: "colorButton_F",
+        index: 8, key: "colorButton_F",
         name: "Button F Color", desc: "select the button color",
         type: "color",
         options: Object.keys(chakraColors),
         value: "white"
       },
       {
-        index: 8, key: "themeColor",
+        index: 9, key: "themeColor",
         name: "Theme Color", desc: "select the button color",
         type: "color",
         options: Object.keys(chakraColors),
         value: "orange"
       },
       {
-        index: 9, key: "SAVE_CONFIG",
+        index: 10, key: "SAVE_CONFIG",
         name: "Save Configuration", desc: "The configuration will be saved to file",
         type: "save",
         value: "save"
       }
 
-    ]
+    ] 
 
   }
 
-  const [settings, setSettings] = useState(defaultSettings)
-  const pageSettingsRef = useRef([])
-  const [pageSettings, setPageSettings] = useState([])
+  const [, setSettings] = useState(defaultSettings)
+  const pageSettingsRef = useRef<SettingDataProps[]>([])
+  const [pageSettings, setPageSettings] = useState<SettingDataProps[]>([])
   const settingsRef = useRef(defaultSettings)
 
   useEffect(() => {
@@ -115,14 +146,14 @@ export const ThemeSettings = ({ navigation, route }) => {
 
       const _dirConfig = await pandaConfig.dirConfig();
 
-      const settingKeys = settingsRef.current.data.map(i => i.key);
+      const settingKeys  = settingsRef.current.data.map(i => i.key);
 
       settingsRef.current = {
         ...settingsRef.current,
         data: settingsRef.current.data.map(item => {
           const key = settingKeys.find(k => k == item.key)
           if (key && _dirConfig?.THEME && Object.keys(_dirConfig.THEME).includes(key)) {
-            return { ...item, value: _dirConfig.THEME[key] }
+            return { ...item, value: _dirConfig.THEME[key as keyof typeof _dirConfig.THEME] }
           }
           return item
         })
@@ -138,7 +169,7 @@ export const ThemeSettings = ({ navigation, route }) => {
       setPageSettings(pageSettingsRef.current)
       // hack to ListenKeyBoard work
       await new Promise(resolve => setTimeout(resolve, 1000))
-      KeyEvent.onKeyDownListener((keyEvent) => ListenKeyBoard(keyEvent));
+      KeyEvent.onKeyDownListener((keyEvent: IKeyEvent) => ListenKeyBoard(keyEvent));
     }
     loadSettings()
   }, [])
@@ -148,7 +179,7 @@ export const ThemeSettings = ({ navigation, route }) => {
     setPageSettings(pageSettingsRef.current)
   }, [pageSettingsRef])
 
-  const ListenKeyBoard = (keyEvent) => {
+  const ListenKeyBoard = (keyEvent: IKeyEvent) => {
 
     if (settingsRef.current.folderIsOpen) {
 
@@ -179,14 +210,14 @@ export const ThemeSettings = ({ navigation, route }) => {
 
   useFocusEffect(
     React.useCallback(() => {
-      KeyEvent.onKeyDownListener((keyEvent) => ListenKeyBoard(keyEvent));
+      KeyEvent.onKeyDownListener((keyEvent: IKeyEvent) => ListenKeyBoard(keyEvent));
       return () => {
         KeyEvent.removeKeyDownListener();
       };
     }, [])
   );
 
-  const setFolderIsOpen = (value) => {
+  const setFolderIsOpen = (value: boolean) => {
     settingsRef.current.folderIsOpen = value
     setSettings(settingsRef.current)
     setTimeout(() => {
@@ -194,7 +225,7 @@ export const ThemeSettings = ({ navigation, route }) => {
     }, 100);
   }
 
-  const setSelectedFileFolder = (value) => {
+  const setSelectedFileFolder = (value: string) => {
 
     settingsRef.current.selectedFileFolder = value
     setSettings(settingsRef.current)
@@ -214,7 +245,7 @@ export const ThemeSettings = ({ navigation, route }) => {
 
     let _pageSettingsRef = pageSettingsRef.current;
 
-    if (!selected) {
+    if (!selected || !first_item || !last_item) {
       return;
     }
 
@@ -235,15 +266,13 @@ export const ThemeSettings = ({ navigation, route }) => {
             _pageSettingsRef = settingsRef.current.data.slice(first_item.index - 1, first_item.index - 1 + PER_PAGE()).map((page) => {
               return {
                 ...page,
-                selected: page.index === first_item.index - 1
+                selected: page.index === first_item!.index - 1
               }
             })
             pageSettingsRef.current = _pageSettingsRef
             setPageSettings(pageSettingsRef.current)
           }
-        } else {
-          // console.log("No more items UP")
-        }
+        } 
 
         break;
       case "DOWN":
@@ -268,7 +297,7 @@ export const ThemeSettings = ({ navigation, route }) => {
             _pageSettingsRef = settingsRef.current.data.slice(first_item.index + 1, first_item.index + 1 + PER_PAGE()).map((game) => {
               return {
                 ...game,
-                selected: game.index === selected.index + 1
+                selected: game.index === selected!.index + 1
               }
             })
 
@@ -298,10 +327,16 @@ export const ThemeSettings = ({ navigation, route }) => {
   const handleSelection = async () => {
 
     const selectedSettingsIndex = pageSettingsRef.current.length ? pageSettingsRef.current.findIndex(g => g.selected) : undefined;
-    const selectedSettings = selectedSettingsIndex !== -1 && selectedSettingsIndex !== undefined ? pageSettingsRef.current[selectedSettingsIndex] : undefined;
+    const selectedSettings = selectedSettingsIndex !== -1 && selectedSettingsIndex !== undefined ? pageSettingsRef.current[selectedSettingsIndex] : null;
 
-    if (selectedSettings) {
-      if (selectedSettings.type == "color") {
+    console.log("D0", selectedSettings)
+    console.log("D1", selectedSettingsIndex)
+
+
+    if (selectedSettings && selectedSettingsIndex !== undefined) {
+
+      console.log("D2", selectedSettings)
+      if (selectedSettings?.options && selectedSettings.type == "color") {
         const choiceIndex = selectedSettings.options.findIndex(o => o === selectedSettings.value);
 
         let newValue;
@@ -340,8 +375,6 @@ export const ThemeSettings = ({ navigation, route }) => {
             }
             return p
           })
-
-          // settingsRef.current.data[selectedSettings.key].value = ""
 
           settingsRef.current.data = settingsRef.current.data.map(item => {
             return {
@@ -383,12 +416,12 @@ export const ThemeSettings = ({ navigation, route }) => {
     }
   }
 
-  const handleSetFolderReturn = async (data) => {
+  const handleSetFolderReturn = async (data: string) => {
 
     const selectedSettingsIndex = pageSettingsRef.current.length ? pageSettingsRef.current.findIndex(g => g.selected) : undefined;
     const selectedSettings = selectedSettingsIndex !== -1 && selectedSettingsIndex !== undefined ? pageSettingsRef.current[selectedSettingsIndex] : undefined;
 
-    if (data && data.match(/.+[.](jpe?g|png)$/i)) {
+    if (data && data.match(/.+[.](jpe?g|png)$/i)  && selectedSettings) {
       pageSettingsRef.current = pageSettingsRef.current.map(p => {
         if (p.key === selectedSettings.key) {
           return {
@@ -431,7 +464,7 @@ export const ThemeSettings = ({ navigation, route }) => {
     return Math.floor(bodyH / (ITEM_HEIGHT + 1));
   }
 
-  const buttonAction = (buttonName) => {
+  const buttonAction = (buttonName: string) => {
 
 
     if (settingsRef.current.folderIsOpen == false) {

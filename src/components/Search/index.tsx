@@ -13,13 +13,22 @@ import { Main } from "./Main"
 
 import { useDbContext } from "../../hooks/useDb"
 import { useKeyboardContext } from "../../hooks/keyboardHook"
+import { StackNavigationProp } from '@react-navigation/stack';
+import { IKeyEvent, IRomSearch } from '../../utils/types';
 
-export const Search = ({ navigation, route }) => {
+interface SearchProps {
+    navigation: StackNavigationProp<any, any>
+}
+
+export const Search = ({ navigation }: SearchProps) => {
 
     const { db } = useDbContext();
     const { searchText, setKeyboardActive, keyboardActiveRef } = useKeyboardContext()
 
-    const keyboardRef = useRef();
+    const keyboardRef = useRef<any>();
+
+
+
 
     const { APP_WIDTH, APP_HEIGHT, keyMap, chakraColors } = useSettingsContext()
 
@@ -32,15 +41,15 @@ export const Search = ({ navigation, route }) => {
 
     const EXTRA_SPACE = APP_HEIGHT - ((PER_PAGE) * ITEM_SIZE)
 
-    const [page, setPage] = useState([])
+    const [page, setPage] = useState<IRomSearch[]>([])
 
-    const pageRef = useRef([]);
-    const gamesRef = useRef([]);
+    const pageRef = useRef<IRomSearch[]>([]);
+    const gamesRef = useRef<IRomSearch[]>([]);
 
     const onBackgroundRef = useRef(false)
     const [onBackground, setOnBackground] = useState(false)
 
-    const readGameDB = async (start, end) => {
+    const readGameDB = async (start: number, end: number) => {
         return gamesRef.current.slice(start, start+end)
     }
 
@@ -49,6 +58,10 @@ export const Search = ({ navigation, route }) => {
     }, [searchText])
 
     const readGameList = async () => {
+
+        if(!db) {
+            return
+        }
 
         const pandaConfig = PandaConfig();
 
@@ -89,7 +102,7 @@ export const Search = ({ navigation, route }) => {
         })
 
         setPage(pageRef.current)
-        KeyEvent.onKeyDownListener((keyEvent) => ListenKeyBoard(keyEvent));
+        KeyEvent.onKeyDownListener((keyEvent: IKeyEvent) => ListenKeyBoard(keyEvent));
     }
 
     useEffect(() => {
@@ -103,7 +116,10 @@ export const Search = ({ navigation, route }) => {
 
     }, [page])
 
-    const ListenKeyBoard = (keyEvent) => {
+    const ListenKeyBoard = (keyEvent: IKeyEvent) => {
+        if(keyboardActiveRef === undefined) {
+            return
+        }
 
         if (keyboardActiveRef?.current) {
 
@@ -121,6 +137,7 @@ export const Search = ({ navigation, route }) => {
 
             if (keyMap.rightKeyCode?.includes(keyEvent.keyCode)) {
                 console.log("Pressed Right")
+                
                 keyboardActiveRef.current = true
                 setKeyboardActive(keyboardActiveRef.current)
             }
@@ -165,7 +182,7 @@ export const Search = ({ navigation, route }) => {
 
     useFocusEffect(
         React.useCallback(() => {
-            KeyEvent.onKeyDownListener((keyEvent) => ListenKeyBoard(keyEvent));
+            KeyEvent.onKeyDownListener((keyEvent: IKeyEvent) => ListenKeyBoard(keyEvent));
             return () => {
                 KeyEvent.removeKeyDownListener();
                 onBackgroundRef.current = true
@@ -176,16 +193,16 @@ export const Search = ({ navigation, route }) => {
 
     const handleRunGame = () => {
         const selectedGameNow = pageRef.current.find(g => g.selected);
-        if (selectedGameNow) {
+        if (selectedGameNow && db) {
             const pandaConfig = PandaConfig();
             pandaConfig.runGame({ rom: selectedGameNow.path, platform: selectedGameNow.platform.split("/")[selectedGameNow.platform.split("/").length - 1] })
             onBackgroundRef.current = true
             setOnBackground(onBackgroundRef.current)
-            db.addHistory({ id: selectedGameNow.gameId, platform: selectedGameNow.platform })
+            db.addHistory(selectedGameNow.gameId, selectedGameNow.platform)
         }
     }
 
-    const handleSelection = async (direction) => {
+    const handleSelection = async (direction: string) => {
 
         if (pageRef.current.length) {
 
@@ -324,7 +341,7 @@ export const Search = ({ navigation, route }) => {
         return pageRef.current.find(g => g.selected)
     }, [page]);
 
-    const buttonAction = (buttonName) => {
+    const buttonAction = (buttonName: string) => {
 
         switch (buttonName) {
             case "A":
@@ -369,7 +386,7 @@ export const Search = ({ navigation, route }) => {
                     }}
                 >
                     <GameList keyboardActiveRef={keyboardActiveRef}   EXTRA_SPACE={EXTRA_SPACE} games={pageRef.current} />
-                    <Main  keyboardActiveRef={keyboardActiveRef} keyboardRef={keyboardRef} buttonAction={buttonAction} title={selectedGame?.platform} onBackground={onBackground} selectedGame={selectedGame} />
+                    <Main  keyboardActiveRef={keyboardActiveRef} keyboardRef={keyboardRef} buttonAction={buttonAction} onBackground={onBackground} selectedGame={selectedGame} />
                 </LinearGradient>
 
             </SafeAreaView>

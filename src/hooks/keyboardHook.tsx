@@ -12,7 +12,7 @@ interface KeyboardContextValuesProps {
     setSearchText: (text: string) => void
     keyboardActive: boolean
     setKeyboardActive: (active: boolean) => void
-    keyboardActiveRef: MutableRefObject<boolean> | null
+    keyboardActiveRef: MutableRefObject<boolean> | undefined
     keyBoardHeight: number
     setKeyBoardHeight: (height: number) => void
 
@@ -22,7 +22,7 @@ const KeyboardContext = createContext<KeyboardContextValuesProps>({
     setSearchText: (text: string) => { console.log("setSearchText NOT initialized ", text)},
     keyboardActive: false,
     setKeyboardActive: (active: boolean) => { console.log("setKeyboardActive NOT initialized ", active)},
-    keyboardActiveRef: null,
+    keyboardActiveRef: undefined,
     keyBoardHeight: 50,
     setKeyBoardHeight: (height: number) => { console.log("setKeyBoardHeight NOT initialized ", height)},
 })

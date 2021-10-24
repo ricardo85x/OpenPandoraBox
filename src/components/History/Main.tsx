@@ -6,7 +6,14 @@ import { Body } from "../Platform/Body"
 import { Header } from "../Platform/Header"
 import { Footer } from "../Footer"
 
-export const Main = ({selectedGame, onBackground, buttonAction}) => {
+interface MainProps {
+    selectedGame: any
+    onBackground: boolean
+    buttonAction: (...args: any[]) => void
+
+}
+
+export const Main = ({selectedGame, onBackground, buttonAction}: MainProps) => {
 
     const { APP_WIDTH, APP_HEIGHT } = useSettingsContext()
 

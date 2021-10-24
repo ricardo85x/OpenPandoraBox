@@ -1,44 +1,58 @@
 import React, {useMemo} from 'react';
-
-import { TouchableOpacity, Text, StyleSheet, View, Image } from "react-native"
+import { TouchableOpacity, Text, View, Image } from "react-native"
+import { StackNavigationProp } from '@react-navigation/stack';
 
 import { useSettingsContext } from "../../hooks/useSettings"
+import { IMenuItem } from '../../utils/types';
 
-export const Item = ({ item, navigation, currentIndex, keyMaps }) => {
+interface ItemProps {
+  item: IMenuItem,
+  navigation: StackNavigationProp<any,any>,
+  currentIndex: number,
+  keyMaps: any
+}
 
-  const { appSettings, APP_WIDTH, APP_HEIGHT, chakraColors, themeColor } = useSettingsContext()
+export const Item = ({ item, navigation, keyMaps }: ItemProps) => {
 
+  const { appSettings, APP_WIDTH, APP_HEIGHT, chakraColors,  themeColor } = useSettingsContext()
   const SLIDER_WIDTH = APP_WIDTH + 80;
   const ITEM_HEIGHT = APP_HEIGHT;
   const ITEM_WIDTH = Math.round(SLIDER_WIDTH * 0.7);
 
-  const text = item?.text ? item.text : "TEXT";
   const title = item?.title ? item.title : "TITLE";
   const type = item?.type ? item.type : "TYPE";
   const background = item?.background ? item.background : "";
 
   const backgroundImage = useMemo( () => {
 
-    let currentBg = ""
+    const FILE_URI = "file://"
+
+    const defaultValue = { uri: "" }
+    let currentBg = defaultValue
+
     if (type === "platform") {
-      currentBg = { uri: `file://${background}` }
+      currentBg = { uri: `${FILE_URI}${background}` }
     } else if (type === "settings") {
       if (appSettings?.THEME?.settingsBackgroundImg){
-        currentBg = { uri: `file://${appSettings.THEME.settingsBackgroundImg}` }
+        currentBg = { uri: `${FILE_URI}${appSettings.THEME.settingsBackgroundImg}` }
       } 
     } else if (type === "history") {
       if (appSettings?.THEME?.historyBackgroundImg){
-        currentBg = { uri: `file://${appSettings.THEME.historyBackgroundImg}` }
+        currentBg = { uri: `${FILE_URI}${appSettings.THEME.historyBackgroundImg}` }
+      }
+    } else if (type === "search") {
+      if (appSettings?.THEME?.searchBackgroundImg){
+        currentBg = { uri: `${FILE_URI}${appSettings.THEME.searchBackgroundImg}` }
       }
     }
 
-    const minPathSize = "file://".length + 3;
+    const minPathSize = FILE_URI.length + 3;
 
-    if(currentBg?.uri?.length > minPathSize ){
+    if(currentBg.uri.length > minPathSize ){
       return currentBg
+    } else {
+      return defaultValue
     }
-
-    return undefined
 
   },[type, background])
 
@@ -48,21 +62,20 @@ export const Item = ({ item, navigation, currentIndex, keyMaps }) => {
       onPress={() => {
 
         if (type === "system") {
-          navigation.navigate('System', { item: item.item })
+          navigation.navigate('System', { item: item })
         } else if (type === "platform") {
-          navigation.navigate('Platform', { item: item.item, keyMaps })
+          navigation.navigate('Platform', { item: item, keyMaps })
         } else if (type === "history") {
-          navigation.navigate('History', { item: item.item, keyMaps })
+          navigation.navigate('History', { item: item, keyMaps })
         }
 
       }}
 
       style={{
 
-        backgroundColor: backgroundImage ? "transparent" : currentIndex == item.index ?
-           "#333333" :
-           "#242424",
-
+        backgroundColor: backgroundImage.uri.length  ? 
+          "transparent" : 
+          chakraColors.gray[7],
         width: ITEM_WIDTH,
         height: ITEM_HEIGHT - (ITEM_HEIGHT * 0.2),
 
@@ -73,7 +86,7 @@ export const Item = ({ item, navigation, currentIndex, keyMaps }) => {
       }}
     >
 
-      { (background || backgroundImage) ? (
+      { backgroundImage.uri.length > 0 ? (
 
         <Image
           source={backgroundImage}
@@ -103,9 +116,7 @@ export const Item = ({ item, navigation, currentIndex, keyMaps }) => {
                fontWeight: "bold",
             }}>{title}</Text>
           </View>
-            
-            {/* <Text style={styles.body}>{text}</Text> */}
-      
+                  
         </View>
       )}
 
@@ -113,20 +124,3 @@ export const Item = ({ item, navigation, currentIndex, keyMaps }) => {
   )
 }
 
-const styles = StyleSheet.create({
-
-  header: {
-    color: "#ffff",
-    fontSize: 28,
-    fontWeight: "bold",
-    paddingLeft: 20,
-    paddingTop: 20
-  },
-  body: {
-    color: "#ffff",
-    fontSize: 18,
-    paddingLeft: 20,
-    paddingLeft: 20,
-    paddingRight: 20
-  }
-})

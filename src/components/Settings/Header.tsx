@@ -4,8 +4,10 @@ import { Text, Image } from 'react-native';
 
 import { useSettingsContext } from "../../hooks/useSettings";
 
-
-export const Header = ({title}) => {
+interface HeaderProps {
+  title: string;
+}
+export const Header = ({title}: HeaderProps) => {
 
   const {themeColor } = useSettingsContext();
 

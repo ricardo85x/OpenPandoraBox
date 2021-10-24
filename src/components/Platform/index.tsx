@@ -1,23 +1,44 @@
 import React, { useEffect, useState, useRef, useMemo } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
-import { SafeAreaView, View } from 'react-native';
+import { SafeAreaView } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 
 import KeyEvent from 'react-native-keyevent';
 
-import { useSettingsContext } from "../../hooks/useSettings";
+import { Utils } from "../../utils";
+import { ParseGameList } from "../../utils/ParseGameList"
 import { PandaConfig } from "../../utils/PandaConfig"
 
-import { GameList } from "../Platform/GameList"
+import { GameList } from "./GameList"
 import { Main } from "./Main"
 
+import { useSettingsContext } from "../../hooks/useSettings"
 import { useDbContext } from "../../hooks/useDb"
+import { StackNavigationProp } from '@react-navigation/stack';
+import { IKeyEvent, IRomPlatform } from '../../utils/types';
 
-export const History = ({ navigation, route }) => {
+interface PlatformProps {
+    navigation: StackNavigationProp<any, any>
+    route: { 
+        name: string,  
+        params: { 
+            platform : {
+                title: string, text: string, path: string
+            } 
+        }
+    }
+}
+
+export const Platform = ({ navigation, route }: PlatformProps) => {
+
+
 
     const { db } = useDbContext();
 
+    const { decodeText } = Utils()
+
     const { APP_WIDTH, APP_HEIGHT, keyMap } = useSettingsContext()
+
 
     const ITEM_SIZE = 50;
     const getPerItem = () => {
@@ -28,61 +49,190 @@ export const History = ({ navigation, route }) => {
 
     const EXTRA_SPACE = APP_HEIGHT - ((PER_PAGE) * ITEM_SIZE)
 
-    const [page, setPage] = useState([])
-    const pageRef = useRef([]);
-    const gamesRef = useRef([]);
+    const { params: { platform } } = route
+
+    const { title, text, path } = platform
+
+    const [page, setPage] = useState<IRomPlatform[]>([])
+    const pageRef = useRef<IRomPlatform[]>([]);
+    const gamesRef = useRef<IRomPlatform[]>([]);
 
     const onBackgroundRef = useRef(false)
     const [onBackground, setOnBackground] = useState(false)
 
-    const readGameDB = async (start, end) => {
-        return gamesRef.current.slice(start, start+end)
+    const readGameDB = async (start:number, end: number) : Promise<IRomPlatform[]>  => {
+        const _dbRoms = (await db?.loadRomsFromPlatformOffsetLimit(path, start, end)) as IRomPlatform[] ?? []
+        return _dbRoms
     }
 
     const readGameList = async (reload = false) => {
 
-        const pandaConfig = PandaConfig();
 
-        const baseConfig = await pandaConfig.dirConfig()
+        if (!db) {
+            return
+        }
 
-        gamesRef.current = (await db.getHistory()).map((game, id) => {
+        let lastGame;
 
-            const platform_name = game.platform.split('/')[game.platform.split('/').length - 1]
+        try {
 
-            return {
-                path: game?.path,
-                thumbnail: game?.thumbnail,
-                image: game?.image,
-                desc: game?.desc,
-                video: game?.video,
-                name: game?.name,
-                id: id,
-                gameId: game?.id,
-                loadVideo: false,
-                platform: game?.platform,
-                platformTitle: baseConfig?.PLATFORMS[platform_name]?.title
+            if (!reload) {
+
+                const _pages = await readGameDB(0, PER_PAGE);
+
+                if (!!_pages && !!_pages.length) {
+
+                    pageRef.current = _pages.map((game, i) => {
+                        return {
+                            ...game,
+                            selected: i === 0
+                        }
+                    })
+
+                    setPage(pageRef.current)
+
+                    const _size = await db.sizeRomPlatform(path)
+
+                    if (!!_size && Number(_size) !== NaN) {
+
+                        const _storageGames = [...new Array(_size)].map((g, i) => {
+                            return {
+                                id: i
+                            } as IRomPlatform
+                        })
+
+                        if (!!_storageGames && !!_storageGames.length) {
+                            gamesRef.current = _storageGames;
+                            KeyEvent.onKeyDownListener((keyEvent: IKeyEvent) => ListenKeyBoard(keyEvent));
+                            return;
+                        } else {
+
+                        }
+                    } else {
+
+                    }
+
+                }
+
             }
-        }).map(g => {
-            return {
-                ...g,
-                romName: !!g.path.split('/').length ?
-                    g.path.split('/')[g.path.split('/').length - 1] : ""
-            }
-        })
 
-        pageRef.current = gamesRef.current.slice(0, PER_PAGE).map((game, i) => {
-            return {
-                ...game,
-                selected: i === 0
-            }
-        })
+            const parseGameList = ParseGameList();
+            const jsonGame = await parseGameList.getJsonData(`${path}/gamelist.xml`)
+            const { gameList } = jsonGame;
 
-        setPage(pageRef.current)
-        KeyEvent.onKeyDownListener((keyEvent) => ListenKeyBoard(keyEvent));
+            let gamesRef_current = []
+
+            if (gameList) {
+
+
+                let cur_id = 0
+
+                gamesRef_current = gameList.game
+                    .sort((a, b) => b.name.localeCompare(a.name))
+                    .filter(game => !!game?.path?.substr)
+                    .reduce((acc, game) => {
+
+                        lastGame = game
+
+                        try {
+
+                            const data_ = {
+                                path: decodeText(`${path}${game?.path?.substr(1)}`),
+                                thumbnail: decodeText(`file:///${path}${game?.thumbnail?.substr(1)}`),
+                                image: decodeText(`file:///${path}${game?.image?.substr(1)}`),
+                                desc: decodeText(game?.desc),
+                                video: decodeText(`file:///${path}${game?.video?.substr(1)}`),
+                                name: decodeText(game?.name),
+                                id: cur_id,
+                                loadVideo: false
+                            }
+
+                            acc.push(data_);
+                            cur_id++
+
+
+
+                        } catch (e) {
+                            console.log("ERROR ADDING ROM", e, game)
+                        }
+
+                        return acc
+
+
+                    }, [] as IRomPlatform[]).map(g => {
+                        return {
+                            ...g,
+                            romName: !!g.path.split('/').length ?
+                                g.path.split('/')[g.path.split('/').length - 1] : ""
+                        }
+                    }) 
+
+
+
+                await db.cleanPlatform(path);
+
+                await db.addRoms(gamesRef_current.map(g => {
+                    return {
+                        ...g,
+                        platform: path
+                    }
+                }))
+                
+
+                pageRef.current = gamesRef_current.slice(0, PER_PAGE).map((game, i) => {
+                    return {
+                        ...game,
+                        selected: i === 0
+                    }
+                })
+
+                setPage(pageRef.current)
+
+                gamesRef.current = [...new Array(gamesRef_current.length)].map((g, i) => {
+                    return {
+                        id: i
+                    } as IRomPlatform
+                })
+
+
+            } else {
+
+            }
+
+        } catch (err) {
+            console.log("Error loading game list", err)
+            console.log("Last Game", lastGame)
+            // KeyEvent.onKeyDownListener((keyEvent) => ListenKeyBoard(keyEvent));
+
+        }
+
+
     }
 
     useEffect(() => {
-        readGameList()
+
+        const loadGameList = async () => {
+
+            try {
+                await  readGameList()
+                KeyEvent.onKeyDownListener((keyEvent: IKeyEvent) => ListenKeyBoard(keyEvent));
+
+
+            } catch {
+                KeyEvent.onKeyDownListener((keyEvent: IKeyEvent) => ListenKeyBoard(keyEvent));
+
+            }
+
+        }
+
+        loadGameList()
+
+
+       
+
+
+
+
     }, [])
 
 
@@ -92,7 +242,7 @@ export const History = ({ navigation, route }) => {
 
     }, [page])
 
-    const ListenKeyBoard = (keyEvent) => {
+    const ListenKeyBoard = (keyEvent: IKeyEvent) => {
 
         if (keyMap.upKeyCode?.includes(keyEvent.keyCode)) {
             handleSelection("UP")
@@ -120,11 +270,20 @@ export const History = ({ navigation, route }) => {
         ) {
             // console.log("KEY F")
             handleSelection("BUTTON_F")
+
         }
 
         if ([...keyMap.P1_D, ...keyMap.P2_D].includes(keyEvent.keyCode)) {
             // console.log("RELOAD")
-            handleRemoveFromHistory()
+            readGameList(true)
+        }
+
+        if ([...keyMap.P1_E, ...keyMap.P2_E].includes(keyEvent.keyCode)) {
+
+            // RANDOM
+
+            selectRandomRom();
+
         }
 
         if (keyMap.P1_B?.includes(keyEvent.keyCode)) {
@@ -141,7 +300,7 @@ export const History = ({ navigation, route }) => {
 
     useFocusEffect(
         React.useCallback(() => {
-            KeyEvent.onKeyDownListener((keyEvent) => ListenKeyBoard(keyEvent));
+            KeyEvent.onKeyDownListener((keyEvent:IKeyEvent) => ListenKeyBoard(keyEvent));
             return () => {
                 KeyEvent.removeKeyDownListener();
                 onBackgroundRef.current = true
@@ -151,33 +310,33 @@ export const History = ({ navigation, route }) => {
     );
 
 
-    const handleRemoveFromHistory = async () => {
-        const selectedGameNow = pageRef.current.find(g => g.selected);
+    const selectRandomRom = async () => {
+        const first = Math.floor(Math.random() * gamesRef.current.length - 1);
 
-        if (selectedGameNow) {
+        pageRef.current = (await readGameDB(first, PER_PAGE)).map((game) => {
+            return {
+                ...game,
+                selected: game.id === first
+            }
+        })
 
-            await db.removeFromHistory({ id: selectedGameNow.gameId, platform: selectedGameNow.platform })
-
-            readGameList()
-
-        }
-
+        setPage(pageRef.current)
     }
-
 
     const handleRunGame = () => {
         const selectedGameNow = pageRef.current.find(g => g.selected);
-        if (selectedGameNow) {
+        if (selectedGameNow && db) {
             const pandaConfig = PandaConfig();
-
-            pandaConfig.runGame({ rom: selectedGameNow.path, platform: selectedGameNow.platform.split("/")[selectedGameNow.platform.split("/").length - 1] })
+            pandaConfig.runGame({ rom: selectedGameNow.path, platform: text })
             onBackgroundRef.current = true
             setOnBackground(onBackgroundRef.current)
-            db.addHistory({ id: selectedGameNow.gameId, platform: selectedGameNow.platform })
+
+
+            db.addHistory(selectedGameNow.id, path)
         }
     }
 
-    const handleSelection = async (direction) => {
+    const handleSelection = async (direction: string) => {
 
         if (pageRef.current.length) {
 
@@ -313,7 +472,8 @@ export const History = ({ navigation, route }) => {
         return pageRef.current.find(g => g.selected)
     }, [page]);
 
-    const buttonAction = (buttonName) => {
+
+    const buttonAction = (buttonName: string) => {
 
         switch (buttonName) {
             case "A":
@@ -330,7 +490,10 @@ export const History = ({ navigation, route }) => {
                 handleSelection("BUTTON_C");
                 break;
             case "D":
-                handleRemoveFromHistory();
+                readGameList(true);
+                break;
+            case "E":
+                selectRandomRom();
                 break;
             case "F":
                 handleSelection("BUTTON_F");
@@ -342,6 +505,10 @@ export const History = ({ navigation, route }) => {
 
     }
 
+    // console.log("N_ITEMS", pageRef.current.length)
+
+
+
     return (
         <>
             <SafeAreaView>
@@ -350,15 +517,17 @@ export const History = ({ navigation, route }) => {
                     start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}
 
                     colors={["#1A202C", "#2D3748", "#4A5568"]}
+
                     style={{
                         display: 'flex',
                         flexDirection: "row",
                         width: APP_WIDTH,
-                        height: APP_HEIGHT
+                        height: APP_HEIGHT,
+                        // backgroundColor: "#4A5568"
                     }}
                 >
                     <GameList EXTRA_SPACE={EXTRA_SPACE} games={pageRef.current} />
-                    <Main buttonAction={buttonAction} title={selectedGame?.platform} onBackground={onBackground} selectedGame={selectedGame} />
+                    <Main buttonAction={buttonAction} title={title} onBackground={onBackground} selectedGame={selectedGame} />
                 </LinearGradient>
 
             </SafeAreaView>

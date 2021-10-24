@@ -1,11 +1,17 @@
 import React from 'react';
 import { Text } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
+import { IRomPlatform } from '../../utils/types';
 
 
-export const GameItem = ({ game, EXTRA_SPACE }) => {
+interface GameItemProps {
+    game: IRomPlatform
+    EXTRA_SPACE: number
+}
 
-    const height = (game?.selected && EXTRA_SPACE) ? ((50) + parseInt(EXTRA_SPACE)) : 50
+export const GameItem = ({ game, EXTRA_SPACE }: GameItemProps) => {
+
+    const height = (game?.selected && EXTRA_SPACE) ? ((50) + EXTRA_SPACE) : 50
 
     let bgColor = ["#171923", "#1A202C", "#2D3748"]
    

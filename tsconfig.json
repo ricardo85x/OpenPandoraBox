@@ -12,7 +12,8 @@
       "skipLibCheck": true,
       "declaration": true,
       "noUnusedLocals": true,
-      "allowJs": true
+      "allowJs": true,
+      "resolveJsonModule": true
     },
     "exclude": [
       "node_modules"

@@ -10,6 +10,7 @@ export interface IRom {
     romName: string
     normalizedName: string
 }
+export type IRomRaw = Omit<IRom, 'normalizedName'>
 
 export interface IHistory {
     romId: number

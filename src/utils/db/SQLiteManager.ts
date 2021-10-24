@@ -4,7 +4,7 @@ SQLite.DEBUG(false);
 SQLite.enablePromise(true);
 
 import * as schema from './schemas';
-import { IRom } from './types';
+import { IRom, IRomRaw } from './types';
 
 const database_name = 'OpenPandoraBox.db';
 const database_version = '1.0';
@@ -116,7 +116,7 @@ class SQLiteManager {
     }
 
     sizeRomPlatform(platform: string) {
-        return new Promise((resolve) => {
+        return new Promise<number>((resolve) => {
             this.db
                 .transaction((tx) => {
                     tx.executeSql('select COUNT(id) as size from Rom where platform = ?  ', [
@@ -190,25 +190,25 @@ class SQLiteManager {
         }
     }
 
-    async addHistory(rom: IRom) {
+    async addHistory(id: number, platform: string) {
         try {
             const current_history = await this.getHistory()
             if (current_history.length === 0) {
                 await this.db.executeSql(
                     "insert into history(romId, platform, updated_at) values (?,?, datetime(CURRENT_TIMESTAMP, 'localtime'))",
-                    [rom.id, rom.platform]
+                    [id, platform]
                 )
             } else {
-                const duplicated = current_history.findIndex(i => i.id === rom.id && i.platform === rom.platform)
+                const duplicated = current_history.findIndex(i => i.id === id && i.platform === platform)
                 if (duplicated === -1) {
                     await this.db.executeSql(
                         "insert into history(romId, platform, updated_at) values (?,?, datetime(CURRENT_TIMESTAMP, 'localtime'))",
-                        [rom.id, rom.platform]
+                        [id, platform]
                     )
                 } else {
                     await this.db.executeSql(
                         'update history set updated_at = datetime(CURRENT_TIMESTAMP, "localtime") where romId = ? and platform = ?',
-                        [rom.id, rom.platform]
+                        [id, platform]
                     )
                 }
             }
@@ -288,7 +288,7 @@ class SQLiteManager {
         return resultData
     }
 
-    async addRoms(roms: IRom[]) {
+    async addRoms(roms: IRomRaw[]) {
 
         const NUMBER_OF_TRANSACTIONS_AT_TIME = 350
         let transactions: any = []

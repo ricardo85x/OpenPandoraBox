@@ -8,11 +8,15 @@ import LinearGradient from 'react-native-linear-gradient';
 
 import { Footer } from "../Footer"
 import { Header } from "./Header"
+import { StackNavigationProp } from '@react-navigation/stack';
+import { IKeyEvent } from '../../utils/types';
+
+interface SettingsProps {
+    navigation: StackNavigationProp<any,any>
+}
 
 
-
-
-export const Settings = ({ navigation, route }) => {
+export const Settings = ({ navigation } : SettingsProps ) => {
 
 
     const { APP_WIDTH, APP_HEIGHT, keyMap, themeColor, chakraColors } = useSettingsContext()
@@ -31,26 +35,16 @@ export const Settings = ({ navigation, route }) => {
     const settingsRef = useRef(defaultSettings)
     const [settings, setSettings] = useState(defaultSettings)
 
-    const [title, setTitle] = useState("Settings")
-
-
-
     useEffect(() => {
         const loadSettings = async () => {
-            // hack to ListenKeyBoard work
             await new Promise(resolve => setTimeout(resolve, 100))
-            
-            KeyEvent.onKeyDownListener((keyEvent) => ListenKeyBoard(keyEvent));
+        
+            KeyEvent.onKeyDownListener((keyEvent: IKeyEvent) => ListenKeyBoard(keyEvent));
         }
         loadSettings()
     }, [])
 
-    // useEffect(() => {
-    //     const current = settingsRef.current.items.find(
-    //         item => item.index === settingsRef.current.active
-    //     )
-    //     setTitle(current.name)
-    // }, [settings])
+ 
 
     const handleSelection = () => {
 
@@ -69,7 +63,7 @@ export const Settings = ({ navigation, route }) => {
         }
     }
 
-    const ListenKeyBoard = (keyEvent) => {
+    const ListenKeyBoard = (keyEvent: IKeyEvent) => {
 
         if ([...keyMap.P1_A, ...keyMap.P2_A].includes(keyEvent.keyCode)) {
             handleSelection()
@@ -134,14 +128,14 @@ export const Settings = ({ navigation, route }) => {
 
     useFocusEffect(
         React.useCallback(() => {
-            KeyEvent.onKeyDownListener((keyEvent) => ListenKeyBoard(keyEvent));
+            KeyEvent.onKeyDownListener((keyEvent: IKeyEvent) => ListenKeyBoard(keyEvent));
             return () => {
                 KeyEvent.removeKeyDownListener();
             };
         }, [])
     );
 
-    const buttonAction = (buttonName) => {
+    const buttonAction = (buttonName: string) => {
 
         switch (buttonName) {
             case "A":
@@ -173,7 +167,7 @@ export const Settings = ({ navigation, route }) => {
 
                     }}
                 >
-                    <Header title={title} />
+                    <Header title="Settings" />
             
 
 

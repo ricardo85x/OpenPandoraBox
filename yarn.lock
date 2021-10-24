@@ -1272,6 +1272,21 @@
   resolved "https://registry.yarnpkg.com/@types/react-native-sqlite-storage/-/react-native-sqlite-storage-5.0.1.tgz#20a0862eaa52de83c9698bdd597f2114349b563a"
   integrity sha512-M4KDSFeHVVh0qiV9WvNr5e5VonRDzYpDqBQCFPtmDAVHRoUBNWxeSQETZ+BNF8jGavxN0u/FMbOQWGo+7UwRaA==
 
+"@types/react-native-video@^5.0.10":
+  version "5.0.10"
+  resolved "https://registry.yarnpkg.com/@types/react-native-video/-/react-native-video-5.0.10.tgz#bd1ecc6fade0b8d37dad711599144942af2e987d"
+  integrity sha512-PmF5h6Co0eM8NaPlQ/MHYeauP6fvroheb6dkAvQ+Lm5hbpCGxRxLNxhrTwG3vRaUd9guj9SpYlriWpY/5rBIJw==
+  dependencies:
+    "@types/react" "*"
+    "@types/react-native" "*"
+
+"@types/react-native@*":
+  version "0.66.0"
+  resolved "https://registry.yarnpkg.com/@types/react-native/-/react-native-0.66.0.tgz#6b3d55c0dcb300df80df315a7ded95b6d9d617ef"
+  integrity sha512-ZGqb0DYNZhF/eZwzzIFCz4WyLuCb8SFoKvDU+ZWgcTUSSD7HUop3vopMBSlBiQUfVRiK7VemxdcGRSav1t9pbg==
+  dependencies:
+    "@types/react" "*"
+
 "@types/react-native@^0.65.10":
   version "0.65.10"
   resolved "https://registry.yarnpkg.com/@types/react-native/-/react-native-0.65.10.tgz#5dad96570ae48b5e326445597e050dfb349a6d54"
