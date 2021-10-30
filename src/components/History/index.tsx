@@ -13,15 +13,14 @@ import { GameList } from "../Platform/GameList"
 import { Main } from "./Main"
 
 import { useDbContext } from "../../hooks/useDb"
-import { IRomCustom } from '../../utils/types';
+import { IRomCustom, IRomPlatform } from '../../utils/types';
 import { IRom } from '../../utils/db/types';
 
 interface HistoryProps {
     navigation: StackNavigationProp<any, any>
-    route: {name: string};
 }
 
-export const History = ({ navigation, route } : HistoryProps) => {
+export const History = ({ navigation } : HistoryProps) => {
 
     const { db } = useDbContext();
 
@@ -47,7 +46,7 @@ export const History = ({ navigation, route } : HistoryProps) => {
         return gamesRef.current.slice(start, start+end)
     }
 
-    const readGameList = async (reload = false) => {
+    const readGameList = async () => {
 
         if (!db){
             return
@@ -185,7 +184,7 @@ export const History = ({ navigation, route } : HistoryProps) => {
             pandaConfig.runGame({ rom: selectedGameNow.path, platform: selectedGameNow.platform.split("/")[selectedGameNow.platform.split("/").length - 1] })
             onBackgroundRef.current = true
             setOnBackground(onBackgroundRef.current)
-            db.addHistory(selectedGameNow.id, selectedGameNow.platform)
+            db.addHistory(selectedGameNow.gameId, selectedGameNow.platform)
         }
     }
 
@@ -369,7 +368,7 @@ export const History = ({ navigation, route } : HistoryProps) => {
                         height: APP_HEIGHT
                     }}
                 >
-                    <GameList EXTRA_SPACE={EXTRA_SPACE} games={pageRef.current} />
+                    <GameList EXTRA_SPACE={EXTRA_SPACE} games={pageRef.current as IRomPlatform[]} />
                     <Main buttonAction={buttonAction} onBackground={onBackground} selectedGame={selectedGame} />
                 </LinearGradient>
 

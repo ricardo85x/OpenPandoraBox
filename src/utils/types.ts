@@ -6,6 +6,7 @@ export type IAppColor =
   | 'blue'
   | 'pink'
   | 'orange';
+  
 export type IAppLauchers =
   | 'retroarch'
   | 'Drastic'
@@ -108,20 +109,17 @@ export interface IRomCustom {
   loadVideo: boolean;
   platformTitle: string;
   selected?: boolean;
+  sortId?: number;
 }
-
-export type IRomPlatform = Omit<
-  IRomCustom,
-  'gameId' | 'platform' | 'platformTitle'
->;
 
 export type IRomSearch = Omit<IRomCustom, 'normalizedName'>;
 
-// export type IRomSearch = Partial<Omit<
-//   IRomCustom, 'normalizedName' | 'selected'
-// >> & {
-//   romName?: string
-// }
+export type IRomPlatform = Partial<Omit<
+  IRomCustom,
+  'gameId' | 'platformTitle' | 'platform'
+  >> & {
+    sortId: number
+}
 
 export interface IGameList {
   lang: string;

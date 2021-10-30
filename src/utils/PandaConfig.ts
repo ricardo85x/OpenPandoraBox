@@ -14,11 +14,7 @@ export const PandaConfig = () => {
 
         let updated = false;
 
-        
         Object.keys(updatedConfig).forEach(key => {
-
-
-            
 
             if (Object.keys(currentConfig).includes(key) == false){
                 updated = true
@@ -35,7 +31,6 @@ export const PandaConfig = () => {
             console.log("SAVING")
             const updatedConfigText = JSON.stringify(updatedConfig, null, 2);
 
-
             try {   
                 await RNFS.writeFile(configFilePath, updatedConfigText, 'utf8')
                 console.log('Settings updated successfully', configFilePath);
@@ -47,20 +42,16 @@ export const PandaConfig = () => {
             return true;
         } else {
             console.log("NOT SAVING")
-
             return false
         }
  
-
     }
-
 
     const baseConfig = async (configFilePath: string, defaultConfig: string, type = "appConfig") => {
 
         if(type === "appConfig") {
             try {
 
-            
                 const json_config : IAppSettings = JSON.parse(defaultConfig);
     
                 const retroArchConfigPath = json_config.RETROARCH_CONFIG;
@@ -82,8 +73,6 @@ export const PandaConfig = () => {
                 console.log("error on baseConfig", err.message);
             }   
         }
-
-        
 
         let rawConfig : string = ""
 
@@ -118,7 +107,6 @@ export const PandaConfig = () => {
         }
 
     }
-
 
     // 
     const dirConfig = async () => {
@@ -236,8 +224,6 @@ export const PandaConfig = () => {
             return
         }
 
-
-
         if (platformCore && platformCore.choices.length > platformCore.default) {
             core = platformCore.choices[
                 platformCore.default
@@ -249,16 +235,12 @@ export const PandaConfig = () => {
         if (core && await RNFS.exists(rom)) {
 
             // const COMMAND = `am start --user 0 -a android.intent.action.MAIN -c android.intent.category.LAUNCHER -n ${_baseConfig.RETROARCH_APK_ID}/com.retroarch.browser.retroactivity.RetroActivityFuture --es "LIBRETRO" "${core_path}" --es "CONFIGFILE" "${_baseConfig.RETROARCH_CONFIG}" --es "ROM" "${rom}" --es "IME" "com.android.inputmethod.latin/.LatinIME"`;
-
             RunLocalCommand().runRetroArch(
                 _baseConfig.RETROARCH_APK_ID, // com.retroarch.ra32
                 core_path, // /data/data/com.retroarch/cores/bla.so
                 _baseConfig.RETROARCH_CONFIG, // /storage/sdcard1/retroarch.cfg
                 rom // /storage/sdcard1/roms/megadrive/sonic2.zip
             );
-
-
-            // console.log("COMMAND", COMMAND)
 
         } else {
             console.log("OUPS", core, rom, core_path)
@@ -306,7 +288,6 @@ export const PandaConfig = () => {
         return (await baseConfig(configFilePath, defaultConfig, "keyMap")) as IKeyMap;
     }
 
-
     const listCores = async () => {
 
         let cores = []
@@ -324,24 +305,18 @@ export const PandaConfig = () => {
                     for (let i = 0; i < listOfFiles.length; i++) {
                         const file = listOfFiles[i];
 
-
                         if (file.isFile()  ) {
 
                             if(file.name.match(/[^.].+\.so/)){
                                 cores.push(file.name)
                             }
-
                         }
                     }
                 }
             }
-
-
-
         }
 
         cores.sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()))
-
 
         return cores;
     }
@@ -419,34 +394,24 @@ export const PandaConfig = () => {
 
         // platforms.sort((a, b) => a.name > b.name)
 
-        platforms.sort((a, b) => b.name.localeCompare(a.name) )
-
+        platforms.sort((a, b) => a.name.localeCompare(b.name) )
 
         return platforms.map((e,i) => {
             return {...e,key:i }
         });
-
-
     }
-
-
 
     const loadItemsMenu = async () => {
 
         const _dirConfig = await dirConfig();
-
-
-       
 
         let defaultConfig : IMenuItem[] = []
 
         if (_dirConfig?.BASE_ROOM_DIR) {
             const base_dir = _dirConfig.BASE_ROOM_DIR;
 
-
             const file_exists = await RNFS.exists(base_dir);
             if (file_exists) {
-
 
                 const listOfFiles = await RNFS.readDir(base_dir);
 
@@ -455,14 +420,12 @@ export const PandaConfig = () => {
                     for (let i = 0; i < listOfFiles.length; i++) {
                         const file = listOfFiles[i];
 
-
                         if (file.isDirectory() && _dirConfig?.PLATFORMS[file.name]?.enabled) {
 
                             const title = _dirConfig?.PLATFORMS[file.name]?.title
                             const bg = _dirConfig?.PLATFORMS[file.name]?.backgroundImg
 
                             if (await RNFS.exists(file.path + "/gamelist.xml")) {
-
 
                                 defaultConfig.push({
                                     type: "platform",
@@ -482,7 +445,6 @@ export const PandaConfig = () => {
         }
 
         defaultConfig.sort((a, b) => b.title.localeCompare(b.title))
-
 
         return [
             {
@@ -513,5 +475,4 @@ export const PandaConfig = () => {
         listPlatforms,
         listCores
     }
-
 }

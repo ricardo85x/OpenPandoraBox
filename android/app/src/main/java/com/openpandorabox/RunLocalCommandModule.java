@@ -128,6 +128,14 @@ public class RunLocalCommandModule extends ReactContextBaseJavaModule {
   }
 
 
+  @ReactMethod
+  private void startPlatformService() {
+    Intent intent = new Intent();
+    intent.setClassName("com.retrostation.gameplatformsupportservice", "com.retrostation.gameplatformsupportservice.joystick.JoystickSupportService");
+    _context.startService(intent);
+    Log.v("OpenPandoraBox", "startPlatformService");
+ }
+
 
   @ReactMethod
   public void openMupenPlusFZ(String rom){

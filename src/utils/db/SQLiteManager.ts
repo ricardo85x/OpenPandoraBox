@@ -30,7 +30,6 @@ class SQLiteManager {
     initDB() {
         let db: SQLite.SQLiteDatabase;
 
-    
         return new Promise((resolve) => {
             (SQLite as any).echoTest()
                 .then(() => {
@@ -87,9 +86,9 @@ class SQLiteManager {
         }
     }
 
-    cleanPlatform(platform: string) {
+    async cleanPlatform(platform: string) {
         try {
-            this.db.executeSql(
+            await this.db.executeSql(
                 'DELETE from Rom where platform = ? ', [ platform ]
             )
         } catch (error) {
@@ -97,7 +96,6 @@ class SQLiteManager {
         }   
     }
 
-   
     loadRomsFromPlatform(platform: string) {
         return new Promise((resolve) => {
             this.db
@@ -145,10 +143,14 @@ class SQLiteManager {
         return new Promise((resolve) => {
             this.db
                 .transaction((tx) => {
+                    const sql = "select * from (select * from Rom where platform = ? order by normalizedName ASC) LIMIT ? OFFSET ? "
 
-                    tx.executeSql('select * from Rom where platform = ? LIMIT ? OFFSET ? ', [
+                    // const sql_origin = "select * from Rom where platform = ? LIMIT ? OFFSET ?"
+
+                    tx.executeSql(sql, [
                         platform, limit, offset
                     ]).then(([, results]) => {
+
 
                         const _size = results.rows.length;
 
@@ -156,7 +158,13 @@ class SQLiteManager {
 
                         if (_size > 0) {
                             for (let i = 0; i < _size; i++) {
-                                roms.push(results.rows.item(i))
+                                roms.push(
+                                    {
+                                        ...results.rows.item(i),
+                                        sortId: i + offset
+
+                                    }
+                                )
                             }
                         }
 
@@ -191,6 +199,8 @@ class SQLiteManager {
     }
 
     async addHistory(id: number, platform: string) {
+
+
         try {
             const current_history = await this.getHistory()
             if (current_history.length === 0) {
@@ -199,6 +209,7 @@ class SQLiteManager {
                     [id, platform]
                 )
             } else {
+
                 const duplicated = current_history.findIndex(i => i.id === id && i.platform === platform)
                 if (duplicated === -1) {
                     await this.db.executeSql(
@@ -297,6 +308,7 @@ class SQLiteManager {
 
         roms.forEach(rom => {
 
+
             try {
 
                 const actual_params = [
@@ -332,16 +344,26 @@ class SQLiteManager {
                 }
 
 
+
             } catch (err) {
                 console.log("cant add rom", rom)
             }
             
         })
 
+        if (params.length > 0 ) {
+            transactions.push({
+                params,
+                args: args.substr(0,args.length -1)
+            })
+            params = []
+            args = ""
+        }
+
+
         for(let i = 0; i < transactions.length; i++) {
 
             try {
-
 
                 const current = transactions[i]
 

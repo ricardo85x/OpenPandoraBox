@@ -1,5 +1,5 @@
 import 'react-native-gesture-handler';
-import React from 'react';
+import React, { useEffect } from 'react';
 
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -17,10 +17,20 @@ import { DbContextProvider } from "./hooks/useDb"
 import { SettingsContextProvider } from "./hooks/useSettings"
 import { KeyboardContextProvider } from "./hooks/keyboardHook"
 
+import { RunLocalCommand } from "./modules/RunLocalCommand";
+
 
 const App = () => {
 
   const Stack = createStackNavigator();
+
+
+  useEffect(() => {
+
+    // enable joystick on pandora box 3d+
+    RunLocalCommand().startPlatformService()
+
+  },[] )
 
   return (
     <DbContextProvider>
