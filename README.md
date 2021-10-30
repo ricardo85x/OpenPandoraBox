@@ -4,7 +4,9 @@ Another emulator frontend using RetroArch.
 
 It is suppose to be used with Pandory on Pandora Box 3D Plus.
 
-It could be used with **NVIDIA Shield Portable** as well as I am using it to debug.
+It could be used with **NVIDIA Shield Portable** as well as I am using it to debug, but not all features will work on other platforms.
+
+### This app is a Launcher so you can replace the default launcher.
 
 ### Platform Selection
 
@@ -16,10 +18,11 @@ It could be used with **NVIDIA Shield Portable** as well as I am using it to deb
 
 
 ### Features
+- Replace the default launcher
 - Touch screen is not required anywhere.
 - Use same configuration for images, videos and descriptions as **EmulationStation** (batocera, recalbox, etc)
 - Select which Retroarch core to use for each platform
-- Works with Drastic, Retroarch, Reicast, MupenPlus FZ, PPSSPP
+- Works with Drastic, Retroarch, Reicast, MupenPlus FZ, PPSSPP, OpenBor
 - History Games
 - Select a random game, because you can't decide what to play next \o/
 - Search a game in all platforms
@@ -42,6 +45,13 @@ It is possible to customize the settings directly on these files:
 - /data/data/com.openpandorabox/files/config.json
 - /data/data/com.openpandorabox/files/keymap.json
 
+
+### OpenBor
+Please do not add the openBor rom on the default openBox path(/storage/emulated/0/OpenBOR/Paks )
+Add the roms like you do with others platforms, and everytime you run a openBor rom, it will empty the default directory and copy this rom(pak) to the right directory.
+
+
+##
 
 
 This frontend will look for gamelist.xml, to get the path, name, desc, image and video.
