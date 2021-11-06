@@ -11,10 +11,11 @@ interface BodyProps {
     onBackground: boolean
 }
 
+
+
 export const Body = ({ selectedGame, onBackground } : BodyProps ) => {
 
     const { APP_WIDTH, APP_HEIGHT } = useSettingsContext()
-
 
     return (
         <View style={{
@@ -25,13 +26,7 @@ export const Body = ({ selectedGame, onBackground } : BodyProps ) => {
             flexDirection: "column"
         }}>
 
-            {selectedGame && !!selectedGame?.image &&
-                <MediaPreview 
-                    selectedGame={selectedGame} 
-                    APP_HEIGHT={APP_HEIGHT} 
-                    onBackground={onBackground}
-                /> 
-            }
+           
             <Text style={{
                 width: (APP_WIDTH * 0.65) - 20,
                 alignSelf: "center",
@@ -44,7 +39,15 @@ export const Body = ({ selectedGame, onBackground } : BodyProps ) => {
                 {selectedGame?.romName}
             </Text>
 
-            {!!selectedGame?.desc && (
+            {selectedGame && !!selectedGame?.image &&
+                <MediaPreview 
+                    selectedGame={selectedGame} 
+                    APP_HEIGHT={APP_HEIGHT} 
+                    onBackground={onBackground}
+                /> 
+            }
+
+            {/* {!!selectedGame?.desc && (
                 <Text style={{
                     width: (APP_WIDTH * 0.65) - 20,
                     alignSelf: "center",
@@ -55,7 +58,7 @@ export const Body = ({ selectedGame, onBackground } : BodyProps ) => {
                 }} >
                     {selectedGame.desc}
                 </Text>
-            )}
+            )} */}
 
         </View>
     )

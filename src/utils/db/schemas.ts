@@ -93,6 +93,11 @@ export const Tables = {
             type: SupportedTypes.TEXT,
             primary_key: false,
             default_value: null,
+        },
+        favorite: {
+            type: SupportedTypes.BOOLEAN,
+            primary_key: false,
+            default_value: 0,
         }
     },
 

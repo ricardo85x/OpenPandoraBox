@@ -14,14 +14,13 @@ import { Main } from "./Main"
 
 import { useDbContext } from "../../hooks/useDb"
 import { IRomCustom, IRomPlatform } from '../../utils/types';
-import { IRom } from '../../utils/db/types';
 import { LOADING_STATUS } from '../Platform';
 
-interface HistoryProps {
+interface FavoriteProps {
     navigation: StackNavigationProp<any, any>
 }
 
-export const History = ({ navigation } : HistoryProps) => {
+export const Favorite = ({ navigation } : FavoriteProps) => {
 
     const { db } = useDbContext();
 
@@ -68,7 +67,7 @@ export const History = ({ navigation } : HistoryProps) => {
 
         const baseConfig = await pandaConfig.dirConfig()
 
-        gamesRef.current = (await db.getHistory()).map((game, id) => {
+        gamesRef.current = (await db.getFavorites()).map((game, id) => {
 
             const platform_name = game.platform.split('/')[game.platform.split('/').length - 1]
 
@@ -79,10 +78,10 @@ export const History = ({ navigation } : HistoryProps) => {
                 desc: game?.desc,
                 video: game?.video,
                 name: game?.name,
-                favorite: game?.favorite,
                 id: id,
                 gameId: game?.id,
                 loadVideo: false,
+                favorite: game?.favorite,
                 platform: game?.platform,
                 platformTitle: baseConfig?.PLATFORMS[platform_name]?.title
             }
@@ -149,7 +148,7 @@ export const History = ({ navigation } : HistoryProps) => {
 
         if ([...keyMap.P1_D, ...keyMap.P2_D].includes(keyEvent.keyCode)) {
             // console.log("RELOAD")
-            handleRemoveFromHistory()
+            handleRemoveFromFavorite()
         }
 
         if (keyMap.P1_B?.includes(keyEvent.keyCode)) {
@@ -176,15 +175,12 @@ export const History = ({ navigation } : HistoryProps) => {
     );
 
 
-    const handleRemoveFromHistory = async () => {
+    const handleRemoveFromFavorite = async () => {
         const selectedGameNow = pageRef.current.find(g => g.selected);
-
         if (selectedGameNow && db) {
-
-            await db.removeFromHistory(selectedGameNow as IRom)
-
+            // await db.removeFromFavorites(selectedGameNow as IRom)
+            await db.setFavorite(selectedGameNow.gameId!, selectedGameNow.platform!)
             readGameList()
-
         }
 
     }
@@ -195,10 +191,13 @@ export const History = ({ navigation } : HistoryProps) => {
         if (selectedGameNow?.platform && selectedGameNow?.path && db) {
             const pandaConfig = PandaConfig();
 
-            pandaConfig.runGame({ rom: selectedGameNow.path, platform: selectedGameNow.platform.split("/")[selectedGameNow.platform.split("/").length - 1] })
+            const current_platform_name = selectedGameNow.platform.split("/")[selectedGameNow.platform.split("/").length - 1]
+            // const current_platform_path = selectedGameNow.platform.split("/").slice(0, selectedGameNow.platform.split("/").length - 1).join("/")
+            pandaConfig.runGame({ rom: selectedGameNow.path, platform: current_platform_name })
             onBackgroundRef.current = true
             setOnBackground(onBackgroundRef.current)
-            db.addHistory(selectedGameNow.gameId, selectedGameNow.platform)
+            db.addHistory(selectedGameNow.gameId, selectedGameNow.platform);
+
         }
     }
 
@@ -218,6 +217,8 @@ export const History = ({ navigation } : HistoryProps) => {
             if (direction === "UP") {
 
                 if (selected.id !== 0) {
+
+                
 
                     // check if it is not the first of the list
                     if (selected.id !== first_item.id) {
@@ -249,10 +250,10 @@ export const History = ({ navigation } : HistoryProps) => {
 
                     const pageRef_current = (await readGameDB(first, PER_PAGE))
 
-                    pageRef.current = pageRef_current.map((game) => {
+                    pageRef.current = pageRef_current.map(game => {
                         return {
                             ...game,
-                            selected: game.id === pageRef_current[pageRef_current.length - 1].id
+                            selected: game.id === pageRef_current[pageRef_current.length -1].id
                         }
                     })
 
@@ -261,6 +262,7 @@ export const History = ({ navigation } : HistoryProps) => {
                 }
             } else if (direction === "DOWN") {
                 if (selected.id !== last_item.id) {
+
                     const currentIndex = pageRef.current.findIndex(g => g.selected)
                     pageRef.current = pageRef.current.map(game => {
                         return {
@@ -295,7 +297,7 @@ export const History = ({ navigation } : HistoryProps) => {
 
                     }
                 }
-            } else if (direction === "BUTTON_F") {
+            } else if (direction === "RIGHT") {
 
                 if (last_item.id! < (gamesRef.current.length - 1)) {
                     const last_id = ((last_item.id! + PER_PAGE) < (gamesRef.current.length - 1)) ?
@@ -313,7 +315,7 @@ export const History = ({ navigation } : HistoryProps) => {
                     setPage(pageRef.current)
                 }
 
-            } else if (direction === "BUTTON_C") {
+            } else if (direction === "LEFT") {
                 // check if it is not the first of the list
                 if (0 !== first_item.id) {
 
@@ -352,13 +354,13 @@ export const History = ({ navigation } : HistoryProps) => {
                 }
                 break;
             case "C":
-                handleSelection("BUTTON_C");
+                // handleSelection("BUTTON_C");
                 break;
             case "D":
-                handleRemoveFromHistory();
+                handleRemoveFromFavorite();
                 break;
             case "F":
-                handleSelection("BUTTON_F");
+                // handleSelection("BUTTON_F");
                 break;
             default:
                 break;

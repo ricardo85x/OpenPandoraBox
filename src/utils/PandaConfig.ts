@@ -224,6 +224,7 @@ export const PandaConfig = () => {
             return
         }
 
+
         if (platformCore && platformCore.choices.length > platformCore.default) {
             core = platformCore.choices[
                 platformCore.default
@@ -243,7 +244,7 @@ export const PandaConfig = () => {
             );
 
         } else {
-            console.log("OUPS", core, rom, core_path)
+            console.log("OUPS", core,  rom, core_path)
         }
 
     }
@@ -444,13 +445,18 @@ export const PandaConfig = () => {
             }
         }
 
-        defaultConfig.sort((a, b) => b.title.localeCompare(b.title))
+        defaultConfig.sort((a, b) => a.title.localeCompare(b.title))
 
         return [
             {
                 type: "settings",
                 title: "SETTINGS",
                 text: "Configure Settings"
+            },
+            {
+                type: "favorite",
+                title: "FAVORITE",
+                text: "Favorite games"
             },
             {
                 type: "history",
@@ -461,6 +467,13 @@ export const PandaConfig = () => {
                 type: "search",
                 title: "SEARCH",
                 text: "Search a game in all platforms"
+            },
+            {
+                type: "platform",
+                text: "All",
+                title: "All",
+                path: "All",
+                background: ""
             },
             ...defaultConfig
         ] as IMenuItem[]

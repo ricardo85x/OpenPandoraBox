@@ -28,7 +28,8 @@ export const Main = ({title, selectedGame, onBackground, buttonAction}: MainProp
             justifyContent: "space-between",
             flexDirection: "column"
         }}>
-            <Header title={title} gameName={selectedGame?.name} />
+            <Header defaultTitle={"Platform"} title={title} gameName={selectedGame?.name} />
+            
             <Body onBackground={onBackground} selectedGame={selectedGame} />
             {/* <Footer /> */}
 
@@ -39,8 +40,7 @@ export const Main = ({title, selectedGame, onBackground, buttonAction}: MainProp
                 {color: "yellow", title: "B", text: "BACK"},
                 {color: "pink", title: "D", text: "RELOAD"},
                 {color: "blue", title: "E", text: "RANDOM"},
-                {color: "red", title: "C", text: "PREV"},
-                {color: "green", title: "F", text: "NEXT"}
+                {color: "green", title: "F", text: "FAV."}
             ]}
           />
         </View>

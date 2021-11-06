@@ -8,6 +8,7 @@ import { HomeScreen } from "./components/Home"
 import { Platform } from "./components/Platform"
 import { Settings } from "./components/Settings"
 import { History } from "./components/History"
+import { Favorite } from "./components/Favorite"
 import { Search } from "./components/Search"
 import { PlatformSettings } from "./components/Settings/Platform"
 import { GeneralSettings } from "./components/Settings/General"
@@ -52,6 +53,7 @@ const App = () => {
             <Stack.Screen name="Platform" component={Platform} />
             <Stack.Screen name="Settings" component={Settings} />
             <Stack.Screen name="History" component={History} />
+            <Stack.Screen name="Favorite" component={Favorite} />
             <Stack.Screen name="Search" component={Search} />
             <Stack.Screen name="PlatformSettings" component={PlatformSettings} />
             <Stack.Screen name="GeneralSettings" component={GeneralSettings} />

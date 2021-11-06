@@ -1,3 +1,5 @@
+import { IRom } from "./db/types";
+
 export type IAppColor =
   | 'white'
   | 'yellow'
@@ -94,23 +96,36 @@ export interface IKeyMap {
   P2_RIGHT: number[];
 }
 
-export interface IRomCustom {
-  platform: string;
-  id: number;
-  name: string;
-  path: string;
-  thumbnail: string;
-  image: string;
-  video: string;
-  desc: string;
-  romName?: string;
-  normalizedName?: string;
-  gameId: number;
-  loadVideo: boolean;
-  platformTitle: string;
-  selected?: boolean;
-  sortId?: number;
+
+export type IRomCustom = Partial<Omit<
+IRom,
+  'romName' | 'normalizedName'
+  >> & {
+    romName?: string;
+    normalizedName?: string;
+    gameId: number;
+    loadVideo: boolean;
+    platformTitle: string;
+    selected?: boolean;
+    sortId?: number;
 }
+// export interface IRomCustom {
+//   platform: string;
+//   id: number;
+//   name: string;
+//   path: string;
+//   thumbnail: string;
+//   image: string;
+//   video: string;
+//   desc: string;
+//   romName?: string;
+//   normalizedName?: string;
+//   gameId: number;
+//   loadVideo: boolean;
+//   platformTitle: string;
+//   selected?: boolean;
+//   sortId?: number;
+// }
 
 export type IRomSearch = Omit<IRomCustom, 'normalizedName'>;
 

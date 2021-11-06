@@ -31,12 +31,20 @@ interface PlatformProps {
   };
 }
 
+export enum LOADING_STATUS {
+  LOADING,
+  LOADED
+}
+
 export const Platform = ({navigation, route}: PlatformProps) => {
+
   const {db} = useDbContext();
 
   const {decodeText} = Utils();
 
-  const {APP_WIDTH, APP_HEIGHT, keyMap} = useSettingsContext();
+  const {APP_WIDTH, APP_HEIGHT, keyMap, appSettings} = useSettingsContext();
+
+
 
   const ITEM_SIZE = 50;
   const getPerItem = () => {
@@ -60,23 +68,131 @@ export const Platform = ({navigation, route}: PlatformProps) => {
   const onBackgroundRef = useRef(false);
   const [onBackground, setOnBackground] = useState(false);
 
+
+  const LOADING_REF = useRef(LOADING_STATUS.LOADING)
+  const [LOADING, SET_LOADING] = useState(LOADING_STATUS.LOADING)
+
+  const updateLoading = (status: LOADING_STATUS) => {
+    LOADING_REF.current = status
+    SET_LOADING(LOADING_REF.current)
+  }
+
+
+  const rangeRef = useRef({
+    current: {
+      start: 0,
+      end: PER_PAGE
+    },
+    previous: {
+      start: -1,
+      end: -1
+    }
+  })
+
+  // const getRange = (start:number, end:number) => new Array(end-start+1).fill(0).map((el, ind) => ind + start);
+
+
   const readGameDBRange = async (
     start: number,
     end: number,
   ): Promise<IRomPlatform[]> => {
-    const _dbRoms =
-      ((await db?.loadRomsFromPlatformOffsetLimit(
-        path,
-        start,
-        end,
-      )) as IRomPlatform[]) ?? [];
-    return _dbRoms;
+
+
+    let dbRoms : IRomPlatform[] = [];
+
+    if(rangeRef.current.previous.start !== -1){
+
+      if(
+        start == rangeRef.current.previous.start + 1 && 
+        end == rangeRef.current.previous.end) {
+
+          console.log("down")
+
+          const missingRom = 
+            ((await db?.loadRomsFromPlatformOffsetLimit(
+              path,
+              start + end - 1,
+              1,
+          )) as IRomPlatform[]) ?? [];
+
+          dbRoms = [
+            ...pageRef.current.slice(1),
+            ...missingRom
+          ]
+      } else if(
+        start == rangeRef.current.previous.start - 1 && 
+        end == rangeRef.current.previous.end && start) {
+
+
+          console.log("up")
+
+
+          const missingRom = 
+            ((await db?.loadRomsFromPlatformOffsetLimit(
+              path,
+              start,
+              1,
+          )) as IRomPlatform[]) ?? [];
+
+          dbRoms = [
+            ...missingRom,
+            ...pageRef.current.slice(0, pageRef.current.length -1),
+
+          ]
+
+      } 
+
+    } else {
+
+      console.log("all")
+
+      dbRoms =
+        ((await db?.loadRomsFromPlatformOffsetLimit(
+          path,
+          start,
+          end,
+        )) as IRomPlatform[]) ?? [];
+    }
+
+    // const miniNew = dbRoms.map(m => {
+    //   return {
+    //     id: m.id,
+    //     sortId: m.sortId,
+    //     name: m.name,
+    //   }
+    // })
+
+
+    // const _dbRoms =
+    //   ((await db?.loadRomsFromPlatformOffsetLimit(
+    //     path,
+    //     start,
+    //     end,
+    //   )) as IRomPlatform[]) ?? [];
+
+    //   rangeRef.current.previous = {
+    //     start, end
+    //   }
+    // const miniDefault = _dbRoms.map(m => {
+    //   return {
+    //     id: m.id,
+    //     sortId: m.sortId,
+    //     name: m.name,
+    //   }
+    // })
+
+    // console.log("NEW", miniNew)
+    // console.log("CURRENT", miniDefault)
+
+    return dbRoms;
   };
 
   const readFromDb = async () => {
 
+
+
     if (!db) {
-        return;
+      return;
     }
 
     const _pages = await readGameDBRange(0, PER_PAGE);
@@ -111,7 +227,12 @@ export const Platform = ({navigation, route}: PlatformProps) => {
   };
 
   const readGameList = async (reload = false) => {
+
+
+    updateLoading(LOADING_STATUS.LOADING)
+
     if (!db) {
+      updateLoading(LOADING_STATUS.LOADED)
       return;
     }
 
@@ -124,9 +245,16 @@ export const Platform = ({navigation, route}: PlatformProps) => {
             KeyEvent.onKeyDownListener((keyEvent: IKeyEvent) =>
                 ListenKeyBoard(keyEvent),
             );
+
+            updateLoading(LOADING_STATUS.LOADED)
             return;
         }
         
+      }
+
+      if(title === "All"){
+        updateLoading(LOADING_STATUS.LOADED)
+        return;
       }
 
       const parseGameList = ParseGameList();
@@ -147,7 +275,7 @@ export const Platform = ({navigation, route}: PlatformProps) => {
           preData = gameList.game
 
         } else {
-
+          updateLoading(LOADING_STATUS.LOADED)
           return
         }
 
@@ -189,6 +317,7 @@ export const Platform = ({navigation, route}: PlatformProps) => {
                 g?.path && !!g.path.split('/').length
                   ? g.path.split('/')[g.path.split('/').length - 1]
                   : '',
+              favorite: false
             };
           });
 
@@ -205,6 +334,9 @@ export const Platform = ({navigation, route}: PlatformProps) => {
 
         await readFromDb()
 
+        updateLoading(LOADING_STATUS.LOADED)
+
+
         
         
       } else {
@@ -212,6 +344,8 @@ export const Platform = ({navigation, route}: PlatformProps) => {
     } catch (err) {
       console.log('Error loading game list', err);
       console.log('Last Game', lastGame);
+      updateLoading(LOADING_STATUS.LOADED)
+
       // KeyEvent.onKeyDownListener((keyEvent) => ListenKeyBoard(keyEvent));
     }
   };
@@ -247,6 +381,14 @@ export const Platform = ({navigation, route}: PlatformProps) => {
       handleSelection('DOWN');
     }
 
+    if (keyMap.leftKeyCode?.includes(keyEvent.keyCode)) {
+      handleSelection('LEFT');
+    }
+
+    if (keyMap.rightKeyCode?.includes(keyEvent.keyCode)) {
+      handleSelection('RIGHT');
+    }
+
     if (
       keyMap.P1_A?.includes(keyEvent.keyCode) ||
       keyMap.P2_A?.includes(keyEvent.keyCode)
@@ -259,7 +401,7 @@ export const Platform = ({navigation, route}: PlatformProps) => {
       keyMap.P2_C?.includes(keyEvent.keyCode)
     ) {
       // console.log("KEY C")
-      handleSelection('BUTTON_C');
+      // handleSelection('BUTTON_C');
     }
 
     if (
@@ -267,7 +409,9 @@ export const Platform = ({navigation, route}: PlatformProps) => {
       keyMap.P2_F?.includes(keyEvent.keyCode)
     ) {
       // console.log("KEY F")
-      handleSelection('BUTTON_F');
+      // handleSelection('BUTTON_F');
+      handleAddFavorites()
+
     }
 
     if ([...keyMap.P1_D, ...keyMap.P2_D].includes(keyEvent.keyCode)) {
@@ -320,9 +464,16 @@ export const Platform = ({navigation, route}: PlatformProps) => {
 
   const handleRunGame = () => {
     const selectedGameNow = pageRef.current.find((g) => g.selected);
-    if (selectedGameNow && db) {
+    if (selectedGameNow?.path && db) {
       const pandaConfig = PandaConfig();
-      pandaConfig.runGame({rom: selectedGameNow.path!, platform: text});
+
+      let platform_name = text
+
+      if(text == "All" ){
+        platform_name = selectedGameNow.path.split('/')[selectedGameNow.path.split('/').length - 2]
+      }
+
+      pandaConfig.runGame({rom: selectedGameNow.path, platform: platform_name});
       onBackgroundRef.current = true;
       setOnBackground(onBackgroundRef.current);
 
@@ -420,7 +571,7 @@ export const Platform = ({navigation, route}: PlatformProps) => {
             setPage(pageRef.current);
           }
         }
-      } else if (direction === 'BUTTON_F') {
+      } else if (direction === 'RIGHT') {
         if (last_item.sortId! < gamesRef.current.length - 1) {
           const last_id =
             last_item.sortId! + PER_PAGE < gamesRef.current.length - 1
@@ -438,7 +589,7 @@ export const Platform = ({navigation, route}: PlatformProps) => {
 
           setPage(pageRef.current);
         }
-      } else if (direction === 'BUTTON_C') {
+      } else if (direction === 'LEFT') {
         // check if it is not the first of the list
         if (0 !== first_item.sortId!) {
           const first_id =
@@ -461,9 +612,37 @@ export const Platform = ({navigation, route}: PlatformProps) => {
     }
   };
 
+  const handleAddFavorites = async () => {
+
+    if(!! db  && selectedGame?.id && selectedGame?.path){
+
+     let platform_path = path
+     if(platform_path == "All"){
+       platform_path = selectedGame.path.split('/').slice(0,selectedGame.path.split('/').length -1).join('/')
+     }
+
+     const isFavorite = await db.setFavorite(selectedGame.id!, platform_path);
+
+     pageRef.current = pageRef.current.map((page) => {
+        if(page.id! === selectedGame.id && page.path === selectedGame.path){
+
+          console.log("Setting fav2", page.id, page.path)
+          return {
+            ...page,
+            favorite: isFavorite,
+          }
+        }
+        return page
+     })
+     setPage(pageRef.current)
+    }
+  }
+
   const selectedGame = useMemo(() => {
     return pageRef.current.find((g) => g.selected);
   }, [page]);
+
+  
 
   const buttonAction = (buttonName: string) => {
     switch (buttonName) {
@@ -478,7 +657,7 @@ export const Platform = ({navigation, route}: PlatformProps) => {
         }
         break;
       case 'C':
-        handleSelection('BUTTON_C');
+        // handleSelection('BUTTON_C');
         break;
       case 'D':
         readGameList(true);
@@ -487,14 +666,27 @@ export const Platform = ({navigation, route}: PlatformProps) => {
         selectRandomRom();
         break;
       case 'F':
-        handleSelection('BUTTON_F');
+        handleAddFavorites()
         break;
       default:
         break;
     }
   };
 
-  // console.log("N_ITEMS", pageRef.current.length)
+
+  const currentTitle = useMemo(() => {
+
+    // console.log("Runing memo")
+    if(selectedGame?.path) {
+      const platform_name = selectedGame.path.split('/')[selectedGame.path.split('/').length - 2]
+      if(Object.keys(appSettings.PLATFORMS).includes(platform_name)) {
+        return appSettings?.PLATFORMS[platform_name]?.title ?? "All"
+      }
+    }
+
+    return text;
+    
+  }, [selectedGame])
 
   return (
     <>
@@ -508,12 +700,11 @@ export const Platform = ({navigation, route}: PlatformProps) => {
             flexDirection: 'row',
             width: APP_WIDTH,
             height: APP_HEIGHT,
-            // backgroundColor: "#4A5568"
           }}>
-          <GameList EXTRA_SPACE={EXTRA_SPACE} games={pageRef.current} />
+          <GameList LOADING={LOADING} EXTRA_SPACE={EXTRA_SPACE} games={pageRef.current} />
           <Main
             buttonAction={buttonAction}
-            title={title}
+            title={currentTitle}
             onBackground={onBackground}
             selectedGame={selectedGame}
           />

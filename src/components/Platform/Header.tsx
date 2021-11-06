@@ -1,5 +1,5 @@
 import React from 'react';
-import { Text } from 'react-native';
+import { Text, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 
 
@@ -8,9 +8,11 @@ import { useSettingsContext } from "../../hooks/useSettings";
 interface HeaderProps {
     title: string;
     gameName: string | undefined;
+    genre?: string;
+    defaultTitle: string
 }
 
-export const Header = ( { title, gameName = ""}: HeaderProps) => {
+export const Header = ( { title, defaultTitle, gameName = "", genre = "no filter"}: HeaderProps) => {
 
     const { APP_WIDTH, themeColor  } = useSettingsContext()
 
@@ -28,20 +30,30 @@ export const Header = ( { title, gameName = ""}: HeaderProps) => {
             marginTop: 2,
             marginRight: 2,
             paddingLeft: 10,
+            paddingRight: 3,
        
-            // backgroundColor: "#718096",
-            // backgroundColor: "orange",
             
 
         }}>
-            <Text style={{ 
-                flex: 1,
-                fontSize: 19, 
-                fontWeight: "bold", 
-                color: '#F7FAFC' 
+            <View style={{
+                display: "flex",
+                flexDirection:"row",
+                justifyContent:"space-between",
+                alignItems: "center"
             }}>
-                {title ? title : "loading..."}
-            </Text>
+                <Text style={{ 
+                    // flex: 1,
+                    fontSize: 19, 
+                    fontWeight: "bold", 
+                    color: '#F7FAFC' 
+                }}>
+                    {title ? title : defaultTitle }
+                </Text>
+
+                
+
+            </View>
+           
 
             <Text style={{ 
                 fontSize: 14, 

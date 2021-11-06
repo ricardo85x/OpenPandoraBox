@@ -16,7 +16,7 @@ interface MediaPreviewProps {
 
 export const MediaPreview = ({ selectedGame, APP_HEIGHT, onBackground } : MediaPreviewProps) => {
 
-    const timeoutRef = useRef(setTimeout(() => console.log("loading MediaPreview"), 0))
+    const timeoutRef = useRef(setTimeout(() => true, 0))
     const [loadVideo, setLoadVideo] = useState(false);
     const [loadImage, setLoadImage] = useState(false)
     const { keyBoardHeight } = useKeyboardContext()

@@ -153,6 +153,8 @@ export const HomeScreen = ({navigation, route}: HomeScreenProps) => {
           navigation.navigate('Settings');
         } else if (currentItem.type === 'history') {
           navigation.navigate('History', {keyMaps: keyMap});
+        } else if (currentItem.type === 'favorite') {
+          navigation.navigate('Favorite', {keyMaps: keyMap});
         } else if (currentItem.type === 'search') {
           navigation.navigate('Search', {keyMaps: keyMap});
         } else if (currentItem.type === 'platform') {

@@ -40,6 +40,10 @@ export const Item = ({ item, navigation, keyMaps }: ItemProps) => {
       if (appSettings?.THEME?.historyBackgroundImg){
         currentBg = { uri: `${FILE_URI}${appSettings.THEME.historyBackgroundImg}` }
       }
+    } else if (type === "favorite") {
+      // if (appSettings?.THEME?.favoriteBackgroundImg){
+      //   currentBg = { uri: `${FILE_URI}${appSettings.THEME.favoriteBackgroundImg}` }
+      // }
     } else if (type === "search") {
       if (appSettings?.THEME?.searchBackgroundImg){
         currentBg = { uri: `${FILE_URI}${appSettings.THEME.searchBackgroundImg}` }
@@ -67,6 +71,8 @@ export const Item = ({ item, navigation, keyMaps }: ItemProps) => {
           navigation.navigate('Platform', { item: item, keyMaps })
         } else if (type === "history") {
           navigation.navigate('History', { item: item, keyMaps })
+        } else if (type === "favorite") {
+          navigation.navigate('Favorite', { item: item, keyMaps })
         }
 
       }}

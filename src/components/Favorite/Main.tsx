@@ -26,7 +26,7 @@ export const Main = ({selectedGame, onBackground, buttonAction}: MainProps) => {
             justifyContent: "space-between",
             flexDirection: "column"
         }}>
-            <Header defaultTitle={"History"}  title={selectedGame?.platformTitle} gameName={selectedGame?.name} />
+            <Header defaultTitle={"Favorites"}  title={selectedGame?.platformTitle} gameName={selectedGame?.name} />
             <Body onBackground={onBackground} selectedGame={selectedGame} />
             <Footer 
                 buttonAction={buttonAction}
@@ -34,8 +34,8 @@ export const Main = ({selectedGame, onBackground, buttonAction}: MainProps) => {
                     {color: "white", title: "A", text: "SELECT"},
                     {color: "yellow", title: "B", text: "BACK"},
                     {color: "pink", title: "D", text: "REMOVE"},
-                    {color: "red", title: "C", text: "PREV"},
-                    {color: "green", title: "F", text: "NEXT"}
+                    // {color: "red", title: "C", text: "PREV"},
+                    // {color: "green", title: "F", text: "NEXT"}
                 ]}
             />
         </View>

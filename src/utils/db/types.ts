@@ -9,7 +9,11 @@ export interface IRom {
     desc: string,
     romName: string
     normalizedName: string
+    favorite: boolean
 }
+
+
+
 export type IRomRaw = Partial<Omit<IRom, 'normalizedName'>> & {
     sortId?: number
 }
