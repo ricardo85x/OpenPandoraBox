@@ -372,6 +372,38 @@ export const Platform = ({navigation, route}: PlatformProps) => {
     setOnBackground(onBackgroundRef.current);
   }, [page]);
 
+  const handleAddFavorites = async () => {
+
+
+    const selectedGameNow = pageRef.current.find((g) => g.selected);
+
+
+    if(!! db  && selectedGameNow?.id && selectedGameNow?.path){
+
+
+     let platform_path = path
+     if(platform_path == "All"){
+       platform_path = selectedGameNow.path.split('/').slice(0,selectedGameNow.path.split('/').length -1).join('/')
+     } 
+
+
+     const isFavorite = await db.setFavorite(selectedGameNow.id!, platform_path);
+
+     pageRef.current = pageRef.current.map((page) => {
+        if(page.id! === selectedGameNow.id && page.path === selectedGameNow.path){
+
+          return {
+            ...page,
+            favorite: isFavorite,
+          }
+        }
+        return page
+     })
+
+     setPage(pageRef.current)
+    } 
+  }
+
   const ListenKeyBoard = (keyEvent: IKeyEvent) => {
     if (keyMap.upKeyCode?.includes(keyEvent.keyCode)) {
       handleSelection('UP');
@@ -408,9 +440,11 @@ export const Platform = ({navigation, route}: PlatformProps) => {
       keyMap.P1_F?.includes(keyEvent.keyCode) ||
       keyMap.P2_F?.includes(keyEvent.keyCode)
     ) {
-      // console.log("KEY F")
-      // handleSelection('BUTTON_F');
+
       handleAddFavorites()
+
+      console.log("KEY F FAVORITE")
+      // handleSelection('BUTTON_F');
 
     }
 
@@ -612,31 +646,7 @@ export const Platform = ({navigation, route}: PlatformProps) => {
     }
   };
 
-  const handleAddFavorites = async () => {
-
-    if(!! db  && selectedGame?.id && selectedGame?.path){
-
-     let platform_path = path
-     if(platform_path == "All"){
-       platform_path = selectedGame.path.split('/').slice(0,selectedGame.path.split('/').length -1).join('/')
-     }
-
-     const isFavorite = await db.setFavorite(selectedGame.id!, platform_path);
-
-     pageRef.current = pageRef.current.map((page) => {
-        if(page.id! === selectedGame.id && page.path === selectedGame.path){
-
-          console.log("Setting fav2", page.id, page.path)
-          return {
-            ...page,
-            favorite: isFavorite,
-          }
-        }
-        return page
-     })
-     setPage(pageRef.current)
-    }
-  }
+  
 
   const selectedGame = useMemo(() => {
     return pageRef.current.find((g) => g.selected);
