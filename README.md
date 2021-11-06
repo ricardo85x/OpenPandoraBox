@@ -10,7 +10,7 @@ It should never be used on a device with a portrait screen orientation.
 
 If you device run on Android 5, you should consider using other solutions, it was build with Android 4 (KitKat) in mind.
 
-### This app is a Launcher so you can replace the default launcher on Pandora Box 3D Plus.
+### This app is a Launcher so you can replace the default Pandora Box 3D Plus' launcher.
 
 ##
 
