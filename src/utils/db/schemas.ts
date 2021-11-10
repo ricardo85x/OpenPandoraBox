@@ -51,7 +51,7 @@ export const Tables = {
         },
         id: {
             type: SupportedTypes.INTEGER,
-            primary_key: false,
+            primary_key: true,
             default_value: null,
         },
         name: {
@@ -98,6 +98,11 @@ export const Tables = {
             type: SupportedTypes.BOOLEAN,
             primary_key: false,
             default_value: 0,
+        },
+        enabled: {
+            type: SupportedTypes.BOOLEAN,
+            primary_key: false,
+            default_value: 1,
         }
     },
 

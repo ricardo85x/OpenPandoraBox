@@ -1,6 +1,6 @@
 {
   "name": "openpandorabox",
-  "version": "0.4",
+  "version": "0.6",
   "private": true,
   "scripts": {
     "android": "react-native run-android",

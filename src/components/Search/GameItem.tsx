@@ -2,6 +2,7 @@ import React from 'react';
 import { Text } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { IRomSearch } from '../../utils/types';
+import {useSettingsContext } from "../../hooks/useSettings"
 
 interface GameItemProps {
     keyboardActiveRef: any
@@ -11,6 +12,9 @@ interface GameItemProps {
 
 export const GameItem = ({ keyboardActiveRef, game, EXTRA_SPACE }: GameItemProps) => {
 
+    const {chakraColors } = useSettingsContext()
+
+
     const height = (game?.selected && EXTRA_SPACE) ? ((50) + EXTRA_SPACE) : 50
 
     let bgColor = ["#171923", "#1A202C", "#2D3748"]
@@ -18,7 +22,7 @@ export const GameItem = ({ keyboardActiveRef, game, EXTRA_SPACE }: GameItemProps
     if (game?.selected) {        
         bgColor = keyboardActiveRef?.current ? ['#A0AEC0', '#718096', '#4A5568'] : ['#A0AEC0', '#718096', '#4A5568']
     } else {
-        if (game.id % 2 === 0) {
+        if (game.id! % 2 === 0) {
             bgColor = ["#1A202C", "#2D3748", "#4A5568"]
         }
     }
@@ -37,6 +41,8 @@ export const GameItem = ({ keyboardActiveRef, game, EXTRA_SPACE }: GameItemProps
                 marginVertical: 2,
                 marginHorizontal: 2,
                 borderWidth: 1,
+                borderLeftWidth: 3,
+                borderLeftColor: game?.favorite ? chakraColors.yellow[3] : "transparent",
             }}>
             <Text style={{
                 fontSize: 17,

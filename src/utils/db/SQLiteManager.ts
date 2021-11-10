@@ -1,4 +1,5 @@
 import SQLite, {SQLiteDatabase} from 'react-native-sqlite-storage';
+import { SortListProps } from '../types';
 
 SQLite.DEBUG(false);
 SQLite.enablePromise(true);
@@ -23,7 +24,7 @@ class SQLiteManager {
   }
 
   errorCB(error: any) {
-    console.log('Error CB', error);
+    console.error('Error CB', error);
   }
 
   initDB() {
@@ -50,17 +51,11 @@ class SQLiteManager {
                   //
                 })
                 .catch((error) => {
-
-                  console.log("INIT DB ERROR", error)
+                  console.error('INIT DB ERROR', error);
 
                   db.transaction((tx) => {
                     for (const name in schema.Tables) {
-
-                      this.dropTable(
-                        tx,
-                        name,
-                      );
-
+                      this.dropTable(tx, name);
                       this.createTable(
                         tx,
                         schema.Tables[
@@ -68,24 +63,22 @@ class SQLiteManager {
                         ] as any,
                         name,
                       );
-                      console.log('Creating Table', name);
+                      console.warn('Creating Table', name);
                     }
                   })
                     .then(() => {
                       //
                     })
-                    .catch((e) => {
-                      
-                    });
+                    .catch((e) => {});
                 });
               resolve(db);
             })
             .catch((error: any) => {
-              console.log('Error initializing db 1', error);
+              console.error('Error initializing db 1', error);
             });
         })
         .catch((error: any) => {
-          console.log('Error initializing db 2', error);
+          console.error('Error initializing db 2', error);
         });
     });
   }
@@ -110,7 +103,7 @@ class SQLiteManager {
         platform,
       ]);
     } catch (error) {
-      console.log('Error cleaning platform', platform, error);
+      console.error('Error cleaning platform', platform, error);
     }
   }
 
@@ -118,14 +111,14 @@ class SQLiteManager {
     return new Promise((resolve) => {
       this.db
         .transaction((tx) => {
-          tx.executeSql('select * from Rom where platform = ? ', [
+          tx.executeSql('select id,platform,name,path,thumbnail,image,video,desc,romName,normalizedName,favorite from Rom where platform = ? ', [
             platform,
           ]).then(([tx, results]) => {
             resolve(results);
           });
         })
         .catch(() => {
-          console.log('Error loading rom from db', platform);
+          console.error('Error loading rom from db', platform);
           resolve([]);
         });
     });
@@ -155,11 +148,104 @@ class SQLiteManager {
           });
         })
         .catch((error: any) => {
-          console.log('Error get size of DB', platform, error);
+          console.error('Error get size of DB', platform, error);
           resolve(0);
         });
     });
   }
+
+  async getSortList(platform: string) {
+    let roms : SortListProps[] = [];
+
+    return new Promise<SortListProps[]>((resolve) => {
+      let sql =
+        'SELECT id from ROM where platform = ? order by normalizedName ASC';
+      let params = [platform];
+
+      if (platform === 'All') {
+        sql = 'SELECT id from ROM order by normalizedName ASC';
+        params = [];
+      }
+      this.db
+        .transaction((tx) => {
+          tx.executeSql(sql, params).then(([, results]) => {
+            resolve(results.rows.raw());
+          });
+        })
+        .catch((err: any) => {
+          console.error('Err on Error loading sort List');
+          resolve(roms);
+        });
+    });
+  }
+
+
+  loadRomsFromPlatformOffsetLimitNew(
+    platform: string,
+    offset: number,
+    limit: number,
+    ids: number[],
+  ) {
+
+
+    return new Promise((resolve) => {
+
+
+      
+      let sql =
+        `select * from (select platform,id,name,path,thumbnail,image,video,romName,normalizedName,favorite from Rom where platform = ? and id in (${ids.toLocaleString()}) order by normalizedName ASC)`;
+      
+
+      let params : any[]= [platform];
+
+      if (platform === 'All') {
+        sql =
+        `select * from (select platform,id,name,path,thumbnail,image,video,romName,normalizedName,favorite from Rom where id in (${ids.toLocaleString()}) order by normalizedName ASC)`;
+        params = [ ];
+
+        // return empty if not All games and 
+      }
+
+
+      if(ids.length === 0){
+        resolve([])
+      }  else {
+
+
+      this.db
+        .transaction((tx) => {
+          tx.executeSql(sql, params).then(([, results]) => {
+
+          
+            const _size = results.rows.length;
+
+            let roms = [];
+
+            if (_size > 0) {
+              for (let i = 0; i < _size; i++) {
+                roms.push({
+                  ...results.rows.item(i),
+                  sortId: i + offset,
+
+                });
+              }
+            }
+
+            resolve(roms);
+          });
+        })
+        .catch((err: any) => {
+          console.error('Err on loadRomsFromPlatformOffsetLimitNew', err);
+          resolve([]);
+        });
+
+      }
+
+
+      
+    });
+  }
+  
 
   loadRomsFromPlatformOffsetLimit(
     platform: string,
@@ -168,18 +254,17 @@ class SQLiteManager {
   ) {
     return new Promise((resolve) => {
       let sql =
-        "select * from (select platform,id,name,path,thumbnail,image,video,romName,normalizedName,favorite from Rom where platform = ? order by normalizedName ASC) LIMIT ? OFFSET ? ";
+        'select * from (select platform,id,name,path,thumbnail,image,video,romName,normalizedName,favorite from Rom where platform = ? order by normalizedName ASC) LIMIT ? OFFSET ? ';
       let params = [platform, limit, offset];
 
       if (platform === 'All') {
         sql =
-          "select * from (select platform,id,name,path,thumbnail,image,video,romName,normalizedName,favorite from Rom order by normalizedName ASC, platform) LIMIT ? OFFSET ? ";
+          'select * from (select platform,id,name,path,thumbnail,image,video,romName,normalizedName,favorite from Rom order by normalizedName ASC, platform) LIMIT ? OFFSET ? ';
         params = [limit, offset];
       }
 
       this.db
         .transaction((tx) => {
- 
           tx.executeSql(sql, params).then(([, results]) => {
             const _size = results.rows.length;
 
@@ -198,8 +283,7 @@ class SQLiteManager {
           });
         })
         .catch((err: any) => {
-          console.log('Err on loadRomsFromPlatformOffsetLimit');
-          // console.log('Err on loadRomsFromPlatformOffsetLimit', err);
+          console.error('Err on loadRomsFromPlatformOffsetLimit');
           resolve([]);
         });
     });
@@ -221,7 +305,7 @@ class SQLiteManager {
         }
       }
     } catch (err) {
-      console.log('Error adding rom to history', err);
+      console.error('Error adding rom to history', err);
     }
   }
 
@@ -250,7 +334,7 @@ class SQLiteManager {
         }
       }
     } catch (err) {
-      console.log('Error adding rom to history', err);
+      console.error('Error adding rom to history', err);
     }
   }
 
@@ -270,18 +354,14 @@ class SQLiteManager {
         }
       }
     } catch (err) {
-      console.log('Error adding rom to favorites', err);
+      console.error('Error adding rom to favorites', err);
     }
   }
 
   async setFavorite(id: number, platform: string) {
-
     let isFavorite = true;
 
-
-
     try {
-
       const roms = await this.db.executeSql(
         'select favorite from Rom where id = ? and platform = ?',
         [id, platform],
@@ -289,24 +369,23 @@ class SQLiteManager {
 
       if (roms.length) {
         const current_row = roms[0].rows.item(0);
-        if(current_row?.favorite){
+        if (current_row?.favorite) {
           isFavorite = false;
-        } 
+        }
         await this.db.executeSql(
           'update rom set favorite = ? where id = ? and platform = ?',
           [isFavorite, id, platform],
         );
       }
     } catch (err) {
-      console.log('Error adding rom to favorites', err);
+      console.error('Error adding rom to favorites', err);
     }
 
-    return isFavorite
+    return isFavorite;
   }
 
-
   async getDescription(id: number) {
-    let result = ""
+    let result = '';
 
     const results = await this.db.executeSql(
       'select desc from Rom where id = ?  limit 1',
@@ -321,14 +400,13 @@ class SQLiteManager {
     }
 
     return result;
-
-  } 
+  }
 
   async getFavorites() {
     let resultData = [];
 
     const results = await this.db.executeSql(
-      'select * from Rom where favorite = ? order by normalizedName ASC',
+      'select id,platform,name,path,thumbnail,image,video,desc,romName,normalizedName,favorite from Rom where favorite = ? order by normalizedName ASC',
       [true],
     );
 
@@ -365,7 +443,7 @@ class SQLiteManager {
           const current_row = results[i].rows.item(j);
 
           const results_rom = await this.db.executeSql(
-            'select * from rom where id = ? and platform = ?',
+            'select id,platform,name,path,thumbnail,image,video,desc,romName,normalizedName,favorite from rom where id = ? and platform = ?',
             [current_row.romId, current_row.platform],
           );
 
@@ -405,7 +483,7 @@ class SQLiteManager {
     }, '');
 
     const results = await this.db.executeSql(
-      `select * from Rom where ${questions} order by normalizedName COLLATE NOCASE ASC LIMIT 100`,
+      `select id,platform,name,path,thumbnail,image,video,desc,romName,normalizedName,favorite from Rom where ${questions} order by normalizedName COLLATE NOCASE ASC LIMIT 100`,
       text_parts,
     );
 
@@ -422,49 +500,42 @@ class SQLiteManager {
     return resultData;
   }
 
-
-
   async addRoms(roms: IRomRaw[]) {
 
-    await Promise.all(
-      [this.db.transaction((tx) => {
+    console.warn("Add roms")
+    await Promise.all([
+      this.db
+        .transaction((tx) => {
+          roms.forEach((rom) => {
+            try {
+              const actual_params = [
+                rom.platform,
+                rom.name,
+                rom.path,
+                rom.thumbnail,
+                rom.image,
+                rom.video,
+                rom.desc,
+                rom.romName,
+                String(rom.name)
+                  .normalize('NFD')
+                  ?.replace(/\p{Diacritic}/gu, ''),
+              ];
 
 
-        roms.forEach((rom) => {
-          try {
-    
-            const actual_params = [
-              rom.platform,
-              rom.id,
-              rom.name,
-              rom.path,
-              rom.thumbnail,
-              rom.image,
-              rom.video,
-              rom.desc,
-              rom.romName,
-              String(rom.name)
-                .normalize('NFD')
-                ?.replace(/\p{Diacritic}/gu, '')
-            ];
-
-            tx.executeSql(
-              `INSERT INTO ROM(platform,id,name,path,thumbnail,image,video,desc,romName,normalizedName) VALUES(?,?,?,?,?,?,?,?,?,?);`,
-              actual_params,
-            )
-
-          } catch (e) {
-            console.log("error adding ROM ", e)
-
-          }
+              tx.executeSql(
+                `INSERT INTO ROM(platform,name,path,thumbnail,image,video,desc,romName,normalizedName) VALUES(?,?,?,?,?,?,?,?,?);`,
+                actual_params,
+              );
+            } catch (e) {
+              console.error('error adding ROM ', e);
+            }
+          });
         })
+        .catch((e) => console.error('error adding ROMS', e)),
+    ]);
 
-
-      }).catch(e => console.log("error adding ROMS", e)) ]
-    )
-
-    console.log("finished add roms")
-
+    console.warn('finished add roms');
   }
 
   createTablesFromSchema() {
@@ -499,7 +570,7 @@ class SQLiteManager {
           reject(err);
         });
     }).catch((error) => {
-      console.log('error dropping database', error);
+      console.error('error dropping database', error);
     });
   }
 
@@ -510,19 +581,15 @@ class SQLiteManager {
       sql,
       [],
       () => {
-          //
+        //
       },
       () => {
-          //
+        //
       },
-  );
-
-
+    );
   }
 
-  
   createTable(tx: SQLite.Transaction, table: any[], tableName: string) {
-    
     let sql = `CREATE TABLE IF NOT EXISTS ${tableName} `;
     const createColumns = [];
 
@@ -540,14 +607,12 @@ class SQLiteManager {
       sql,
       [],
       () => {
-          //
+        //
       },
       () => {
-          //
+        //
       },
-  );
-
-    
+    );
   }
 }
 

@@ -30,8 +30,8 @@ export const Main = ({ keyboardActiveRef, keyboardRef, selectedGame, onBackgroun
     [
         { title: "A", text: "SELECT" },
         { title: "B", text: "BACK" },
-        { title: "C", text: "PREV" },
-        { title: "F", text: "NEXT" }
+        // { title: "C", text: "PREV" },
+        { title: "F", text: "FAV" }
     ]
 
     return (

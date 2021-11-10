@@ -116,6 +116,37 @@ export const Search = ({ navigation }: SearchProps) => {
 
     }, [page])
 
+    const handleAddFavorites = async () => {
+
+        const selectedGameNow = pageRef.current.find((g) => g.selected);
+
+
+        console.log("selectedGameNow", !! selectedGameNow)
+    
+        if(!! db  && selectedGameNow?.gameId && selectedGameNow?.path){
+    
+         let platform_path = selectedGameNow.path.split('/').slice(0,selectedGameNow.path.split('/').length -1).join('/')
+         
+    
+         const isFavorite = await db.setFavorite(selectedGameNow.gameId!, platform_path);
+    
+         pageRef.current = pageRef.current.map((page) => {
+            if(page.gameId! === selectedGameNow.gameId && page.path === selectedGameNow.path){
+    
+              return {
+                ...page,
+                favorite: isFavorite,
+              }
+            }
+            return page
+         })
+    
+         setPage(pageRef.current)
+        } 
+
+        
+      }
+
     const ListenKeyBoard = (keyEvent: IKeyEvent) => {
         if(keyboardActiveRef === undefined) {
             return
@@ -159,7 +190,7 @@ export const Search = ({ navigation }: SearchProps) => {
                 || keyMap.P2_F?.includes(keyEvent.keyCode)
             ) {
                 // console.log("KEY F")
-                handleSelection("BUTTON_F")
+                handleAddFavorites()
     
             }
     
@@ -193,7 +224,7 @@ export const Search = ({ navigation }: SearchProps) => {
 
     const handleRunGame = () => {
         const selectedGameNow = pageRef.current.find(g => g.selected);
-        if (selectedGameNow && db) {
+        if (selectedGameNow?.platform && selectedGameNow?.path && db) {
             const pandaConfig = PandaConfig();
             pandaConfig.runGame({ rom: selectedGameNow.path, platform: selectedGameNow.platform.split("/")[selectedGameNow.platform.split("/").length - 1] })
             onBackgroundRef.current = true
@@ -233,10 +264,10 @@ export const Search = ({ navigation }: SearchProps) => {
                         setPage(pageRef.current)
                     } else {
 
-                        pageRef.current = (await readGameDB(first_item.id - 1, PER_PAGE)).map((game) => {
+                        pageRef.current = (await readGameDB(first_item.id! - 1, PER_PAGE)).map((game) => {
                             return {
                                 ...game,
-                                selected: game.id === first_item.id - 1
+                                selected: game.id === first_item.id! - 1
                             }
                         })
 
@@ -274,12 +305,12 @@ export const Search = ({ navigation }: SearchProps) => {
                 } else {
                     // check if has more items
                    
-                    if (last_item.id < (gamesRef.current.length - 1)) {
+                    if (last_item.id! < (gamesRef.current.length - 1)) {
 
-                        pageRef.current = (await readGameDB(first_item.id + 1, PER_PAGE)).map((game) => {
+                        pageRef.current = (await readGameDB(first_item.id! + 1, PER_PAGE)).map((game) => {
                             return {
                                 ...game,
-                                selected: game.id === selected.id + 1
+                                selected: game.id === selected.id! + 1
                             }
                         })
 
@@ -298,11 +329,11 @@ export const Search = ({ navigation }: SearchProps) => {
 
                     }
                 }
-            } else if (direction === "BUTTON_F") {
+            } else if (direction === "RIGHT") {
 
-                if (last_item.id < (gamesRef.current.length - 1)) {
-                    const last_id = ((last_item.id + PER_PAGE) < (gamesRef.current.length - 1)) ?
-                        last_item.id + PER_PAGE :
+                if (last_item.id! < (gamesRef.current.length - 1)) {
+                    const last_id = ((last_item.id! + PER_PAGE) < (gamesRef.current.length - 1)) ?
+                        last_item.id! + PER_PAGE :
                         (gamesRef.current.length - 1);
 
                     pageRef.current = (await readGameDB(last_id - PER_PAGE, PER_PAGE)).map((game) => {
@@ -316,12 +347,12 @@ export const Search = ({ navigation }: SearchProps) => {
                     setPage(pageRef.current)
                 }
 
-            } else if (direction === "BUTTON_C") {
+            } else if (direction === "LEFT") {
                 // check if it is not the first of the list
                 if (0 !== first_item.id) {
 
-                    const first_id = ((first_item.id - PER_PAGE) > 0) ?
-                        first_item.id - PER_PAGE :
+                    const first_id = ((first_item.id! - PER_PAGE) > 0) ?
+                        first_item.id! - PER_PAGE :
                         0;
 
                     pageRef.current = (await readGameDB(first_id, PER_PAGE)).map((game) => {
@@ -358,7 +389,7 @@ export const Search = ({ navigation }: SearchProps) => {
                 handleSelection("BUTTON_C");
                 break;
             case "F":
-                handleSelection("BUTTON_F");
+                handleAddFavorites()
                 break;
             default:
                 break;

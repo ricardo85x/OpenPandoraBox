@@ -161,3 +161,7 @@ export interface KeyboardKeyProps {
   size: number;
   selected: boolean;
 }
+
+export interface SortListProps {
+  id: number
+}

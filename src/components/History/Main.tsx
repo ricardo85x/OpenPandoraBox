@@ -31,11 +31,10 @@ export const Main = ({selectedGame, onBackground, buttonAction}: MainProps) => {
             <Footer 
                 buttonAction={buttonAction}
                 items={[
-                    {color: "white", title: "A", text: "SELECT"},
-                    {color: "yellow", title: "B", text: "BACK"},
-                    {color: "pink", title: "D", text: "REMOVE"},
-                    {color: "red", title: "C", text: "PREV"},
-                    {color: "green", title: "F", text: "NEXT"}
+                    { title: "A", text: "SELECT"},
+                    { title: "B", text: "BACK"},
+                    { title: "D", text: "REMOVE"},
+                    { title: "F", text: "FAV."}
                 ]}
             />
         </View>

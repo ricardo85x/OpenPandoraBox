@@ -68,6 +68,7 @@ export const History = ({ navigation } : HistoryProps) => {
 
         const baseConfig = await pandaConfig.dirConfig()
 
+
         gamesRef.current = (await db.getHistory()).map((game, id) => {
 
             const platform_name = game.platform.split('/')[game.platform.split('/').length - 1]
@@ -117,6 +118,36 @@ export const History = ({ navigation } : HistoryProps) => {
 
     }, [page])
 
+    const handleAddFavorites = async () => {
+
+
+        const selectedGameNow = pageRef.current.find((g) => g.selected);
+    
+    
+        if(!! db  && selectedGameNow?.gameId && selectedGameNow?.path){
+    
+    
+         const platform_path = selectedGameNow.path.split('/').slice(0,selectedGameNow.path.split('/').length -1).join('/')
+          
+    
+         const isFavorite = await db.setFavorite(selectedGameNow.gameId!, platform_path);
+    
+         pageRef.current = pageRef.current.map((page) => {
+            if(page.gameId! === selectedGameNow.gameId && page.path === selectedGameNow.path){
+    
+              return {
+                ...page,
+                favorite: isFavorite,
+              }
+            }
+            return page
+         })
+    
+         setPage(pageRef.current)
+        } 
+      }
+
+
     const ListenKeyBoard = (keyEvent: KeyEventProps) => {
 
         if (keyMap.upKeyCode?.includes(keyEvent.keyCode)) {
@@ -125,6 +156,12 @@ export const History = ({ navigation } : HistoryProps) => {
 
         if (keyMap.downKeyCode?.includes(keyEvent.keyCode)) {
             handleSelection("DOWN")
+        }
+        if (keyMap.leftKeyCode?.includes(keyEvent.keyCode)) {
+            handleSelection("LEFT")
+        }
+        if (keyMap.rightKeyCode?.includes(keyEvent.keyCode)) {
+            handleSelection("RIGHT")
         }
 
         if (keyMap.P1_A?.includes(keyEvent.keyCode)
@@ -137,14 +174,15 @@ export const History = ({ navigation } : HistoryProps) => {
             || keyMap.P2_C?.includes(keyEvent.keyCode)
         ) {
             // console.log("KEY C")
-            handleSelection("BUTTON_C")
+            //handleSelection("BUTTON_C")
         }
 
         if (keyMap.P1_F?.includes(keyEvent.keyCode)
             || keyMap.P2_F?.includes(keyEvent.keyCode)
         ) {
             // console.log("KEY F")
-            handleSelection("BUTTON_F")
+            // handleSelection("BUTTON_F")
+            handleAddFavorites()
         }
 
         if ([...keyMap.P1_D, ...keyMap.P2_D].includes(keyEvent.keyCode)) {
@@ -295,7 +333,7 @@ export const History = ({ navigation } : HistoryProps) => {
 
                     }
                 }
-            } else if (direction === "BUTTON_F") {
+            } else if (direction === "RIGHT") {
 
                 if (last_item.id! < (gamesRef.current.length - 1)) {
                     const last_id = ((last_item.id! + PER_PAGE) < (gamesRef.current.length - 1)) ?
@@ -313,7 +351,7 @@ export const History = ({ navigation } : HistoryProps) => {
                     setPage(pageRef.current)
                 }
 
-            } else if (direction === "BUTTON_C") {
+            } else if (direction === "LEFT") {
                 // check if it is not the first of the list
                 if (0 !== first_item.id) {
 
@@ -352,13 +390,13 @@ export const History = ({ navigation } : HistoryProps) => {
                 }
                 break;
             case "C":
-                handleSelection("BUTTON_C");
+             //   handleSelection("BUTTON_C");
                 break;
             case "D":
                 handleRemoveFromHistory();
                 break;
             case "F":
-                handleSelection("BUTTON_F");
+                handleAddFavorites();
                 break;
             default:
                 break;
