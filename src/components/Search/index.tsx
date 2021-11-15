@@ -121,7 +121,6 @@ export const Search = ({ navigation }: SearchProps) => {
         const selectedGameNow = pageRef.current.find((g) => g.selected);
 
 
-        console.log("selectedGameNow", !! selectedGameNow)
     
         if(!! db  && selectedGameNow?.gameId && selectedGameNow?.path){
     
@@ -155,6 +154,7 @@ export const Search = ({ navigation }: SearchProps) => {
         if (keyboardActiveRef?.current) {
 
             keyboardRef.current?.listenInput(keyEvent.keyCode)
+
       
         } else {
 
@@ -167,7 +167,6 @@ export const Search = ({ navigation }: SearchProps) => {
             }
 
             if (keyMap.rightKeyCode?.includes(keyEvent.keyCode)) {
-                console.log("Pressed Right")
                 
                 keyboardActiveRef.current = true
                 setKeyboardActive(keyboardActiveRef.current)
@@ -182,14 +181,12 @@ export const Search = ({ navigation }: SearchProps) => {
             if (keyMap.P1_C?.includes(keyEvent.keyCode)
                 || keyMap.P2_C?.includes(keyEvent.keyCode)
             ) {
-                // console.log("KEY C")
                 handleSelection("BUTTON_C")
             }
     
             if (keyMap.P1_F?.includes(keyEvent.keyCode)
                 || keyMap.P2_F?.includes(keyEvent.keyCode)
             ) {
-                // console.log("KEY F")
                 handleAddFavorites()
     
             }
@@ -199,10 +196,8 @@ export const Search = ({ navigation }: SearchProps) => {
     
                 if (navigation.canGoBack()) {
                     navigation.goBack()
-                    // console.log("BACK")
                 } else {
                     navigation.navigate('Home');
-                    // console.log("To the home")
                 }
             }
 
@@ -374,32 +369,36 @@ export const Search = ({ navigation }: SearchProps) => {
 
     const buttonAction = (buttonName: string) => {
 
-        switch (buttonName) {
-            case "A":
-                handleRunGame();
-                break;
-            case "B":
-                if (navigation.canGoBack()) {
-                    navigation.goBack()
-                } else {
-                    navigation.navigate('Home');
-                }
-                break;
-            case "C":
-                handleSelection("BUTTON_C");
-                break;
-            case "F":
-                handleAddFavorites()
-                break;
-            default:
-                break;
+        if (keyboardActiveRef?.current) {
+            if(!! keyboardRef.current?.buttonAction) {
+                keyboardRef.current.buttonAction(buttonName)
+            }
+        } else {
+
+            switch (buttonName) {
+                case "A":
+                    handleRunGame();
+                    break;
+                case "B":
+                    if (navigation.canGoBack()) {
+                        navigation.goBack()
+                    } else {
+                        navigation.navigate('Home');
+                    }
+                    break;
+                case "C":
+                    handleSelection("BUTTON_C");
+                    break;
+                case "F":
+                    handleAddFavorites()
+                    break;
+                default:
+                    break;
+            }
         }
-
-
     }
 
     const colorsBg = [chakraColors.gray[8], chakraColors.gray[7], chakraColors.gray[6]]
-
 
     return (
         <>

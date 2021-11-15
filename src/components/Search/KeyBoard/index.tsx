@@ -191,33 +191,35 @@ export const KeyBoard = forwardRef((
 
     }
 
-    useImperativeHandle(ref, () => ({
+    useImperativeHandle(ref, () => {
+        return {
+            buttonAction: (key: string) => {
+                handlePressKey(key)
+            },
+            listenInput: (keyCode: number) => {
 
-        listenInput: (keyCode: number) => {
-
-            if ([...keyMap.P1_A, ...keyMap.P2_A].some(key => key === keyCode)) {
-                handlePressKey("A")
-            } else if ([...keyMap.P1_B, ...keyMap.P2_B].some(key => key === keyCode)) {
-                handlePressKey("B")
-            } else if ([...keyMap.P1_C, ...keyMap.P2_C].some(key => key === keyCode)) {
-                handlePressKey("C")
-            } else if (keyMap.upKeyCode.some(key => key === keyCode)) {
-                handleKeyNavigation("UP")
-            } else if (keyMap.downKeyCode.some(key => key === keyCode)) {
-                handleKeyNavigation("DOWN")
-            } else if (keyMap.leftKeyCode.some(key => key === keyCode)) {
-                handleKeyNavigation("LEFT")
-
-            } else if (keyMap.rightKeyCode.some(key => key === keyCode)) {
-                handleKeyNavigation("RIGHT")
-
-            } else if ([...keyMap.P1_START, ...keyMap.P2_START].some(key => key === keyCode)) {
-                handlePressKey("START")
+                if ([...keyMap.P1_A, ...keyMap.P2_A].some(key => key === keyCode)) {
+                    handlePressKey("A")
+                } else if ([...keyMap.P1_B, ...keyMap.P2_B].some(key => key === keyCode)) {
+                    handlePressKey("B")
+                } else if ([...keyMap.P1_C, ...keyMap.P2_C].some(key => key === keyCode)) {
+                    handlePressKey("C")
+                } else if (keyMap.upKeyCode.some(key => key === keyCode)) {
+                    handleKeyNavigation("UP")
+                } else if (keyMap.downKeyCode.some(key => key === keyCode)) {
+                    handleKeyNavigation("DOWN")
+                } else if (keyMap.leftKeyCode.some(key => key === keyCode)) {
+                    handleKeyNavigation("LEFT")
+    
+                } else if (keyMap.rightKeyCode.some(key => key === keyCode)) {
+                    handleKeyNavigation("RIGHT")
+    
+                } else if ([...keyMap.P1_START, ...keyMap.P2_START].some(key => key === keyCode)) {
+                    handlePressKey("START")
+                }
             }
         }
-
-    }));
-
+    })
 
     const colorsBg = keyboardActiveRef.current ?
         [chakraColors.gray[8], chakraColors.gray[7], chakraColors.gray[6]] :

@@ -102,6 +102,9 @@ class SQLiteManager {
       await this.db.executeSql('DELETE from Rom where platform = ? ', [
         platform,
       ]);
+      await this.db.executeSql('DELETE from History where platform = ? ', [
+        platform,
+      ]);
     } catch (error) {
       console.error('Error cleaning platform', platform, error);
     }

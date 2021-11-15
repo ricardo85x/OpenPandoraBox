@@ -227,6 +227,9 @@ export const Platform = ({navigation, route}: PlatformProps) => {
   const readGameList = async (reload = false) => {
     updateLoading(LOADING_STATUS.LOADING);
 
+    pageRef.current = []
+    setPage(pageRef.current);
+
     if (!db) {
       updateLoading(LOADING_STATUS.LOADED);
       return;
