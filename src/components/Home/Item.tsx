@@ -30,7 +30,7 @@ export const Item = ({ item, navigation, keyMaps }: ItemProps) => {
     const defaultValue = { uri: "" }
     let currentBg = defaultValue
 
-    if (type === "platform") {
+    if (type === "platform" && title !== "All") {
       currentBg = { uri: `${FILE_URI}${background}` }
     } else if (type === "settings") {
       if (appSettings?.THEME?.settingsBackgroundImg){
@@ -41,14 +41,19 @@ export const Item = ({ item, navigation, keyMaps }: ItemProps) => {
         currentBg = { uri: `${FILE_URI}${appSettings.THEME.historyBackgroundImg}` }
       }
     } else if (type === "favorite") {
-      // if (appSettings?.THEME?.favoriteBackgroundImg){
-      //   currentBg = { uri: `${FILE_URI}${appSettings.THEME.favoriteBackgroundImg}` }
-      // }
+      if (appSettings?.THEME?.favoriteBackgroundImg){
+        currentBg = { uri: `${FILE_URI}${appSettings.THEME.favoriteBackgroundImg}` }
+      }
     } else if (type === "search") {
       if (appSettings?.THEME?.searchBackgroundImg){
         currentBg = { uri: `${FILE_URI}${appSettings.THEME.searchBackgroundImg}` }
       }
+    }  else if (type === "platform" && title === "All") {
+      if (appSettings?.THEME?.allBackgroundImg){
+        currentBg = { uri: `${FILE_URI}${appSettings.THEME.allBackgroundImg}` }
+      }
     }
+
 
     const minPathSize = FILE_URI.length + 3;
 

@@ -76,56 +76,68 @@ export const ThemeSettings = ({ navigation }: ThemeSettingsProps) => {
         value: "",
       },
       {
-        index: 3, key: "colorButton_A",
+        index: 3, key: "favoriteBackgroundImg",
+        name: "Favorite Background", desc: "This image will show on home screen",
+        type: "file",
+        value: "",
+      },
+      {
+        index: 4, key: "allBackgroundImg",
+        name: "All Background", desc: "This image will show on home screen",
+        type: "file",
+        value: "",
+      },
+      {
+        index: 5, key: "colorButton_A",
         name: "Button A Color", desc: "select the button color",
         type: "color",
         options: Object.keys(chakraColors),
         value: "white"
       },
       {
-        index: 4, key: "colorButton_B",
+        index: 6, key: "colorButton_B",
         name: "Button B Color", desc: "select the button color",
         type: "color",
         options: Object.keys(chakraColors),
         value: "white"
       },
       {
-        index: 5, key: "colorButton_C",
+        index: 7, key: "colorButton_C",
         name: "Button C Color", desc: "select the button color",
         type: "color",
         options: Object.keys(chakraColors),
         value: "white"
       },
       {
-        index: 6, key: "colorButton_D",
+        index: 8, key: "colorButton_D",
         name: "Button D Color", desc: "select the button color",
         type: "color",
         options: Object.keys(chakraColors),
         value: "white"
       },
       {
-        index: 7, key: "colorButton_E",
+        index: 9, key: "colorButton_E",
         name: "Button E Color", desc: "select the button color",
         type: "color",
         options: Object.keys(chakraColors),
         value: "white"
       },
       {
-        index: 8, key: "colorButton_F",
+        index: 10, key: "colorButton_F",
         name: "Button F Color", desc: "select the button color",
         type: "color",
         options: Object.keys(chakraColors),
         value: "white"
       },
       {
-        index: 9, key: "themeColor",
+        index: 11, key: "themeColor",
         name: "Theme Color", desc: "select the button color",
         type: "color",
         options: Object.keys(chakraColors),
         value: "orange"
       },
       {
-        index: 10, key: "SAVE_CONFIG",
+        index: 12, key: "SAVE_CONFIG",
         name: "Save Configuration", desc: "The configuration will be saved to file",
         type: "save",
         value: "save"

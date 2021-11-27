@@ -22,6 +22,8 @@ interface IThemeSettings {
   settingsBackgroundImg: string;
   historyBackgroundImg: string;
   searchBackgroundImg: string;
+  favoriteBackgroundImg: string;
+  allBackgroundImg: string;
   colorButton_A: IAppColor;
   colorButton_B: IAppColor;
   colorButton_C: IAppColor;

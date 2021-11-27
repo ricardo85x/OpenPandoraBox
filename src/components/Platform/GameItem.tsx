@@ -34,6 +34,7 @@ export const GameItem = ({ game, EXTRA_SPACE }: GameItemProps) => {
 
             colors={bgColor}
 
+            
             style={{
                 justifyContent: "center",
                 height: height - 4,
