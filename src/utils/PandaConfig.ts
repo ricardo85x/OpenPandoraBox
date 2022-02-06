@@ -215,6 +215,11 @@ export const PandaConfig = () => {
             return
         }
 
+        if (launcher == "Flycast"){
+            RunLocalCommand().openFlycast(rom);
+            return
+        }
+
         if (launcher == "openBor"){
             runOpenBor(rom);
             return

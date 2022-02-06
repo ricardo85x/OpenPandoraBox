@@ -184,6 +184,29 @@ public class RunLocalCommandModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
+  public void openFlycast(String rom){
+    Intent requestedIntent = new Intent("android.intent.action.VIEW");
+
+    if (requestedIntent != null) {
+
+      ComponentName componentName = new ComponentName("com.flycast.emulator", "com.reicast.emulator.MainActivity");
+
+      requestedIntent.setComponent(componentName);
+      requestedIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+      requestedIntent.setData(Uri.parse(new File(rom).toString()));
+      
+      _context.startActivity(requestedIntent);
+
+    } else {
+      Log.d(
+        "ERROR",
+        "Error no intent com.flycast.emulator found"
+      );
+    }
+  }
+
+  @ReactMethod
   public void runRetroArch(String retroArchPackageId, String corePath, String configPath, String romPath){
     // Intent retroArchIntent = getActivity().getPackageManager().getLaunchIntentForPackage(retroArchPackageId);
     Intent retroArchIntent = new Intent("android.intent.category.LAUNCHER");

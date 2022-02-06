@@ -16,7 +16,8 @@ export type IAppLauchers =
   | 'openBor'
   | 'openBor old'
   | 'PPSSPP'
-  | 'Reicast';
+  | 'Reicast'
+  | 'Flycast';
 
 interface IThemeSettings {
   settingsBackgroundImg: string;

@@ -7,6 +7,7 @@ import { Body } from "./Body"
 import { Header } from "./Header"
 import { Footer } from "../Footer/index"
 import { IRomPlatform } from '../../utils/types';
+import { usePlatformContext } from './PlatformContext';
 
 interface MainProps {
     title: string;
@@ -18,6 +19,9 @@ interface MainProps {
 export const Main = ({title, selectedGame, onBackground, buttonAction}: MainProps) => {
 
     const { APP_WIDTH, APP_HEIGHT } = useSettingsContext()
+
+    const { footerItems } = usePlatformContext()
+
 
     return (
 
@@ -35,13 +39,7 @@ export const Main = ({title, selectedGame, onBackground, buttonAction}: MainProp
 
             <Footer
                 buttonAction={buttonAction}
-                items={[
-                {color: "white", title: "A", text: "SELECT"},
-                {color: "yellow", title: "B", text: "BACK"},
-                {color: "pink", title: "D", text: "RELOAD"},
-                {color: "blue", title: "E", text: "RANDOM"},
-                {color: "green", title: "F", text: "FAV."}
-            ]}
+                items={footerItems}
           />
         </View>
     )

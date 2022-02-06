@@ -21,6 +21,7 @@ import {
   IRomPlatform,
   SortListProps,
 } from '../../utils/types';
+import {PlatformContextProvider, usePlatformContext} from './PlatformContext';
 
 interface PlatformProps {
   navigation: StackNavigationProp<any, any>;
@@ -42,7 +43,17 @@ export enum LOADING_STATUS {
 }
 
 export const Platform = ({navigation, route}: PlatformProps) => {
+  return (
+    <PlatformContextProvider>
+      <PlatformChild navigation={navigation} route={route} />
+    </PlatformContextProvider>
+  );
+};
+
+export const PlatformChild = ({navigation, route}: PlatformProps) => {
   const {db} = useDbContext();
+
+  const {setTitle} = usePlatformContext();
 
   const {decodeText} = Utils();
 
@@ -62,6 +73,12 @@ export const Platform = ({navigation, route}: PlatformProps) => {
   } = route;
 
   const {title, text, path} = platform;
+
+  useEffect(() => {
+    if (setTitle) {
+      setTitle(title);
+    }
+  }, [title]);
 
   const [page, setPage] = useState<IRomPlatform[]>([]);
   const pageRef = useRef<IRomPlatform[]>([]);
@@ -104,22 +121,16 @@ export const Platform = ({navigation, route}: PlatformProps) => {
     isLoadingPageRef.current = true;
     let dbRoms: IRomPlatform[] = [];
 
-
-
     try {
       const ids: number[] = sortListRef.current
         .slice(start, start + end)
         .map((v) => v.id);
 
-
       if (rangeRef.current.previous.start !== -1) {
-
-
         if (
           start == rangeRef.current.previous.start + 1 &&
           end == rangeRef.current.previous.end
         ) {
-
           const missingRom =
             ((await db?.loadRomsFromPlatformOffsetLimitNew(
               path,
@@ -134,7 +145,6 @@ export const Platform = ({navigation, route}: PlatformProps) => {
           end == rangeRef.current.previous.end &&
           start
         ) {
-
           const missingRom =
             ((await db?.loadRomsFromPlatformOffsetLimitNew(path, start, 1, [
               ids[0],
@@ -145,17 +155,15 @@ export const Platform = ({navigation, route}: PlatformProps) => {
             ...pageRef.current.slice(0, pageRef.current.length - 1),
           ];
         } else {
-
-         dbRoms =
-          ((await db?.loadRomsFromPlatformOffsetLimitNew(
-            path,
-            start,
-            end,
-            ids,
-          )) as IRomPlatform[]) ?? [];
-       }
+          dbRoms =
+            ((await db?.loadRomsFromPlatformOffsetLimitNew(
+              path,
+              start,
+              end,
+              ids,
+            )) as IRomPlatform[]) ?? [];
+        }
       } else {
-
         dbRoms =
           ((await db?.loadRomsFromPlatformOffsetLimitNew(
             path,
@@ -163,18 +171,15 @@ export const Platform = ({navigation, route}: PlatformProps) => {
             end,
             ids,
           )) as IRomPlatform[]) ?? [];
-
-          
       }
 
       rangeRef.current.previous = {
         start,
         end,
       };
-
-    } catch (e) { console.error("readGameDBRange",e) }
-
-
+    } catch (e) {
+      console.error('readGameDBRange', e);
+    }
 
     isLoadingPageRef.current = false;
 
@@ -183,19 +188,12 @@ export const Platform = ({navigation, route}: PlatformProps) => {
 
   const readFromDb = async () => {
     if (!db) {
-    
       return false;
     }
 
-
-
     const _pages = await readGameDBRange(0, PER_PAGE);
 
-
-
     if (!!_pages && !!_pages.length) {
-
-
       pageRef.current = _pages.map((game, i) => {
         return {
           ...game,
@@ -227,7 +225,7 @@ export const Platform = ({navigation, route}: PlatformProps) => {
   const readGameList = async (reload = false) => {
     updateLoading(LOADING_STATUS.LOADING);
 
-    pageRef.current = []
+    pageRef.current = [];
     setPage(pageRef.current);
 
     if (!db) {
@@ -237,9 +235,6 @@ export const Platform = ({navigation, route}: PlatformProps) => {
 
     try {
       if (!reload) {
-
-
-
         if (sortListRef.current.length === 0) {
           sortListRef.current = await db.getSortList(path);
           setSortList(sortListRef.current);
@@ -254,16 +249,12 @@ export const Platform = ({navigation, route}: PlatformProps) => {
 
           return;
         }
-
-
       }
-
 
       if (title === 'All') {
         updateLoading(LOADING_STATUS.LOADED);
         return;
       }
-
 
       const parseGameList = ParseGameList();
       const jsonGame = await parseGameList.getJsonData(`${path}/gamelist.xml`);
@@ -289,8 +280,6 @@ export const Platform = ({navigation, route}: PlatformProps) => {
           // .sort((a, b) => b.name.localeCompare(a.name))
           .filter((game) => !!game?.path?.substr)
           .reduce((acc, game) => {
-           
-
             try {
               const data_ = {
                 path: decodeText(`${path}${game?.path?.substr(1)}`),
@@ -336,13 +325,10 @@ export const Platform = ({navigation, route}: PlatformProps) => {
           }),
         );
 
-
         if (sortListRef.current.length === 0) {
           sortListRef.current = await db.getSortList(path);
           setSortList(sortListRef.current);
         }
-
-
 
         await readFromDb();
 
@@ -601,7 +587,6 @@ export const Platform = ({navigation, route}: PlatformProps) => {
           // check if has more items
 
           if (last_item.sortId! < gamesRef.current.length - 1) {
-
             pageRef.current = (
               await readGameDBRange(first_item.sortId! + 1, PER_PAGE)
             ).map((game) => {
@@ -613,7 +598,6 @@ export const Platform = ({navigation, route}: PlatformProps) => {
 
             setPage(pageRef.current);
           } else {
-
             pageRef.current = (await readGameDBRange(0, PER_PAGE)).map(
               (game) => {
                 return {
@@ -687,7 +671,9 @@ export const Platform = ({navigation, route}: PlatformProps) => {
         // handleSelection('BUTTON_C');
         break;
       case 'D':
-        readGameList(true);
+        if(title !== "All"){
+          readGameList(true);
+        }
         break;
       case 'E':
         selectRandomRom();
