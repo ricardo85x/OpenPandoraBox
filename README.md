@@ -4,11 +4,11 @@ Just another emulator frontend.
 
 It is suppose to be used with **Pandory** on Pandora Box 3D Plus.
 
-It could be used with **NVIDIA Shield Portable** as well as I am using it to debug, but not all features will work on other platforms.
+It could be used with **NVIDIA Shield Portable** as well as I'm using it to debug, but not all features will work on other platforms.
 
 It should never be used on a device with a portrait screen orientation.
 
-If you device run on Android 5, you should consider using other solutions, it was build with Android 4 (KitKat) in mind.
+If you device run on Android 5 or later, you should consider using other solutions, it was build with Android 4 (KitKat) in mind.
 
 ### This app is a Launcher so you can replace the default Pandora Box 3D Plus' launcher.
 ## You will need a mouse on PandoraBox to select the default launcher.
@@ -33,7 +33,7 @@ If you device run on Android 5, you should consider using other solutions, it wa
 - History Games
 - Select a random game, because you can't decide what to play next \o/
 - Search a game in all platforms
-- Custom **file browser**, so you do not need a xkeyboard or touch screen to set a configuration option
+- Custom **file browser**, so you don't need a keyboard or touch screen to configure it
 - Custom **keyboard viewer**, so you can search a game without using touch screen
 
 ## Installation
@@ -47,7 +47,7 @@ If you device run on Android 5, you should consider using other solutions, it wa
 4 - Done
 
 
-It is possible to customize the settings directly on these files:
+It's possible to customize the settings directly on these files:
 
 - /data/data/com.openpandorabox/files/config.json
 - /data/data/com.openpandorabox/files/keymap.json
@@ -61,9 +61,9 @@ Add the roms like you do with others platforms, and everytime you run a openBor 
 ##
 
 
-This frontend will look for gamelist.xml, to get the path, name, desc, image and video.
+This frontend will look for gamelist.xml to get the path, name, desc, image and video.
 
-You can generate a gamelist.xml for each platform with  a external tool like skraper.
+You can generate a gamelist.xml for each platform with a external tool like skraper.
 
 ### If you have a emulationstation installation like batocera/recalbox somewhere, just copy the base ROM folder somewhere on pandora box, install the retroarch cores and you are done.
 
