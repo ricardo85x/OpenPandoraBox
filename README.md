@@ -72,6 +72,6 @@ You can generate a gamelist.xml for each platform with a external tool like skra
 ## Motivation.
 The default Pandora Box 3D interface is good, but I can't configure games individually.
 
-I tried to find a frontend on playstore but none works well with the default arcade controls on Pandory Box 3D.
+I tried to find a frontend on playstore but none works well with the default arcade controls on Pandora Box 3D.
 
-I hate to use mouse and keyboard on pandory box, so I created this frontend.
+I hate to use mouse and keyboard on pandora box, so I created this frontend.
